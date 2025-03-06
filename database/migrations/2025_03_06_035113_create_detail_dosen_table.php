@@ -5,17 +5,22 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void {
+    public function up(): void
+    {
         Schema::create('detail_dosen', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('dosen_id')->constrained('dosen')->onDelete('cascade');
             $table->foreignId('pengajuan_judul_id')->constrained('pengajuan_judul')->onDelete('cascade');
+            $table->enum('pembimbing', ['pembimbing 1', 'pembimbing 2']);
+            $table->enum('status', ['diproses', 'diterima', 'ditolak'])->default('diproses');
+            $table->text('alasan_dibatalkan')->nullable();
             $table->timestamps();
+
+            $table->primary(['dosen_id', 'pengajuan_judul_id']);
         });
     }
 
-    public function down(): void {
+    public function down(): void
+    {
         Schema::dropIfExists('detail_dosen');
     }
 };
-
