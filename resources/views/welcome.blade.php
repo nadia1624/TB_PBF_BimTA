@@ -19,7 +19,7 @@
             </style>
         @endif
     </head>
-    <body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
+    <body class="bg-[#FDFDFC] dark:bg-white text-white flex p-6 lg:p-8 items-center lg:justify-center min-h-screen flex-col">
         <header class="w-full lg:max-w-4xl max-w-[335px] text-sm mb-6 not-has-[nav]:hidden">
             @if (Route::has('login'))
                 <nav class="flex items-center justify-end gap-4">
@@ -32,20 +32,20 @@
                         </a>
                     @else
                     <a
-    href="{{ route('login') }}"
-    class="inline-block px-5 py-1.5 dark:text-[#EDEDEC] text-[#1b1b18] border border-white hover:border-gray-300 dark:hover:border-gray-500 rounded-sm text-sm leading-normal"
->
-    Log in
-</a>        
+                    href="{{ route('login') }}"
+                    class="inline-block px-5 py-1.5 text-[#638B35] border border-[#638B35] hover:bg-[#638B35] hover:text-white dark:hover:bg-[#4f722a] rounded-sm text-sm leading-normal transition duration-300"
+                >
+                    Log in
+                </a>
 
                     @endauth
                 </nav>
             @endif
         </header>
-        <section class="bg-white dark:bg-gray-900">
+        <section class="bg-white dark:bg-white shadow-[0px_10px_15px_-3px_rgba(0,0,0,0.2),0px_-10px_15px_-3px_rgba(0,0,0,0.2),10px_0px_15px_-3px_rgba(0,0,0,0.2),-10px_0px_15px_-3px_rgba(0,0,0,0.2)]">
     <div class="items-center max-w-screen-xl gap-16 px-4 py-8 mx-auto lg:grid lg:grid-cols-2 lg:py-16 lg:px-6">
         <div class="text-gray-500 sm:text-lg dark:text-gray-400">
-            <h2 class="mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Selamat Datang di Website BimTA</h2>
+            <h2 class="mb-4 text-4xl font-extrabold tracking-tight text-black-900 dark:text-[#232323]">Selamat Datang di Website BimTA</h2>
             <p class="mb-4">We are strategists, designers and developers. Innovators and problem solvers. Small enough to be simple and quick, but big enough to deliver the scope you want at the pace you need. Small enough to be simple and quick, but big enough to deliver the scope you want at the pace you need.</p>
             <p>We are strategists, designers and developers. Innovators and problem solvers. Small enough to be simple and quick.</p>
         </div>

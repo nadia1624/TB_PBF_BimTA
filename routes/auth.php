@@ -35,7 +35,7 @@ Route::middleware('guest',)->group(function () {
         ->name('password.store');
 });
 
-Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
@@ -56,4 +56,16 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+});
+
+Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
+    Route::get('/mahasiswa/dashboard', function () {
+        return view('mahasiswa.dashboard');
+    })->name('mahasiswa.dashboard');
+});
+
+Route::middleware(['auth', 'role:dosen'])->group(function () {
+    Route::get('/dosen/dashboard', function () {
+        return view('dosen.dashboard');
+    })->name('dosen.dashboard');
 });
