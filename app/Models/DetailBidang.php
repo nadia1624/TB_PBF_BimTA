@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class DetailBidang extends Model
 {
     use HasFactory;
-
+    
+    protected $table = 'detail_bidang';
     protected $fillable = ['bidang_keahlian_id', 'dosen_id'];
 
     public function bidangKeahlian()
