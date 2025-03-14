@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->text('alasan_dibatalkan')->nullable();
             $table->timestamps();
 
-            $table->primary(['dosen_id', 'pengajuan_judul_id']);
+            $table->primary(['dosen_id', 'pengajuan_judul_id', 'pembimbing']);
         });
     }
 

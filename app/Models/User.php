@@ -16,9 +16,14 @@ class User extends Authenticatable
         'email', 'password', 'gambar', 'role'
     ];
 
-    // Dalam model User.php
     public function mahasiswa()
     {
         return $this->hasOne(Mahasiswa::class);
+    }
+
+    // Relasi one-to-one dengan Dosen
+    public function dosen()
+    {
+        return $this->hasOne(Dosen::class);
     }
 }
