@@ -9,11 +9,18 @@ class PengajuanJudul extends Model
 {
     use HasFactory;
 
+    protected $table = 'pengajuan_judul';
+
     protected $fillable = ['judul', 'deskripsi', 'komentar', 'approved_ta', 'tanda_tangan', 'surat', 'mahasiswa_id'];
 
     public function mahasiswa()
     {
         return $this->belongsTo(Mahasiswa::class);
+    }
+
+    public function jadwalBimbingan()
+    {
+        return $this->hasMany(JadwalBimbingan::class);
     }
 }
 

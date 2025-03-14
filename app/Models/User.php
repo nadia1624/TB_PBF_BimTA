@@ -15,4 +15,10 @@ class User extends Authenticatable
     protected $fillable = [
         'email', 'password', 'gambar', 'role'
     ];
+
+    // Dalam model User.php
+    public function mahasiswa()
+    {
+        return $this->hasOne(Mahasiswa::class);
+    }
 }
