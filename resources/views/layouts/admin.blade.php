@@ -23,8 +23,8 @@
          </button>
 
          <!-- Mengubah lebar sidebar dari w-64 menjadi w-48 -->
-<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-48 h-screen flex flex-col transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-    <div class="h-full px-3 py-4 overflow-y-auto bg-[#638B35] flex flex-col justify-between">
+<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen flex flex-col transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+    <div class="h-full px-3 py-4 overflow-y-auto bg-[#638B35] flex flex-col justify-between rounded-3xl drop-shadow-xl m-2">
           <div class="flex flex-col items-center justify-center">
             <img src="/uploads/logo.png" class="h-6 sm:h-16 mx-auto mb-2" alt="BimTa Logo" />
             <img src="/uploads/namelogo.png" class="h-5 sm:h-10 mx-auto" alt="BimTa Name" />
@@ -84,7 +84,7 @@
 </aside>
 
 <!-- Juga perlu menyesuaikan margin pada konten utama jika sidebar dihilangkan -->
-<div class="p-4 sm:ml-48">
+<div class="p-4 sm:ml-64">
     @yield('content')
 </div>
 

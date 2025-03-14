@@ -44,13 +44,13 @@
             </div>
         </div>
         <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <button type="button" onclick="openModal('tambahBidangModal')" class="text-white bg-[#638B35] hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center">
+            <button type="button" onclick="openModal('tambahBidangModal')" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center">
                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Tambah Bidang
             </button>
-            <button type="button" onclick="openModal('tambahDosenModal')" class="text-white bg-[#638B35] hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center">
+            <button type="button" onclick="openModal('tambahDosenModal')" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center">
                 <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
@@ -92,20 +92,25 @@
                     </td>
                     <td class="px-6 py-4 text-center">
                         <div class="flex justify-center space-x-2">
-                            <button type="button" onclick="editDosen({{ $item->id }})" class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 rounded-lg p-2" title="Edit">
+                            <button type="button" onclick="editDosen({{ $item->id }})"
+                                class="bg-[#FBDA00] text-white hover:bg-yellow-300 border border-transparent focus:ring-4 focus:ring-[#FBDA00]-300 rounded-lg p-2"
+                                title="Edit">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                             </button>
-                            <button type="button" onclick="confirmDelete({{ $item->id }})" class="text-red-700 hover:text-white border border-red-700 hover:bg-red-700 focus:ring-4 focus:ring-red-300 rounded-lg p-2" title="Hapus">
+
+                            <button type="button" onclick="viewDosenDetail({{ $item}})"
+                            class="bg-[#638B35] text-white hover:text-white border hover:bg-[#7FAF50] focus:ring-4 focus:ring-lime-300 rounded-lg p-2" title="Lihat Detail">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                                  </svg>
+                            </button>
+                            <button type="button" onclick="confirmDelete({{ $item->id }})"
+                                class="bg-red-700 text-white hover:text-white border border-red-700 hover:bg-red-500 focus:ring-4 focus:ring-red-300 rounded-lg p-2" title="Hapus">
                                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                            <button type="button" onclick="viewDosenDetail({{ $item}})" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-700 focus:ring-4 focus:ring-green-300 rounded-lg p-2" title="Lihat Detail">
-                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
                             </button>
                         </div>
@@ -123,10 +128,10 @@
 
     <div class="relative w-full max-w-md max-h-full">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-black">
                     Tambah Bidang Keahlian
                 </h3>
                 <button type="button" onclick="closeModal('tambahBidangModal')" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
@@ -141,14 +146,14 @@
                 @csrf
                 <div class="p-4 md:p-5 space-y-4">
                     <div>
-                        <label for="nama_keahlian" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Bidang Keahlian</label>
-                        <input type="text" name="nama_keahlian" id="nama_keahlian" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Masukkan nama bidang" required>
+                        <label for="nama_keahlian" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Nama Bidang Keahlian</label>
+                        <input type="text" name="nama_keahlian" id="nama_keahlian" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-black-500 dark:placeholder-gray-400 dark:text-black" placeholder="Masukkan nama bidang" required>
                     </div>
                 </div>
                 <!-- Modal footer -->
                 <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <button type="submit" class="text-white bg-[#638B35] hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Simpan</button>
-                    <button type="button" onclick="closeModal('tambahBidangModal')" class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Batal</button>
+                    <button type="submit" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Simpan</button>
+                    <button type="button" onclick="closeModal('tambahBidangModal')" class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                 </div>
             </form>
         </div>
@@ -161,10 +166,10 @@
 
     <div class="relative w-full max-w-2xl max-h-full">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white text-center w-full">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-black text-center w-full">
                     Tambah Dosen Pembimbing Baru
                 </h3>
                 <button type="button" onclick="closeModal('tambahDosenModal')" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
@@ -180,20 +185,20 @@
                 <div class="p-4 md:p-5 space-y-4 max-h-[60vh] overflow-y-auto">
                     <!-- Informasi Pribadi Section -->
                     <div class="mb-4">
-                        <h4 class="text-lg font-medium text-gray-900 dark:text-white border-b pb-2">Informasi Pribadi</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-bklack border-b pb-2">Informasi Pribadi</h4>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="nip" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NIP</label>
-                            <input type="text" name="nip" id="nip" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Nomor Induk Pegawai" required>
+                            <label for="nip" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">NIP</label>
+                            <input type="text" name="nip" id="nip" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Nomor Induk Pegawai" required>
                         </div>
                         <div>
-                            <label for="nama_lengkap" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" id="nama_lengkap" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Nama lengkap dosen" required>
+                            <label for="nama_lengkap" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Nama Lengkap</label>
+                            <input type="text" name="nama_lengkap" id="nama_lengkap" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Nama lengkap dosen" required>
                         </div>
                         <div class="md:col-span-2">
-                            <label for="bidang_keahlian_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bidang Keahlian</label>
-                            <select name="bidang_keahlian_id" id="bidang_keahlian_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
+                            <label for="bidang_keahlian_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Bidang Keahlian</label>
+                            <select name="bidang_keahlian_id" id="bidang_keahlian_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" required>
                                 <option value="">Pilih Bidang Keahlian</option>
                                 @foreach($bidang_keahlian as $bidang)
                                 <option value="{{ $bidang->id }}">{{ $bidang->nama_keahlian }}</option>
@@ -204,27 +209,27 @@
 
                     <!-- Informasi Akun Section -->
                     <div class="pt-4 mb-4">
-                        <h4 class="text-lg font-medium text-gray-900 dark:text-white border-b pb-2">Informasi Akun</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-black border-b pb-2">Informasi Akun</h4>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                            <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Email dosen" required>
+                            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
+                            <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Email dosen" required>
                         </div>
                         <div>
-                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                            <input type="password" name="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Password untuk login" required>
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Password</label>
+                            <input type="password" name="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Password untuk login" required>
                         </div>
                         <div>
-                            <label for="password_confirmation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Konfirmasi Password</label>
-                            <input type="password" name="password_confirmation" id="password_confirmation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Ketik ulang password" required>
+                            <label for="password_confirmation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Konfirmasi Password</label>
+                            <input type="password" name="password_confirmation" id="password_confirmation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Ketik ulang password" required>
                         </div>
                     </div>
                 </div>
                 <!-- Modal footer -->
                 <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <button type="submit" class="text-white bg-[#638B35] hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Simpan</button>
-                    <button type="button" onclick="closeModal('tambahDosenModal')" class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Batal</button>
+                    <button type="submit" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#638B35]-600 dark:hover:bg-lime-700 dark:focus:ring-lime-800">Simpan</button>
+                    <button type="button" onclick="closeModal('tambahDosenModal')" class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                 </div>
             </form>
         </div>
@@ -237,10 +242,10 @@
 
     <div class="relative w-full max-w-2xl max-h-full">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-black">
                     Edit Dosen
                 </h3>
                 <button type="button" onclick="closeModal('editDosenModal')" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
@@ -258,20 +263,20 @@
                 <div class="p-4 md:p-5 space-y-4 max-h-[60vh] overflow-y-auto">
                     <!-- Informasi Pribadi Section -->
                     <div class="mb-4">
-                        <h4 class="text-lg font-medium text-gray-900 dark:text-white border-b pb-2">Informasi Pribadi</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-black border-b pb-2">Informasi Pribadi</h4>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="edit_nip" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NIP</label>
-                            <input type="text" name="nip" id="edit_nip" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Nomor Induk Pegawai" required>
+                            <label for="edit_nip" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">NIP</label>
+                            <input type="text" name="nip" id="edit_nip" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Nomor Induk Pegawai" required>
                         </div>
                         <div>
-                            <label for="edit_nama_lengkap" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama Lengkap</label>
-                            <input type="text" name="nama_lengkap" id="edit_nama_lengkap" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Nama lengkap dosen" required>
+                            <label for="edit_nama_lengkap" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Nama Lengkap</label>
+                            <input type="text" name="nama_lengkap" id="edit_nama_lengkap" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Nama lengkap dosen" required>
                         </div>
                         <div class="md:col-span-2">
-                            <label for="edit_bidang_keahlian_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Bidang Keahlian</label>
-                            <select name="bidang_keahlian_id" id="edit_bidang_keahlian_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
+                            <label for="edit_bidang_keahlian_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Bidang Keahlian</label>
+                            <select name="bidang_keahlian_id" id="edit_bidang_keahlian_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" required>
                                 <option value="">Pilih Bidang Keahlian</option>
                                 @foreach($bidang_keahlian as $bidang)
                                 <option value="{{ $bidang->id }}">{{ $bidang->nama_keahlian }}</option>
@@ -282,37 +287,37 @@
 
                     <!-- Informasi Akun Section -->
                     <div class="pt-4 mb-4">
-                        <h4 class="text-lg font-medium text-gray-900 dark:text-white border-b pb-2">Informasi Akun</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-black border-b pb-2">Informasi Akun</h4>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="edit_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                            <input type="email" name="email" id="edit_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Email dosen" required>
+                            <label for="edit_email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
+                            <input type="email" name="email" id="edit_email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Email dosen" required>
                         </div>
 
                         <div class="md:col-span-2">
                             <div class="flex items-center mb-4">
                                 <input type="checkbox" id="change_password" onclick="togglePasswordFields()" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
-                                <label for="change_password" class="ml-2 text-sm font-medium text-gray-900 dark:text-white">Ubah Password</label>
+                                <label for="change_password" class="ml-2 text-sm font-medium text-gray-900 dark:text-black">Ubah Password</label>
                             </div>
                         </div>
 
                         <div id="password_fields" class="hidden md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label for="edit_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password Baru</label>
-                                <input type="password" name="password" id="edit_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Password baru">
+                                <label for="edit_password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Password Baru</label>
+                                <input type="password" name="password" id="edit_password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Password baru">
                             </div>
                             <div>
-                                <label for="edit_password_confirmation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Konfirmasi Password Baru</label>
-                                <input type="password" name="password_confirmation" id="edit_password_confirmation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" placeholder="Konfirmasi password baru">
+                                <label for="edit_password_confirmation" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Konfirmasi Password Baru</label>
+                                <input type="password" name="password_confirmation" id="edit_password_confirmation" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black" placeholder="Konfirmasi password baru">
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- Modal footer -->
                 <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <button type="submit" class="text-white bg-[#638B35] hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Simpan Perubahan</button>
-                    <button type="button" onclick="closeModal('editDosenModal')" class="ms-3 text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Batal</button>
+                    <button type="submit" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#638B35]-700 dark:hover:bg-lime-700 dark:focus:ring-lime-800">Simpan Perubahan</button>
+                    <button type="button" onclick="closeModal('editDosenModal')" class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                 </div>
             </form>
         </div>
@@ -325,13 +330,13 @@
 
     <div class="relative w-full max-w-md max-h-full">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
             <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-white-600">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-black">
                     Konfirmasi Hapus
                 </h3>
-                <button type="button" onclick="closeModal('deleteDosenModal')" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                <button type="button" onclick="closeModal('deleteDosenModal')" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-black-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-white-600 dark:hover:text-black">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
@@ -340,11 +345,11 @@
             </div>
             <!-- Modal body -->
             <div class="p-4 md:p-5 text-center">
-                <svg class="mx-auto mb-4 text-red-600 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <svg class="mx-auto mb-4 text-red-600 w-12 h-12 dark:text-black-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
-                <h3 class="mb-5 text-lg font-normal text-gray-800 dark:text-gray-400">Apakah Anda yakin ingin menghapus dosen ini?</h3>
-                <p class="mb-5 text-sm text-gray-700 dark:text-gray-300">Tindakan ini tidak dapat dibatalkan dan akan menghapus semua data terkait dosen ini.</p>
+                <h3 class="mb-5 text-lg font-normal text-gray-800 dark:text-black-400">Apakah Anda yakin ingin menghapus dosen ini?</h3>
+                <p class="mb-5 text-sm text-gray-700 dark:text-black-300">Tindakan ini tidak dapat dibatalkan dan akan menghapus semua data terkait dosen ini.</p>
                 <form id="deleteDosenForm" action="{{ route('admin.dosen.delete') }}" method="POST">
                     @csrf
                     @method('DELETE')
@@ -353,9 +358,7 @@
                         <button type="submit" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
                             Ya, hapus
                         </button>
-                        <button type="button" onclick="closeModal('deleteDosenModal')" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">
-                            Batal
-                        </button>
+                        <button type="button" onclick="closeModal('deleteDosenModal')" class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                     </div>
                 </form>
             </div>
@@ -369,10 +372,10 @@
 
     <div class="relative w-full max-w-xl max-h-full">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-black">
                     Detail Dosen
                 </h3>
                 <button type="button" onclick="closeModal('detailDosenModal')" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
@@ -551,6 +554,7 @@
         // Fetch dosen details
 
                 const detailContainer = document.getElementById('dosenDetailContent');
+                openModal('detailDosenModal');
 
                 // Build detail HTML
                 let bidangHtml = '';
@@ -602,25 +606,25 @@
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="text-sm">
-                                <p class="text-gray-500 dark:text-gray-400">NIP</p>
-                                <p class="font-medium text-gray-900 dark:text-white">${dosen.nip}</p>
+                                <p class="text-gray-500 dark:text-black-400">NIP</p>
+                                <p class="font-medium text-gray-900 dark:text-black">${dosen.nip}</p>
                             </div>
                             <div class="text-sm">
-                                <p class="text-gray-500 dark:text-gray-400">Nama Lengkap</p>
-                                <p class="font-medium text-gray-900 dark:text-white">${dosen.nama_lengkap}</p>
+                                <p class="text-gray-500 dark:text-black-400">Nama Lengkap</p>
+                                <p class="font-medium text-gray-900 dark:text-black">${dosen.nama_lengkap}</p>
                             </div>
                             <div class="text-sm">
-                                <p class="text-gray-500 dark:text-gray-400">Email</p>
-                                <p class="font-medium text-gray-900 dark:text-white">${dosen.user ? dosen.user.email : ''}</p>
+                                <p class="text-gray-500 dark:text-black-400">Email</p>
+                                <p class="font-medium text-gray-900 dark:text-black">${dosen.user ? dosen.user.email : ''}</p>
                             </div>
                             <div class="text-sm">
-                                <p class="text-gray-500 dark:text-gray-400">Bidang Keahlian</p>
-                                <p class="font-medium text-gray-900 dark:text-white">${bidangHtml}</p>
+                                <p class="text-gray-500 dark:text-black-400">Bidang Keahlian</p>
+                                <p class="font-medium text-gray-900 dark:text-black">${bidangHtml}</p>
                             </div>
                         </div>
 
                         <div class="border-t pt-4">
-                            <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Mahasiswa Bimbingan</h4>
+                            <h4 class="text-lg font-medium text-gray-900 dark:text-black mb-4">Mahasiswa Bimbingan</h4>
                             ${mahasiswaHtml}
                         </div>
                     </div>
