@@ -21,7 +21,7 @@
                 @endcan
 
                 @can('mahasiswa')
-                    <a href="" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">Pengajuan Judul</a>
+                    <a href="{{route('pengajuan-judul')}}"  class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">Pengajuan Judul</a>
                     <a href="{{ route('mahasiswa.jadwal-bimbingan.index') }}" class="px-3 py-2 bg-green-600 text-white rounded-md text-sm font-medium">Jadwal Bimbingan</a>
                     <a href="#" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900">Bimbingan</a>
                 @endcan

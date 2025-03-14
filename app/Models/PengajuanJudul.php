@@ -30,6 +30,7 @@ class PengajuanJudul extends Model
     public function jadwalBimbingan()
     {
         return $this->hasMany(JadwalBimbingan::class);
+    }
 
     // Relasi many-to-many dengan Dosen melalui DetailDosen
     public function dosen()
