@@ -144,7 +144,7 @@
                 </div>
             @else
                 <!-- Show form for new submission -->
-                <form action="{{ route('pengajuan-judul.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('mahasiswa.pengajuan-judul.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <!-- Form content remains the same... -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">

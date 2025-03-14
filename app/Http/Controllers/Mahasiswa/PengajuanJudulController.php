@@ -66,7 +66,7 @@ class PengajuanJudulController extends Controller
               ->first();
 
             if ($pengajuan) {
-                return redirect()->route('pengajuan-judul')
+                return redirect()->route('mahasiswa.pengajuan-judul.index')
                     ->with('error', 'Anda sudah memiliki judul yang disetujui. Tidak dapat mengajukan judul baru.');
             }
         }
@@ -94,7 +94,7 @@ class PengajuanJudulController extends Controller
 
         // Periksa apakah user memiliki data mahasiswa
         if (!$user->mahasiswa) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Data mahasiswa belum lengkap. Silakan lengkapi profil Anda terlebih dahulu.');
         }
 
@@ -105,7 +105,7 @@ class PengajuanJudulController extends Controller
           ->first();
 
         if ($pengajuanDiterima) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Anda sudah memiliki judul yang disetujui. Tidak dapat mengajukan judul baru.');
         }
 
@@ -168,7 +168,7 @@ class PengajuanJudulController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('success', 'Pengajuan judul berhasil disimpan dan sedang diproses.');
 
         } catch (\Exception $e) {
@@ -181,7 +181,7 @@ class PengajuanJudulController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Terjadi kesalahan saat menyimpan pengajuan judul. ' . $e->getMessage());
         }
     }
@@ -196,7 +196,7 @@ class PengajuanJudulController extends Controller
         // Check if the current user is authorized to view this submission
         $user = Auth::user();
         if ($user->mahasiswa->id != $pengajuan->mahasiswa_id) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Anda tidak memiliki akses untuk melihat pengajuan ini.');
         }
 
@@ -232,7 +232,7 @@ class PengajuanJudulController extends Controller
         // Check if the current user is authorized to edit this submission
         $user = Auth::user();
         if ($user->mahasiswa->id != $pengajuan->mahasiswa_id) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Anda tidak memiliki akses untuk mengedit pengajuan ini.');
         }
 
@@ -246,7 +246,7 @@ class PengajuanJudulController extends Controller
         }
 
         if (!$canBeEdited) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Pengajuan yang sudah disetujui tidak dapat diedit.');
         }
 
@@ -282,7 +282,7 @@ class PengajuanJudulController extends Controller
         // Check if the current user is authorized to update this submission
         $user = Auth::user();
         if ($user->mahasiswa->id != $pengajuan->mahasiswa_id) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Anda tidak memiliki akses untuk mengupdate pengajuan ini.');
         }
 
@@ -296,7 +296,7 @@ class PengajuanJudulController extends Controller
         }
 
         if (!$canBeUpdated) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Pengajuan yang sudah disetujui tidak dapat diupdate.');
         }
 
@@ -371,7 +371,7 @@ class PengajuanJudulController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('success', 'Pengajuan judul berhasil diperbarui dan sedang diproses ulang.');
 
         } catch (\Exception $e) {
@@ -384,7 +384,7 @@ class PengajuanJudulController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Terjadi kesalahan saat mengupdate pengajuan judul. ' . $e->getMessage());
         }
     }
@@ -399,7 +399,7 @@ class PengajuanJudulController extends Controller
         // Check if the current user is authorized to delete this submission
         $user = Auth::user();
         if ($user->mahasiswa->id != $pengajuan->mahasiswa_id) {
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Anda tidak memiliki akses untuk menghapus pengajuan ini.');
         }
 
@@ -416,7 +416,7 @@ class PengajuanJudulController extends Controller
 
             DB::commit();
 
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('success', 'Pengajuan judul berhasil dihapus.');
 
         } catch (\Exception $e) {
@@ -429,7 +429,7 @@ class PengajuanJudulController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return redirect()->route('pengajuan-judul')
+            return redirect()->route('mahasiswa.pengajuan-judul.index')
                 ->with('error', 'Terjadi kesalahan saat menghapus pengajuan judul. ' . $e->getMessage());
         }
     }

@@ -18,7 +18,7 @@
             @can('mahasiswa')
                 <a href="{{ route('mahasiswa.dashboard') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('mahasiswa.dashboard') ? 'bg-green-600 text-white rounded-full' : 'text-gray-700 hover:text-gray-900' }}">Dashboard</a>
 
-                <a href="{{ route('pengajuan-judul') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('pengajuan-judul') ? 'bg-green-600 text-white rounded-full' : 'text-gray-700 hover:text-gray-900' }}">Pengajuan Judul</a>
+                <a href="{{ route('mahasiswa.pengajuan-judul.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('mahasiswa.pengajuan-judul.*') ? 'bg-green-600 text-white rounded-full' : 'text-gray-700 hover:text-gray-900' }}">Pengajuan Judul</a>
 
                 <a href="{{ route('mahasiswa.jadwal-bimbingan.index') }}" class="px-4 py-2 text-sm font-medium {{ request()->routeIs('mahasiswa.jadwal-bimbingan.*') ? 'bg-green-600 text-white rounded-full' : 'text-gray-700 hover:text-gray-900' }}">Jadwal Bimbingan</a>
 
