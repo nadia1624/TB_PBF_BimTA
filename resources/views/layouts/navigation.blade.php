@@ -15,6 +15,16 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <!-- Add new navigation links here -->
+                    <x-nav-link :href="route('pengajuan-judul')" :active="request()->routeIs('pengajuan-judul')">
+                        {{ __('Pengajuan Judul') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('jadwal-bimbingan')" :active="request()->routeIs('jadwal-bimbingan')">
+                        {{ __('Jadwal Bimbingan') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('bimbingan')" :active="request()->routeIs('bimbingan')">
+                        {{ __('Bimbingan') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -69,6 +79,16 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            <!-- Add new navigation links here for mobile view -->
+            <x-responsive-nav-link :href="route('pengajuan-judul')" :active="request()->routeIs('pengajuan-judul')">
+                {{ __('Pengajuan Judul') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('jadwal-bimbingan')" :active="request()->routeIs('jadwal-bimbingan')">
+                {{ __('Jadwal Bimbingan') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('bimbingan')" :active="request()->routeIs('bimbingan')">
+                {{ __('Bimbingan') }}
             </x-responsive-nav-link>
         </div>
 

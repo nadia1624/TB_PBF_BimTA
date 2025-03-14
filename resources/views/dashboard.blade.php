@@ -15,28 +15,6 @@
         </div>
     </div>
 
-    <table class="border-separate border border-gray-400 ...">
-  <thead>
-    <tr>
-      <th class="border border-black-300 text-red-500">State</th>
-      <th class="border border-gray-300 ...">City</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="border border-gray-300 ...">Indiana</td>
-      <td class="border border-gray-300 ...">Indianapolis</td>
-    </tr>
-    <tr>
-      <td class="border border-gray-300 ...">Ohio</td>
-      <td class="border border-gray-300 ...">Columbus</td>
-    </tr>
-    <tr>
-      <td class="border border-gray-300 ...">Michigan</td>
-      <td class="border border-gray-300 ...">Detroit</td>
-    </tr>
-  </tbody>
-</table>
 <section class="bg-gray-50 dark:bg-gray-900 h-screen flex items-center">
   <div class="max-w-screen-xl px-4 mx-auto lg:px-12 w-full">
     <!-- Start coding here -->
@@ -131,3 +109,10 @@
   </div>
 </section>
 </x-app-layout>
+
+
+
+
+
+
+
