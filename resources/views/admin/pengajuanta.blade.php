@@ -103,19 +103,24 @@
                     <td class="px-6 py-4">{{ $item->created_at->format('d/m/Y') }}</td>
                     <td class="px-6 py-4 text-center">
                         @php
-                            $status = $item->approved_ta;
                             $statusLabel = 'Diproses';
                             $statusClass = 'bg-yellow-100 text-yellow-800';
 
-                            if($status == 'disetujui') {
-                                $statusLabel = 'Disetujui';
-                                $statusClass = 'bg-green-100 text-green-800';
-                            } elseif($status == 'ditolak') {
-                                $statusLabel = 'Ditolak';
-                                $statusClass = 'bg-red-100 text-red-800';
-                            } elseif($status == 'pending') {
-                                $statusLabel = 'Diproses';
-                                $statusClass = 'bg-yellow-100 text-yellow-800';
+                            // Get status from detail_dosen instead of approved_ta
+                            if($item->detailDosen->isNotEmpty()) {
+                                $detailDosen = $item->detailDosen->first();
+                                $status = $detailDosen->status;
+
+                                if($status == 'diterima') {
+                                    $statusLabel = 'Diterima';
+                                    $statusClass = 'bg-green-100 text-green-800';
+                                } elseif($status == 'ditolak') {
+                                    $statusLabel = 'Ditolak';
+                                    $statusClass = 'bg-red-100 text-red-800';
+                                } elseif($status == 'diproses') {
+                                    $statusLabel = 'Diproses';
+                                    $statusClass = 'bg-yellow-100 text-yellow-800';
+                                }
                             }
                         @endphp
                         <span class="{{ $statusClass }} text-xs font-medium px-2.5 py-0.5 rounded-full">{{ $statusLabel }}</span>
@@ -279,16 +284,22 @@ function updateTable(pengajuan) {
         row.setAttribute('data-id', item.id);
         row.setAttribute('data-mahasiswa', item.mahasiswa ? item.mahasiswa.id : '');
 
-        // Determine status and its class based on approved_ta field
+        // Determine status and its class from detail_dosen instead of approved_ta
         let statusLabel = 'Diproses';
         let statusClass = 'bg-yellow-100 text-yellow-800';
 
-        if (item.approved_ta === 'disetujui') {
-            statusLabel = 'Disetujui';
-            statusClass = 'bg-green-100 text-green-800';
-        } else if (item.approved_ta === 'ditolak') {
-            statusLabel = 'Ditolak';
-            statusClass = 'bg-red-100 text-red-800';
+        if (item.detail_dosen && item.detail_dosen.length > 0) {
+            const detailDosen = item.detail_dosen[0];
+            if (detailDosen.status === 'disetujui') {
+                statusLabel = 'Disetujui';
+                statusClass = 'bg-green-100 text-green-800';
+            } else if (detailDosen.status === 'ditolak') {
+                statusLabel = 'Ditolak';
+                statusClass = 'bg-red-100 text-red-800';
+            } else if (detailDosen.status === 'diproses') {
+                statusLabel = 'Diproses';
+                statusClass = 'bg-yellow-100 text-yellow-800';
+            }
         }
 
         // Generate dosen list

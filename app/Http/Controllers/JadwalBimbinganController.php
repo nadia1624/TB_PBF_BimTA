@@ -78,7 +78,7 @@ class JadwalBimbinganController extends Controller
      */
     public function show($id)
     {
-        $jadwalBimbingan = JadwalBimbingan::with(['dosen', 'pengajuanJudul.mahasiswa', 'dokumenOnline'])
+        $jadwalBimbingan = JadwalBimbingan::with(['dosen.bidangKeahlian', 'pengajuanJudul.mahasiswa', 'dokumenOnline'])
             ->findOrFail($id);
 
         // Security check - only allow if this belongs to the logged in student
