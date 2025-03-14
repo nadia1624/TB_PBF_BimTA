@@ -24,19 +24,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/admin/dosen/delete', [DosenController::class, 'delete'])->name('admin.dosen.delete');
 
 
-    Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        // Tampilan Pengajuan TA
-        Route::get('/pengajuan-ta', [App\Http\Controllers\Admin\PengajuanController::class, 'index'])->name('pengajuanta');
-
-        // Filter Pengajuan TA
-        Route::post('/pengajuan-ta/filter', [App\Http\Controllers\Admin\PengajuanController::class, 'filter'])->name('pengajuanta.filter');
-
-        // Detail Pengajuan TA
-        Route::get('/pengajuan-ta/{id}/detail', [App\Http\Controllers\Admin\PengajuanController::class, 'detail'])->name('pengajuanta.detail');
-
-        // Update Status Pengajuan TA
-        Route::put('/pengajuan-ta/{id}/status', [App\Http\Controllers\Admin\PengajuanController::class, 'updateStatus'])->name('pengajuanta.status');
-    });
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/pengajuan-ta', [App\Http\Controllers\Admin\PengajuanController::class, 'index'])->name('pengajuanta');
+    Route::post('/pengajuan-ta/filter', [App\Http\Controllers\Admin\PengajuanController::class, 'filter'])->name('pengajuanta.filter');
+    Route::get('/pengajuan-ta/{id}/detail', [App\Http\Controllers\Admin\PengajuanController::class, 'detail'])->name('pengajuanta.detail');
+    Route::put('/pengajuan-ta/{id}/status', [App\Http\Controllers\Admin\PengajuanController::class, 'updateStatus'])->name('pengajuanta.status');
+});
 
 
 });

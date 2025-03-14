@@ -1,4 +1,6 @@
-<x-app-layout>
+@extends('layouts.app')
+
+@section('content')
     <div class="w-full bg-gray-100 py-8 px-4">
         <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8">
             <h2 class="text-xl font-semibold text-gray-800 mb-6">Pengajuan Judul Tugas Akhir</h2>
@@ -275,4 +277,4 @@
             @endif
         </div>
     </div>
-</x-app-layout>
+    @endsection
