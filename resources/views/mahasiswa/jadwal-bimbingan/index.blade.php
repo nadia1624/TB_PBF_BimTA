@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="w-full bg-gray-100 py-8 px-4">
     <!-- Form Section -->
     <div class="bg-white rounded-lg shadow-md overflow-hidden max-w-6xl mx-auto mb-8">
-        <div class="p-6">
+        <div class="p-8">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Pengajuan Jadwal Bimbingan</h2>
 
             @if (session('error'))

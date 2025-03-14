@@ -9,7 +9,22 @@ class DokumenOnline extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['bab', 'dokumen_mahasiswa', 'keterangan_mahasiswa', 'status', 'tanggal_review', 'dokumen_dosen', 'keterangan_dosen', 'jadwal_bimbingan_id'];
+    protected $table = 'dokumen_online'; // Specify the correct table name
+
+    protected $fillable = [
+        'jadwal_bimbingan_id',
+        'bab',
+        'dokumen_mahasiswa',
+        'keterangan_mahasiswa',
+        'dokumen_dosen',
+        'keterangan_dosen',
+        'tanggal_review',
+        'status'
+    ];
+
+    protected $casts = [
+        'tanggal_review' => 'date',
+    ];
 
     public function jadwalBimbingan()
     {

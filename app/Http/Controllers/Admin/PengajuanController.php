@@ -49,21 +49,24 @@ class PengajuanController extends Controller
             });
         }
 
-        // Filter berdasarkan status - menggunakan approved_ta dari pengajuan_judul
+        // Filter berdasarkan status - menggunakan status dari detail_dosen
         if ($request->has('status') && $request->status != 'all') {
             $status = $request->status;
 
             // Map status UI ke nilai db
-            $dbStatus = 'pending';
+            $dbStatus = '';
             if ($status == 'Disetujui') {
                 $dbStatus = 'disetujui';
             } elseif ($status == 'Ditolak') {
                 $dbStatus = 'ditolak';
             } elseif ($status == 'Diproses') {
-                $dbStatus = 'pending';
+                $dbStatus = 'diproses';
             }
 
-            $query->where('approved_ta', $dbStatus);
+            // Filter berdasarkan status di detail_dosen
+            $query->whereHas('detailDosen', function($q) use ($dbStatus) {
+                $q->where('status', $dbStatus);
+            });
         }
 
         // Filter berdasarkan pencarian (mahasiswa atau judul)
@@ -91,26 +94,62 @@ class PengajuanController extends Controller
         $request->validate([
             'status' => 'required|in:Diproses,Disetujui,Ditolak',
             'komentar' => 'nullable|string',
+            'dosen_id' => 'required|exists:dosen,id',
         ]);
 
         $pengajuan = PengajuanJudul::findOrFail($id);
 
         // Map status UI ke nilai db
-        $dbStatus = 'pending';
+        $dbStatus = 'diproses';
         if ($request->status == 'Disetujui') {
             $dbStatus = 'disetujui';
         } elseif ($request->status == 'Ditolak') {
             $dbStatus = 'ditolak';
         }
 
-        $pengajuan->approved_ta = $dbStatus;
+        // Update status di tabel detail_dosen
+        $detailDosen = DetailDosen::where('pengajuan_judul_id', $id)
+            ->where('dosen_id', $request->dosen_id)
+            ->first();
 
-        // Jika ada komentar, simpan di kolom komentar
-        if ($request->has('komentar') && !empty($request->komentar)) {
-            $pengajuan->komentar = $request->komentar;
+        if ($detailDosen) {
+            $detailDosen->status = $dbStatus;
+
+            // Jika ada komentar, simpan di kolom alasan_dibatalkan untuk status ditolak
+            if ($dbStatus == 'ditolak' && $request->has('komentar') && !empty($request->komentar)) {
+                $detailDosen->alasan_dibatalkan = $request->komentar;
+            }
+
+            $detailDosen->save();
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Detail dosen tidak ditemukan'
+            ], 404);
         }
 
-        $pengajuan->save();
+        // Jika semua dosen menyetujui, update status approved_ta di pengajuan_judul
+        if ($dbStatus == 'disetujui') {
+            // Periksa apakah semua dosen telah menyetujui
+            $allApproved = DetailDosen::where('pengajuan_judul_id', $id)
+                ->where('status', '!=', 'disetujui')
+                ->doesntExist();
+
+            if ($allApproved) {
+                $pengajuan->approved_ta = 'berjalan'; // Artinya pengajuan TA telah disetujui dan sedang berjalan
+                $pengajuan->save();
+            }
+        } elseif ($dbStatus == 'ditolak') {
+            // Jika ada yang menolak, update status approved_ta menjadi ditolak
+            $pengajuan->approved_ta = 'ditolak';
+
+            // Simpan komentar penolakan juga di pengajuan_judul
+            if ($request->has('komentar') && !empty($request->komentar)) {
+                $pengajuan->komentar = $request->komentar;
+            }
+
+            $pengajuan->save();
+        }
 
         return response()->json([
             'success' => true,
