@@ -15,4 +15,16 @@ class User extends Authenticatable
     protected $fillable = [
         'email', 'password', 'gambar', 'role'
     ];
+
+    // Relasi one-to-one dengan Mahasiswa
+    public function mahasiswa()
+    {
+        return $this->hasOne(Mahasiswa::class);
+    }
+
+    // Relasi one-to-one dengan Dosen
+    public function dosen()
+    {
+        return $this->hasOne(Dosen::class);
+    }
 }

@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class DetailDosen extends Model
+class DetailDosen extends Pivot
 {
     use HasFactory;
 
     protected $table = 'detail_dosen';
-    protected $primaryKey = ['dosen_id', 'pengajuan_judul_id'];
+
+    // Untuk primary key komposit, sebaiknya gunakan Pivot class daripada Model
     public $incrementing = false;
     public $timestamps = true;
     protected $fillable = [
@@ -21,11 +22,13 @@ class DetailDosen extends Model
         'alasan_dibatalkan'
     ];
 
+    // Relasi dengan Dosen
     public function dosen()
     {
         return $this->belongsTo(Dosen::class, 'dosen_id');
     }
 
+    // Relasi dengan PengajuanJudul
     public function pengajuanJudul()
     {
         return $this->belongsTo(PengajuanJudul::class, 'pengajuan_judul_id');

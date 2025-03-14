@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->string('judul');
             $table->text('deskripsi');
             $table->string('komentar')->nullable();
-            $table->enum('approved_ta', ['berjalan', 'selesai', 'dibatalkan']);
+            $table->enum('approved_ta', ['pending', 'disetujui', 'ditolak'])->default('pending');
             $table->string('tanda_tangan')->nullable();
             $table->string('surat')->nullable();
             $table->foreignId('mahasiswa_id')->constrained('mahasiswa')->onDelete('cascade');
@@ -23,4 +23,3 @@ return new class extends Migration {
         Schema::dropIfExists('pengajuan_judul');
     }
 };
-
