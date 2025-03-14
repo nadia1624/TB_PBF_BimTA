@@ -10,6 +10,7 @@ class PengajuanJudul extends Model
     use HasFactory;
 
     protected $table = 'pengajuan_judul';
+
     protected $fillable = [
         'judul',
         'deskripsi',
@@ -26,6 +27,10 @@ class PengajuanJudul extends Model
         return $this->belongsTo(Mahasiswa::class);
     }
 
+    public function jadwalBimbingan()
+    {
+        return $this->hasMany(JadwalBimbingan::class);
+
     // Relasi many-to-many dengan Dosen melalui DetailDosen
     public function dosen()
     {
@@ -38,6 +43,7 @@ class PengajuanJudul extends Model
     public function detailDosen()
     {
         return $this->hasMany(DetailDosen::class);
+
     }
 }
 
