@@ -12,6 +12,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\DetailBidang;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
 
 class DosenController extends Controller
 {
@@ -20,20 +21,25 @@ class DosenController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $dosen = Dosen::with(['user', 'detailBidang.bidangKeahlian'])->get();
         $bidang_keahlian = BidangKeahlian::all();
 
-        return view('admin.dosen.index', compact('dosen', 'bidang_keahlian'));
+    $dosenQuery = Dosen::with(['user', 'detailBidang.bidangKeahlian']);
+
+    // Filter berdasarkan bidang keahlian jika ada
+    if ($request->has('bidang') && $request->bidang !== 'all') {
+        $bidangId = $request->bidang;
+        $dosenQuery->whereHas('detailBidang', function($query) use ($bidangId) {
+            $query->where('bidang_keahlian_id', $bidangId);
+        });
     }
 
-    /**
-     * Create a new expertise field
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
+    $dosen = $dosenQuery->get();
+
+    return view('admin.dosen.index', compact('dosen', 'bidang_keahlian'));
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -162,71 +168,65 @@ class DosenController extends Controller
      */
     public function update(Request $request)
     {
+        // Validasi input
         $rules = [
             'dosen_id' => 'required|exists:dosen,id',
             'nip' => ['required', 'string', 'max:50', Rule::unique('dosen', 'nip')->ignore($request->dosen_id)],
             'nama_lengkap' => 'required|string|max:100',
             'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:users,email,' . optional(Dosen::find($request->dosen_id))->user_id,
         ];
 
-        // Add password validation if provided
-        if ($request->filled('password')) {
-            $rules['password'] = 'min:8';
-            $rules['password_confirmation'] = 'required|same:password';
-        }
-
-        $validator = Validator::make($request->all(), $rules, [
+        $messages = [
             'dosen_id.required' => 'ID dosen tidak valid',
             'dosen_id.exists' => 'Dosen tidak ditemukan',
             'nip.required' => 'NIP wajib diisi',
-            'nip.unique' => 'NIP sudah digunakan oleh dosen lain',
+            'nip.unique' => 'NIP sudah terdaftar',
             'nama_lengkap.required' => 'Nama lengkap wajib diisi',
             'bidang_keahlian_id.required' => 'Bidang keahlian wajib dipilih',
-            'bidang_keahlian_id.exists' => 'Bidang keahlian tidak valid',
             'email.required' => 'Email wajib diisi',
             'email.email' => 'Format email tidak valid',
-            'password.min' => 'Password minimal 8 karakter',
-            'password_confirmation.same' => 'Konfirmasi password tidak cocok',
-        ]);
+            'email.unique' => 'Email sudah digunakan',
+        ];
+
+        if ($request->filled('password')) {
+            $rules['password'] = 'required|min:8|confirmed';
+        }
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.dosen')
+            return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
         }
-
         DB::beginTransaction();
 
         try {
-            // Update lecturer data
+            // Update data dosen
             $dosen = Dosen::findOrFail($request->dosen_id);
-            $dosen->nip = $request->nip;
-            $dosen->nama_lengkap = $request->nama_lengkap;
-            $dosen->save();
+            $dosen->update([
+                'nip' => $request->nip,
+                'nama_lengkap' => $request->nama_lengkap,
+            ]);
 
-            // Update user data
+            // Update data user
             $user = User::findOrFail($dosen->user_id);
-            $user->email = $request->email;
+            $userData = ['email' => $request->email];
 
-            // Update password if provided
             if ($request->filled('password')) {
-                $user->password = Hash::make($request->password);
+                $userData['password'] = Hash::make($request->password);
             }
 
-            $user->save();
+            $user->update($userData);
 
-            // Update expertise relation
-            $detailBidang = DetailBidang::where('dosen_id', $dosen->id)->first();
-            if ($detailBidang) {
-                $detailBidang->bidang_keahlian_id = $request->bidang_keahlian_id;
-                $detailBidang->save();
-            } else {
-                $detailBidang = new DetailBidang();
-                $detailBidang->dosen_id = $dosen->id;
-                $detailBidang->bidang_keahlian_id = $request->bidang_keahlian_id;
-                $detailBidang->save();
-            }
+            // Hapus bidang keahlian lama dan tambahkan yang baru
+            DetailBidang::where('dosen_id', $dosen->id)->delete();
+
+            DetailBidang::create([
+                'dosen_id' => $dosen->id,
+                'bidang_keahlian_id' => $request->bidang_keahlian_id,
+            ]);
 
             DB::commit();
 
@@ -234,9 +234,10 @@ class DosenController extends Controller
                 ->with('success', 'Data dosen berhasil diperbarui');
         } catch (\Exception $e) {
             DB::rollback();
+            Log::error('Gagal update dosen: ' . $e->getMessage());
 
-            return redirect()->route('admin.dosen')
-                ->with('error', 'Gagal memperbarui data dosen: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Gagal memperbarui data dosen. Silakan coba lagi.');
         }
     }
 
