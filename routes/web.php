@@ -34,6 +34,12 @@ Route::middleware(['auth'])->group(function () {
             ->name('jadwal-bimbingan.show');
         Route::delete('/jadwal-bimbingan/{id}', [JadwalBimbinganController::class, 'destroy'])
             ->name('jadwal-bimbingan.destroy');
+
+        // Dokumen Online routes
+        Route::post('/jadwal-bimbingan/{jadwalId}/dokumen', [JadwalBimbinganController::class, 'uploadDokumen'])
+            ->name('jadwal-bimbingan.upload-dokumen');
+        Route::get('/jadwal-bimbingan/{jadwalId}/dokumen/{dokumenId}', [JadwalBimbinganController::class, 'showDokumen'])
+            ->name('jadwal-bimbingan.show-dokumen');
     });
 
     // Routes for Dosen
