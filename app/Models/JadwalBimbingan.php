@@ -9,14 +9,27 @@ class JadwalBimbingan extends Model
 {
     use HasFactory;
 
-    protected $table = 'jadwal_bimbingan'; // Specify the correct table name here
+    protected $table = 'jadwal_bimbingan';
 
-    protected $fillable = ['tanggal_pengajuan', 'waktu_pengajuan', 'status', 'keterangan', 'dosen_id', 'pengajuan_judul_id', 'metode'];
+    protected $fillable = [
+        'tanggal_pengajuan',
+        'waktu_pengajuan',
+        'status',
+        'keterangan',
+        'keterangan_ditolak',
+        'metode',
+        'dosen_id',
+        'pengajuan_judul_id'
+    ];
 
     protected $casts = [
         'tanggal_pengajuan' => 'date',
         'waktu_pengajuan' => 'datetime',
     ];
+
+    // Konstanta untuk metode bimbingan
+    const METODE_ONLINE = 'online';
+    const METODE_OFFLINE = 'offline';
 
     public function dosen()
     {

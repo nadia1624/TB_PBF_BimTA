@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dosen;
+use App\Models\DokumenOnline;
 use App\Models\JadwalBimbingan;
 use App\Models\PengajuanJudul;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class JadwalBimbinganController extends Controller
 {
@@ -78,18 +80,18 @@ class JadwalBimbinganController extends Controller
      */
     public function show($id)
     {
-        $jadwalBimbingan = JadwalBimbingan::with(['dosen.bidangKeahlian', 'pengajuanJudul.mahasiswa', 'dokumenOnline'])
+        $jadwal = JadwalBimbingan::with(['dosen', 'pengajuanJudul.mahasiswa', 'dokumenOnline'])
             ->findOrFail($id);
 
         // Security check - only allow if this belongs to the logged in student
         $user = Auth::user();
         $mahasiswa = $user->mahasiswa;
 
-        if ($jadwalBimbingan->pengajuanJudul->mahasiswa_id != $mahasiswa->id) {
+        if ($jadwal->pengajuanJudul->mahasiswa_id != $mahasiswa->id) {
             abort(403, 'Unauthorized action.');
         }
 
-        return view('mahasiswa.jadwal-bimbingan.show', compact('jadwalBimbingan'));
+        return view('mahasiswa.jadwal-bimbingan.show', compact('jadwal'));
     }
 
     /**
@@ -117,5 +119,95 @@ class JadwalBimbinganController extends Controller
 
         return redirect()->route('mahasiswa.jadwal-bimbingan.index')
             ->with('success', 'Jadwal bimbingan berhasil dibatalkan.');
+    }
+
+    /**
+     * Upload dokumen bimbingan
+     */
+    public function uploadDokumen(Request $request, $jadwalId)
+    {
+        $request->validate([
+            'bab' => 'required|in:bab 1,bab 2,bab 3,bab 4,bab 5,lengkap',
+            'dokumen' => 'required|file|mimes:pdf,doc,docx|max:10240',
+            'keterangan' => 'required|string|max:1000',
+        ]);
+
+        $jadwal = JadwalBimbingan::with('dokumenOnline')->findOrFail($jadwalId);
+
+        // Security check - only allow if this belongs to the logged in student
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+
+        if ($jadwal->pengajuanJudul->mahasiswa_id != $mahasiswa->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Check if the jadwal is accepted and online
+        if ($jadwal->status != 'diterima') {
+            return redirect()->route('mahasiswa.jadwal-bimbingan.show', $jadwal->id)
+                ->with('error', 'Hanya jadwal bimbingan yang sudah disetujui yang dapat mengunggah dokumen.');
+        }
+
+        if ($jadwal->metode != JadwalBimbingan::METODE_ONLINE) {
+            return redirect()->route('mahasiswa.jadwal-bimbingan.show', $jadwal->id)
+                ->with('error', 'Hanya jadwal bimbingan online yang dapat mengunggah dokumen.');
+        }
+
+        // Upload file
+        $file = $request->file('dokumen');
+        $fileName = time() . '_' . $jadwal->id . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('dokumen_bimbingan', $fileName, 'public');
+
+        // Check if there's an existing document for this bab
+        $existingDokumen = DokumenOnline::where('jadwal_bimbingan_id', $jadwal->id)
+            ->where('bab', $request->bab)
+            ->first();
+
+        if ($existingDokumen) {
+            // Update existing document
+            if ($existingDokumen->dokumen_mahasiswa) {
+                Storage::disk('public')->delete($existingDokumen->dokumen_mahasiswa);
+            }
+
+            $existingDokumen->dokumen_mahasiswa = $path;
+            $existingDokumen->keterangan_mahasiswa = $request->keterangan;
+            $existingDokumen->status = 'diproses';
+            $existingDokumen->save();
+
+            return redirect()->route('mahasiswa.jadwal-bimbingan.show', $jadwal->id)
+                ->with('success', 'Dokumen bimbingan berhasil diperbarui.');
+        } else {
+            // Create new document
+            $dokumen = new DokumenOnline();
+            $dokumen->jadwal_bimbingan_id = $jadwal->id;
+            $dokumen->bab = $request->bab;
+            $dokumen->dokumen_mahasiswa = $path;
+            $dokumen->keterangan_mahasiswa = $request->keterangan;
+            $dokumen->status = 'menunggu';
+            $dokumen->save();
+
+            return redirect()->route('mahasiswa.jadwal-bimbingan.show', $jadwal->id)
+                ->with('success', 'Dokumen bimbingan berhasil diunggah.');
+        }
+    }
+
+    /**
+     * Show dokumen detail
+     */
+    public function showDokumen($jadwalId, $dokumenId)
+    {
+        $jadwal = JadwalBimbingan::findOrFail($jadwalId);
+        $dokumen = DokumenOnline::where('jadwal_bimbingan_id', $jadwalId)
+            ->findOrFail($dokumenId);
+
+        // Security check - only allow if this belongs to the logged in student
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+
+        if ($jadwal->pengajuanJudul->mahasiswa_id != $mahasiswa->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('mahasiswa.jadwal-bimbingan.dokumen', compact('jadwal', 'dokumen'));
     }
 }

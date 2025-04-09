@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="w-full bg-gray-100 py-8 px-4">
+<div class="w-full bg-gray-100 py-12 px-4">
     <div class="bg-white rounded-lg shadow-md overflow-hidden max-w-6xl mx-auto">
         <div class="p-6">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Dashboard Mahasiswa</h2>

@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->time('waktu_pengajuan');
             $table->enum('status', ['diproses', 'diterima', 'ditolak'])->default('diproses');
             $table->text('keterangan')->nullable();
+            $table->text('keterangan_ditolak')->nullable();
             $table->enum('metode', ['online', 'offline'])->default('online');
             $table->foreignId('dosen_id')->constrained('dosen')->onDelete('cascade');
             $table->foreignId('pengajuan_judul_id')->constrained('pengajuan_judul')->onDelete('cascade');
