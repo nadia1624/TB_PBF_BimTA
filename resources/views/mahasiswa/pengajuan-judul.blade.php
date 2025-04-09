@@ -1,7 +1,46 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full bg-gray-100 py-8 px-4">
+    <div class="w-full bg-gray-100 py-8 px-4 space-y-6">
+        <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">Daftar Dosen</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach ($dosenList as $dosen)
+                <div class="border rounded-lg overflow-hidden shadow-sm">
+                    <div class="bg-gray-300 h-40">
+                        <div class="h-full w-full bg-gray-200 flex items-center justify-center overflow-hidden border-2">
+                            @if($dosen->gambar)
+                                <img src="{{ asset('storage/' . $dosen->gambar) }}" alt="Profile image" class="h-full w-full">
+                            @else
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                                </svg>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <h3 class="font-semibold text-gray-800">{{ $dosen->nama_lengkap }}</h3>
+                        <p class="text-sm text-gray-600">{{ $dosen->nip }}</p>
+                        <p class="text-sm text-gray-600">Bidang Keahlian :
+                            @if ($dosen->detailBidang->isNotEmpty())
+                            <ul class="list-disc list-inside ml-4">
+                            @foreach ($dosen->detailBidang as $bidang)
+                                <li class="text-sm text-gray-600">{{ optional($bidang->bidangKeahlian)->nama_keahlian ?? 'Belum ditentukan' }}</li>
+                            @endforeach
+                            </ul>
+                        @else
+                            <span class="text-yellow-500">Belum ditentukan</span>
+                        @endif
+                        </p>
+                        <div class="mt-2 flex items-center">
+                            <p class="text-sm text-gray-600 mr-2">Kuota Tersedia :</p>
+                            <p class="text-lg font-bold text-gray-700">20</p>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
         <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8">
             <h2 class="text-xl font-semibold text-gray-800 mb-6">Pengajuan Judul Tugas Akhir</h2>
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DetailDosen;
 use App\Models\Dosen;
 use App\Models\PengajuanJudul;
+use App\Models\BidangKeahlian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 
 class PengajuanJudulController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $dosenList = Dosen::all();
@@ -45,12 +46,27 @@ class PengajuanJudulController extends Controller
             }
         }
 
+        $bidang_keahlian = BidangKeahlian::all();
+        $dosenQuery = Dosen::with(['user', 'detailBidang.bidangKeahlian']);
+
+    // Filter berdasarkan bidang keahlian jika ada
+    if ($request->has('bidang') && $request->bidang !== 'all') {
+        $bidangId = $request->bidang;
+        $dosenQuery->whereHas('detailBidang', function($query) use ($bidangId) {
+            $query->where('bidang_keahlian_id', $bidangId);
+        });
+    }
+
+    $dosen = $dosenQuery->get();
+
         return view('mahasiswa.pengajuan-judul', compact(
             'dosenList',
             'isDataComplete',
             'pengajuan',
             'pembimbing1',
-            'pembimbing2'
+            'pembimbing2',
+            'bidang_keahlian',
+            'dosen'
         ));
     }
 
