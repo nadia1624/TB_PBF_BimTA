@@ -43,12 +43,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // Routes for Dosen
-    Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->group(function () {
-        // Jadwal Bimbingan routes for Dosen
-        // These will be implemented later
-    });
+    
 });
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
 require __DIR__.'/mahasiswa.php';
+require __DIR__ . '/dosen.php';

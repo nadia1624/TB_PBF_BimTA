@@ -1,133 +1,170 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard Dosen') }}
-        </h2>
-    </x-slot>
+@extends('layouts.dosen')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
+@section('title', 'Dashboard Dosen')
+
+@section('content')
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Dashboard</h1>
+
+    <!-- Stats Cards -->
+    <div class="row my-4">
+        <div class="col-xl-4 col-md-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-square rounded bg-light text-dark p-3 me-3">
+                                <i class="fas fa-users fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="text-xs text-uppercase mb-1">Total Mahasiswa Bimbingan</div>
+                            <div class="h1 mb-0 font-weight-bold">{{ $totalMahasiswa ?? 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-square rounded bg-light text-dark p-3 me-3">
+                                <i class="fas fa-file-alt fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="text-xs text-uppercase mb-1">Pengajuan Judul</div>
+                            <div class="h1 mb-0 font-weight-bold">{{ $totalPengajuanJudul ?? 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4 col-md-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <div class="icon-square rounded bg-light text-dark p-3 me-3">
+                                <i class="fas fa-calendar-alt fa-2x"></i>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="text-xs text-uppercase mb-1">Jadwal Bimbingan</div>
+                            <div class="h1 mb-0 font-weight-bold">{{ $totalJadwalBimbingan ?? 0 }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <table class="border-separate border border-gray-400 ...">
-  <thead>
-    <tr>
-      <th class="border border-black-300 text-red-500">State</th>
-      <th class="border border-gray-300 ...">City</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="border border-gray-300 ...">Indiana</td>
-      <td class="border border-gray-300 ...">Indianapolis</td>
-    </tr>
-    <tr>
-      <td class="border border-gray-300 ...">Ohio</td>
-      <td class="border border-gray-300 ...">Columbus</td>
-    </tr>
-    <tr>
-      <td class="border border-gray-300 ...">Michigan</td>
-      <td class="border border-gray-300 ...">Detroit</td>
-    </tr>
-  </tbody>
-</table>
-<section class="bg-gray-50 dark:bg-gray-900 h-screen flex items-center">
-  <div class="max-w-screen-xl px-4 mx-auto lg:px-12 w-full">
-    <!-- Start coding here -->
-    <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
-      <div class="flex flex-col items-center justify-between p-4 space-y-3 md:flex-row md:space-y-0 md:space-x-4">
-        <div class="w-full md:w-1/2">
-          <form class="flex items-center">
-            <label for="simple-search" class="sr-only">Search</label>
-            <div class="relative w-full">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <input type="text" id="simple-search" class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required="">
+    <!-- Content Rows -->
+    <div class="row">
+        <!-- Pengajuan Judul Terbaru -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">Pengajuan Judul Terbaru</h6>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if(isset($latestSubmissions) && $latestSubmissions->count() > 0)
+                        <div class="list-group list-group-flush">
+                            @foreach($latestSubmissions as $submission)
+                            <div class="list-group-item px-3 py-3 d-flex align-items-center">
+                                <div class="icon-square bg-light text-dark p-2 me-3">
+                                    <i class="fas fa-file-alt"></i>
+                                </div>
+                                <div class="ms-2 flex-grow-1">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ $submission->mahasiswa->nama }} - {{ $submission->mahasiswa->nim }}</h6>
+                                        <small>{{ \Carbon\Carbon::parse($submission->created_at)->format('d F Y') }} · {{ \Carbon\Carbon::parse($submission->created_at)->format('H:i') }}</small>
+                                    </div>
+                                    <p class="mb-1 text-muted small">{{ $submission->judul }}</p>
+                                </div>
+                                <div class="ms-auto">
+                                    <a href="#" class="text-decoration-none">
+                                        <small class="text-primary">Review <i class="fas fa-chevron-right ms-1"></i></small>
+                                    </a>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                        <div class="card-footer bg-white border-top-0 text-end">
+                            <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-decoration-none">
+                                Lihat Semua Jadwal <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        </div>
+                    @else
+                        <div class="text-center p-4">
+                            <p class="mb-0">Tidak ada pengajuan judul terbaru</p>
+                        </div>
+                    @endif
+                </div>
             </div>
-          </form>
         </div>
-        <div class="flex flex-col items-stretch justify-end flex-shrink-0 w-full space-y-2 md:w-auto md:flex-row md:space-y-0 md:items-center md:space-x-3">
-          <button type="button" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
-            <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-            </svg>
-            Add product
-          </button>
-          <div class="flex items-center w-full space-x-3 md:w-auto">
-            <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
-              <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-              </svg>
-              Actions
-            </button>
-            <div id="actionsDropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
-              <ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="actionsDropdownButton">
-                <li>
-                  <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Mass Edit</a>
-                </li>
-              </ul>
-              <div class="py-1">
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete all</a>
-              </div>
+
+        <!-- Jadwal Bimbingan Hari Ini -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 font-weight-bold">Jadwal Bimbingan Hari Ini</h6>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+                        <div class="list-group list-group-flush">
+                            @foreach($todaySchedules as $schedule)
+                            <div class="list-group-item px-3 py-3 border-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-square bg-light text-dark p-2 me-3">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">{{ $schedule->pengajuanJudul->mahasiswa->nama }}</h6>
+                                        <p class="mb-1 text-muted small">{{ $schedule->pengajuanJudul->judul }}</p>
+                                        <div>
+                                            <span class="badge bg-primary">{{ \Carbon\Carbon::parse($schedule->waktu_pengajuan)->format('H:i') }}</span>
+                                            <span class="badge {{ $schedule->metode == 'online' ? 'bg-info' : 'bg-success' }}">{{ $schedule->metode == 'online' ? 'Online' : 'Offline' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-5">
+                            <div class="icon-square d-inline-block bg-light text-secondary p-3 mb-3 rounded-circle">
+                                <i class="fas fa-calendar-check fa-3x"></i>
+                            </div>
+                            <h5 class="text-muted">Tidak ada jadwal bimbingan hari ini</h5>
+                        </div>
+                    @endif
+                </div>
+                @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+                <div class="card-footer bg-white border-top-0 text-end">
+                    <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-decoration-none">
+                        Lihat Semua Jadwal <i class="fas fa-chevron-right ms-1"></i>
+                    </a>
+                </div>
+                @endif
             </div>
-            <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown" class="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg md:w-auto focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
-              <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="w-4 h-4 mr-2 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd" />
-              </svg>
-              Filter
-              <svg class="-mr-1 ml-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-              </svg>
-            </button>
-            <!-- Dropdown menu -->
-            <div id="filterDropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-              <h6 class="mb-3 text-sm font-medium text-gray-900 dark:text-white">
-                Category
-              </h6>
-              <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-                <li class="flex items-center">
-                  <input id="apple" type="checkbox" value=""
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-                  <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Apple (56)
-                  </label>
-                </li>
-                <li class="flex items-center">
-                  <input id="fitbit" type="checkbox" value=""
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-                  <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Fitbit (56)
-                  </label>
-                </li>
-                <li class="flex items-center">
-                  <input id="dell" type="checkbox" value=""
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-                  <label for="dell" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Dell (56)
-                  </label>
-                </li>
-                <li class="flex items-center">
-                  <input id="asus" type="checkbox" value="" checked
-                    class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-                  <label for="asus" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                    Asus (97)
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-</section>
-</x-app-layout>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Any JavaScript functionality can go here
+    });
+</script>
+@endsection

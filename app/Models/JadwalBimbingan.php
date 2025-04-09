@@ -18,6 +18,7 @@ class JadwalBimbingan extends Model
         'keterangan',
         'keterangan_ditolak',
         'metode',
+        'keterangan_diterima_offline',
         'dosen_id',
         'pengajuan_judul_id'
     ];
