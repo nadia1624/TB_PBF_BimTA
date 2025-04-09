@@ -16,16 +16,10 @@ use Illuminate\Support\Facades\Log;
 
 class DosenController extends Controller
 {
-    /**
-     * Display the list of lecturers with their expertise fields
-     *
-     * @return \Illuminate\View\View
-     */
     public function index(Request $request)
     {
         $bidang_keahlian = BidangKeahlian::all();
-
-    $dosenQuery = Dosen::with(['user', 'detailBidang.bidangKeahlian']);
+        $dosenQuery = Dosen::with(['user', 'detailBidang.bidangKeahlian']);
 
     // Filter berdasarkan bidang keahlian jika ada
     if ($request->has('bidang') && $request->bidang !== 'all') {
@@ -68,19 +62,14 @@ class DosenController extends Controller
         }
     }
 
-    /**
-     * Store a newly created lecturer
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'nip' => 'required|string|max:20|unique:dosen,nip',
             'nama_lengkap' => 'required|string|max:100',
             'email' => 'required|email|max:100|unique:users,email',
-            'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
+            'bidang_keahlian_id' => 'required|array|exists:bidang_keahlian,id',
             'password' => 'required|string|min:8',
             'password_confirmation' => 'required|same:password',
         ], [
@@ -120,10 +109,12 @@ class DosenController extends Controller
             $dosen->save();
 
             // Create expertise relation
-            $detailBidang = new DetailBidang();
-            $detailBidang->bidang_keahlian_id = $request->bidang_keahlian_id;
-            $detailBidang->dosen_id = $dosen->id;
-            $detailBidang->save();
+            foreach ($request->bidang_keahlian_id as $bidangId) {
+                $detailBidang = new DetailBidang();
+                $detailBidang->bidang_keahlian_id = $bidangId;
+                $detailBidang->dosen_id = $dosen->id;
+                $detailBidang->save();
+            }
 
             DB::commit();
 
@@ -136,36 +127,6 @@ class DosenController extends Controller
                 ->with('error', 'Gagal menambahkan dosen: ' . $e->getMessage());
         }
     }
-
-    /**
-     * Get lecturer data for editing
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function edit($id)
-    {
-        try {
-            $dosen = Dosen::with(['user', 'detailBidang.bidangKeahlian'])->findOrFail($id);
-
-            return response()->json([
-                'success' => true,
-                'dosen' => $dosen
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dosen tidak ditemukan'
-            ], 404);
-        }
-    }
-
-    /**
-     * Update the specified lecturer
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function update(Request $request)
     {
         // Validasi input
@@ -173,7 +134,7 @@ class DosenController extends Controller
             'dosen_id' => 'required|exists:dosen,id',
             'nip' => ['required', 'string', 'max:50', Rule::unique('dosen', 'nip')->ignore($request->dosen_id)],
             'nama_lengkap' => 'required|string|max:100',
-            'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
+            'bidang_keahlian_id' => 'required|array|exists:bidang_keahlian,id',
             'email' => 'required|email|unique:users,email,' . optional(Dosen::find($request->dosen_id))->user_id,
         ];
 
@@ -223,10 +184,13 @@ class DosenController extends Controller
             // Hapus bidang keahlian lama dan tambahkan yang baru
             DetailBidang::where('dosen_id', $dosen->id)->delete();
 
-            DetailBidang::create([
-                'dosen_id' => $dosen->id,
-                'bidang_keahlian_id' => $request->bidang_keahlian_id,
-            ]);
+            // Tambahkan bidang keahlian baru (untuk setiap bidang yang dipilih)
+            foreach ($request->bidang_keahlian_id as $bidangId) {
+                DetailBidang::create([
+                    'dosen_id' => $dosen->id,
+                    'bidang_keahlian_id' => $bidangId,
+                ]);
+            }
 
             DB::commit();
 
@@ -240,13 +204,6 @@ class DosenController extends Controller
                 ->with('error', 'Gagal memperbarui data dosen. Silakan coba lagi.');
         }
     }
-
-    /**
-     * Delete the specified lecturer
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function delete(Request $request)
     {
         $validator = Validator::make($request->all(), [

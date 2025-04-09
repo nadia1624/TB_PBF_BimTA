@@ -1,33 +1,52 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div
-        x-data ="{
-        search:'',
-        user :null,
-        isEditPassword:false,
-        openModal(modal,user){
-            this.$dispatch('open-modal',modal);
-            this.user=user;
-            if(modal === 'editDosenModal') {
-            setTimeout(() => {
-                document.getElementById('edit_password').value = '';
-                document.getElementById('edit_password_confirmation').value = '';
-            }, 100);
-        }
-            },
-        closeModal(){
-            this.$dispatch('close');
-            this.user=null;
+<div
+    x-data="{
+        search: '',
+        user: null,
+        isEditPassword: false,
+        allBidang: {{ Js::from($bidang_keahlian) }},
+        bidangKeahlian: [],
+        currentBidang: '',
+        selectedBidang: null,
+
+        // Tetap gunakan versi getBidangText yang mengambil dari <select>
+        getBidangText(bidangId) {
+            const option = document.querySelector(`select option[value='${bidangId}']`);
+            return option ? option.textContent : 'Bidang tidak ditemukan';
         },
-        togglePassword(){
-            this.isEditPassword =!this.isEditPassword;
-            },
-        filterByBidang(bidangId){
+
+        openModal(modal, user) {
+            this.$dispatch('open-modal', modal);
+            this.user = user;
+
+            // Ambil bidang lama dari user.detail_bidang
+            this.bidangKeahlian = user.detail_bidang?.map(b => b.bidang_keahlian.id) || [];
+
+            if (modal === 'editDosenModal') {
+                setTimeout(() => {
+                    document.getElementById('edit_password').value = '';
+                    document.getElementById('edit_password_confirmation').value = '';
+                }, 100);
+            }
+        },
+
+        closeModal() {
+            this.$dispatch('close');
+            this.user = null;
+        },
+
+        togglePassword() {
+            this.isEditPassword = !this.isEditPassword;
+        },
+
+        filterByBidang(bidangId) {
             this.selectedBidang = bidangId;
             filterDosen(bidangId);
-            }
-    }">
+        }
+    }"
+>
         <div class="container mx-auto px-4 py-6">
             <!-- Header Section with Search -->
             <div class="flex flex-col md:flex-row items-center justify-between mb-6">
@@ -251,7 +270,7 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form id="dosenForm" action="{{ route('admin.dosen.store') }}" method="POST">
+                <form id="dosenForm" action="{{ route('admin.dosen.store') }}" method="POST" x-data="{ currentBidang: '', bidangKeahlian: [] }">
                     @csrf
                     <div class="p-4 md:p-5 space-y-4 max-h-[60vh] overflow-y-auto">
                         <!-- Informasi Pribadi Section -->
@@ -277,17 +296,44 @@
                                     placeholder="Nama lengkap dosen" required>
                             </div>
                             <div class="md:col-span-2">
-                                <label for="bidang_keahlian_id"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Bidang
-                                    Keahlian</label>
-                                <select name="bidang_keahlian_id" id="bidang_keahlian_id"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
-                                    required>
-                                    <option value="">Pilih Bidang Keahlian</option>
-                                    @foreach ($bidang_keahlian as $bidang)
-                                        <option value="{{ $bidang->id }}">{{ $bidang->nama_keahlian }}</option>
-                                    @endforeach
-                                </select>
+                                <label for="bidang_keahlian"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Bidang Keahlian</label>
+
+                                <div class="flex space-x-2 mb-3">
+                                    <!-- Dropdown Pilihan Bidang Keahlian -->
+                                    <select x-model="currentBidang"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black">
+                                        <option value="">Pilih Bidang Keahlian</option>
+                                        @foreach ($bidang_keahlian as $bidang)
+                                            <option value="{{ $bidang->id }}">{{ $bidang->nama_keahlian }}</option>
+                                        @endforeach
+                                    </select>
+
+                                    <!-- Tombol untuk Menambah Bidang Keahlian ke dalam List -->
+                                    <button type="button"
+                                        @click="if(currentBidang && !bidangKeahlian.includes(currentBidang)) { bidangKeahlian.push(currentBidang); currentBidang = ''; }"
+                                        class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center">
+                                        + Tambah
+                                    </button>
+                                </div>
+
+                                <!-- Menampilkan bidang keahlian yang dipilih -->
+                                <div class="mt-3 space-y-2">
+                                    <template x-for="(bidangId, index) in bidangKeahlian" :key="index">
+                                        <div class="flex items-center justify-between p-2 bg-gray-100 rounded-lg">
+                                            <span x-text="getBidangText(bidangId)"></span>
+                                            <!-- Hidden input untuk menyimpan nilai bidang yang dipilih -->
+                                            <input type="hidden" name="bidang_keahlian_id[]" :value="bidangId">
+                                            <button type="button" @click="bidangKeahlian.splice(index, 1)"
+                                                class="text-red-500 hover:text-red-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 
@@ -332,7 +378,6 @@
             </div>
         </x-modal>
 
-
         <!-- Modal Edit Dosen -->
         <x-modal name="editDosenModal">
             <!-- Modal content -->
@@ -353,7 +398,7 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form id="editDosenForm" action="{{ route('admin.dosen.update') }}" method="POST">
+                <form id="editDosenForm" action="{{ route('admin.dosen.update') }}" method="POST" x-data="{ currentBidang: '', bidangKeahlian: [] }">
                     @csrf
                     @method('PUT')
                     <input type="hidden" x-model="user?.id" name="dosen_id" id="dosen_id">
@@ -382,18 +427,55 @@
                                     placeholder="Nama lengkap dosen" required>
                             </div>
                             <div class="md:col-span-2">
-                                <label for="edit_bidang_keahlian_id"
-                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Bidang
-                                    Keahlian</label>
-                                <select x-model="user?.bidang_keahlian_id" name="bidang_keahlian_id"
-                                    id="bidang_keahlian_id"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
-                                    required>
-                                    <option value="">Pilih Bidang Keahlian</option>
-                                    @foreach ($bidang_keahlian as $bidang)
-                                        <option value="{{ $bidang->id }}">{{ $bidang->nama_keahlian }}</option>
-                                    @endforeach
-                                </select>
+                                <label for="bidang_keahlian"
+                                    class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
+                                    Bidang Keahlian
+                                </label>
+
+                                <!-- Bagian Dropdown dan Tombol Tambah -->
+                                <div class="flex space-x-2 mb-3">
+                                    <select x-model="currentBidang"
+                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black">
+                                        <option value="">Pilih Bidang Keahlian</option>
+                                        <template x-for="bidang in allBidang" :key="bidang.id">
+                                            <option :value="bidang.id" x-text="bidang.nama_keahlian"></option>
+                                        </template>
+                                    </select>
+
+                                    <button type="button"
+                                        @click="if(currentBidang && !bidangKeahlian.includes(currentBidang)) { bidangKeahlian.push(currentBidang); currentBidang = ''; }"
+                                        class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center">
+                                        + Tambah
+                                    </button>
+                                </div>
+
+                                <!-- Menampilkan bidang keahlian yang dipilih (yang akan dikirim via form) -->
+                                <div class="mt-3 space-y-2">
+                                    <template x-for="(bidangId, index) in bidangKeahlian" :key="index">
+                                        <div class="flex items-center justify-between p-2 bg-gray-100 rounded-lg">
+                                            <span x-text="getBidangText(bidangId)"></span>
+                                            <input type="hidden" name="bidang_keahlian_id[]" :value="bidangId">
+                                            <button type="button" @click="bidangKeahlian.splice(index, 1)"
+                                                class="text-red-500 hover:text-red-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Menampilkan data bidang lama saat edit -->
+                                <div x-show="user && Array.isArray(user.detail_bidang)" class="mt-5 text-sm border-t pt-3">
+                                    <p class="text-gray-500 dark:text-black-400 mb-2">Bidang Keahlian (Data Lama)</p>
+                                    <template x-for="(bidang, index) in user.detail_bidang" :key="index">
+                                        <p x-text="bidang.bidang_keahlian.nama_keahlian"
+                                            class="font-medium text-gray-900 dark:text-black">
+                                        </p>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 
@@ -452,7 +534,6 @@
                     </div>
                 </form>
             </div>
-
         </x-modal>
 
         <!-- Modal Konfirmasi Hapus Dosen -->
@@ -538,10 +619,10 @@
                                 <p class="text-gray-500 dark:text-black-400">Email</p>
                                 <p x-text="user?.user?.email" class="font-medium text-gray-900 dark:text-black"></p>
                             </div>
-                            <div x-if="(Array.isArray(user?.user?.detailBidang))" class="text-sm">
+                            <div x-if="Array.isArray(user.detail_bidang)" class="text-sm">
                                 <p class="text-gray-500 dark:text-black-400">Bidang Keahlian</p>
-                                <template x-for="(bidang,index) in user?.user?.detailBidang" :key="index">
-                                    <p x-text="bidang.bidangKeahlian.nama_keahlian"
+                                <template x-for="(bidang,index) in user.detail_bidang" :key="index">
+                                    <p x-text="bidang.bidang_keahlian.nama_keahlian"
                                         class="font-medium text-gray-900 dark:text-black"></p>
                                 </template>
                             </div>
@@ -549,7 +630,7 @@
 
                         <div class="border-t pt-4">
                             <h4 class="text-lg font-medium text-gray-900 dark:text-black mb-4">Mahasiswa Bimbingan</h4>
-                            ${mahasiswaHtml}
+
                         </div>
                     </div>
                 </div>
@@ -561,5 +642,4 @@
             </div>
         </x-modal>
     </div>
-
 @endsection
