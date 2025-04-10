@@ -162,10 +162,8 @@ class JadwalBimbinganController extends Controller
         $fileName = time() . '_' . $jadwal->id . '_' . $file->getClientOriginalName();
         $path = $file->storeAs('dokumen_bimbingan', $fileName, 'public');
 
-        // Cek apakah sudah ada dokumen untuk bab yang dipilih
-        $existingDokumen = DokumenOnline::where('jadwal_bimbingan_id', $jadwal->id)
-            ->where('bab', $request->bab)
-            ->first();
+        // Cek apakah sudah ada dokumen untuk jadwal bimbingan ini
+        $existingDokumen = DokumenOnline::where('jadwal_bimbingan_id', $jadwal->id)->first();
 
         if ($existingDokumen) {
             // Jika dokumen sudah ada, update dokumen yang lama
@@ -173,6 +171,7 @@ class JadwalBimbinganController extends Controller
                 Storage::disk('public')->delete($existingDokumen->dokumen_mahasiswa);
             }
 
+            $existingDokumen->bab = $request->bab; // Tambahkan ini untuk mengubah bab jika perlu
             $existingDokumen->dokumen_mahasiswa = $path;
             $existingDokumen->keterangan_mahasiswa = $request->keterangan;
             $existingDokumen->status = 'diproses'; // Status berubah menjadi diproses setelah upload
@@ -187,7 +186,7 @@ class JadwalBimbinganController extends Controller
             $dokumen->bab = $request->bab;
             $dokumen->dokumen_mahasiswa = $path;
             $dokumen->keterangan_mahasiswa = $request->keterangan;
-            $dokumen->status = 'menunggu'; // Status awal adalah menunggu
+            $dokumen->status = 'diproses'; // Set status to 'diproses' right away (not 'menunggu')
             $dokumen->save();
 
             return redirect()->route('mahasiswa.jadwal-bimbingan.show', $jadwal->id)

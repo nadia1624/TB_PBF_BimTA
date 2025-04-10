@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Http\Controllers\Dosen;
+
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,6 +15,7 @@ use App\Models\JadwalBimbingan;
 use App\Models\DokumenOnline;
 use App\Models\Mahasiswa;
 
+
 class JadwalBimbinganController extends Controller
 {
     /**
@@ -24,9 +27,11 @@ class JadwalBimbinganController extends Controller
             // Get current dosen
             $dosen = Auth::user()->dosen;
 
+
             if (!$dosen) {
                 return redirect()->back()->with('error', 'Data dosen tidak ditemukan.');
             }
+
 
             // Get total students under guidance
             $totalMahasiswa = DetailDosen::where('dosen_id', $dosen->id)
@@ -36,13 +41,16 @@ class JadwalBimbinganController extends Controller
                 })
                 ->count();
 
+
             // Get total title submissions
             $totalPengajuanJudul = DetailDosen::where('dosen_id', $dosen->id)
                 ->count();
 
+
             // Get total guidance schedules
             $totalJadwalBimbingan = JadwalBimbingan::where('dosen_id', $dosen->id)
                 ->count();
+
 
             // Get latest title submissions
             $latestSubmissions = PengajuanJudul::whereHas('detailDosen', function($query) use ($dosen) {
@@ -53,6 +61,7 @@ class JadwalBimbinganController extends Controller
                 ->limit(5)
                 ->get();
 
+
             // Get today's guidance schedule
             $today = Carbon::now()->format('Y-m-d');
             $todaySchedules = JadwalBimbingan::where('dosen_id', $dosen->id)
@@ -60,6 +69,7 @@ class JadwalBimbinganController extends Controller
                 ->where('status', 'diterima')
                 ->with(['pengajuanJudul', 'pengajuanJudul.mahasiswa'])
                 ->get();
+
 
             return view('dosen.dashboard', compact(
                 'totalMahasiswa',
@@ -69,7 +79,9 @@ class JadwalBimbinganController extends Controller
                 'todaySchedules'
             ));
 
+
         } catch (\Exception $e) {
+
 
             // Provide default values for the view
             $totalMahasiswa = 0;
@@ -77,6 +89,7 @@ class JadwalBimbinganController extends Controller
             $totalJadwalBimbingan = 0;
             $latestSubmissions = collect([]);
             $todaySchedules = collect([]);
+
 
             return view('dosen.dashboard', compact(
                 'totalMahasiswa',
@@ -88,6 +101,7 @@ class JadwalBimbinganController extends Controller
         }
     }
 
+
     /**
      * Tampilkan halaman jadwal bimbingan dengan semua informasi yang diperlukan
      * (Menggabungkan fungsi index, today, dan mendatang dalam satu halaman)
@@ -98,12 +112,15 @@ class JadwalBimbinganController extends Controller
             // Get current dosen
             $dosen = Auth::user()->dosen;
 
+
             if (!$dosen) {
                 return redirect()->back()->with('error', 'Data dosen tidak ditemukan.');
             }
 
+
             // Get today's date
             $today = Carbon::now()->format('Y-m-d');
+
 
             // Get today's schedules
             $todaySchedules = JadwalBimbingan::where('dosen_id', $dosen->id)
@@ -111,6 +128,7 @@ class JadwalBimbinganController extends Controller
                 ->with(['pengajuanJudul.mahasiswa', 'dokumenOnline'])
                 ->orderBy('waktu_pengajuan', 'asc')
                 ->get();
+
 
             // Get schedules waiting for confirmation (pending)
             $menungguKonfirmasi = JadwalBimbingan::where('dosen_id', $dosen->id)
@@ -120,6 +138,7 @@ class JadwalBimbinganController extends Controller
                 ->orderBy('waktu_pengajuan', 'asc')
                 ->get();
 
+
             // Get completed schedules
             $totalSelesai = JadwalBimbingan::where('dosen_id', $dosen->id)
                 ->where('status', 'diterima')
@@ -128,10 +147,12 @@ class JadwalBimbinganController extends Controller
                 ->orderBy('waktu_pengajuan', 'desc')
                 ->get();
 
+
             // Get total counts for cards
             $todaySchedulesCount = $todaySchedules->count();
             $pendingSchedulesCount = $menungguKonfirmasi->count();
             $completedSchedulesCount = $totalSelesai->count();
+
 
             // Get upcoming schedules (future schedules or pending schedules)
             $upcomingSchedules = JadwalBimbingan::where('dosen_id', $dosen->id)
@@ -144,10 +165,12 @@ class JadwalBimbinganController extends Controller
                 ->orderBy('waktu_pengajuan', 'asc')
                 ->get();
 
+
             // Add missing variables from previous fixes
             $bimbinganHariIni = $todaySchedules;
             $jadwalHariIni = $todaySchedules;
             $jadwalMendatang = $upcomingSchedules; // Tambahkan alias ini
+
 
             return view('dosen.jadwal-bimbingan', compact(
                 'todaySchedules',
@@ -162,6 +185,7 @@ class JadwalBimbinganController extends Controller
                 'jadwalMendatang'
             ));
 
+
         } catch (\Exception $e) {
             // Provide default values
             $todaySchedules = collect([]);
@@ -174,6 +198,7 @@ class JadwalBimbinganController extends Controller
             $totalSelesai = collect([]);
             $jadwalHariIni = collect([]);
             $jadwalMendatang = collect([]); // Tambahkan default value ini
+
 
             return view('dosen.jadwal-bimbingan', compact(
                 'todaySchedules',
@@ -190,14 +215,18 @@ class JadwalBimbinganController extends Controller
         }
     }
 
+
     /**
      * Accept a guidance schedule request.
      */
     public function accept(Request $request, $id)
-{
-    $jadwal = JadwalBimbingan::find($id);
+    {
+        $jadwal = JadwalBimbingan::find($id);
 
-    if ($jadwal) {
+        if (!$jadwal) {
+            return redirect()->back()->with('error', 'Jadwal bimbingan tidak ditemukan');
+        }
+
         $jadwal->status = 'diterima';
 
         // Add location details if it's an offline meeting
@@ -207,17 +236,18 @@ class JadwalBimbinganController extends Controller
 
         $jadwal->save();
 
-        // If online method, redirect to document page
+        // For online method, we need to handle the document creation differently
         if ($jadwal->metode == 'online') {
-            return redirect()->route('dosen.dokumen.show', $jadwal->id)
-                ->with('success', 'Jadwal bimbingan berhasil diterima');
+            // We'll no longer create a dokumen_online record here
+            // Let the student create it when they upload
+
+            return redirect()->route('dosen.dokumen.online')
+                ->with('success', 'Jadwal bimbingan online berhasil diterima');
         }
 
-        return redirect()->back()->with('success', 'Jadwal bimbingan berhasil diterima');
+        return redirect()->back()->with('success', 'Jadwal bimbingan offline berhasil diterima');
     }
 
-    return redirect()->back()->with('error', 'Jadwal bimbingan tidak ditemukan');
-}
 
     /**
      * Reject a guidance schedule request.
@@ -228,18 +258,23 @@ class JadwalBimbinganController extends Controller
             'keterangan_ditolak' => 'required|string',
         ]);
 
+
         $jadwal = JadwalBimbingan::find($id);
+
 
         if ($jadwal) {
             $jadwal->status = 'ditolak';
             $jadwal->keterangan_ditolak = $request->keterangan_ditolak;
             $jadwal->save();
 
+
             return redirect()->back()->with('success', 'Jadwal bimbingan berhasil ditolak');
         }
 
+
         return redirect()->back()->with('error', 'Jadwal bimbingan tidak ditemukan');
     }
+
 
     /**
      * Show the details of a guidance document.
@@ -253,8 +288,10 @@ class JadwalBimbinganController extends Controller
             ])
             ->findOrFail($id);
 
+
         return view('dosen.dokumen-detail', compact('dokumen'));
     }
+
 
     /**
      * Update the guidance document with lecturer's review.
@@ -266,15 +303,19 @@ class JadwalBimbinganController extends Controller
             'dokumen_dosen' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
+
         $dokumen = DokumenOnline::find($id);
+
 
         if (!$dokumen) {
             return redirect()->back()->with('error', 'Dokumen tidak ditemukan');
         }
 
+
         $dokumen->keterangan_dosen = $request->keterangan_dosen;
         $dokumen->tanggal_review = Carbon::now()->format('Y-m-d');
         $dokumen->status = 'selesai';
+
 
         // Upload document if provided
         if ($request->hasFile('dokumen_dosen')) {
@@ -284,7 +325,9 @@ class JadwalBimbinganController extends Controller
             $dokumen->dokumen_dosen = 'uploads/dokumen_dosen/' . $fileName;
         }
 
+
         $dokumen->save();
+
 
         return redirect()->back()->with('success', 'Dokumen berhasil diperbarui');
     }
