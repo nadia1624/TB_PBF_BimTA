@@ -175,41 +175,43 @@
                             </div>
                         @endif
 
-                        <!-- Form Upload File (Visible only if status = diterima and no document yet) -->
-                        @if($jadwal->metode == 'online' && $jadwal->status == 'diterima' && $jadwal->dokumenOnline->count() == 0)
-                            <div class="mb-6">
-                                <div class="border border-gray-200 rounded-lg p-4">
-                                    <form method="POST" action="{{ route('mahasiswa.jadwal-bimbingan.upload-dokumen', $jadwal->id) }}" enctype="multipart/form-data" id="uploadForm">
-                                        @csrf
-                                        <input type="hidden" name="bab" id="selectedBab" value="{{ $selectedBab }}">
+                        <!-- Form Upload File (Visible only if status = diterima and either no document yet or document status is "menunggu") -->
+                        @if($jadwal->metode == 'online' && $jadwal->status == 'diterima' &&
+                        ($jadwal->dokumenOnline->count() == 0 ||
+                        ($jadwal->dokumenOnline->count() > 0 && $jadwal->dokumenOnline->first()->status == 'menunggu')))
+                        <div class="mb-6">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <form method="POST" action="{{ route('mahasiswa.jadwal-bimbingan.upload-dokumen', $jadwal->id) }}" enctype="multipart/form-data" id="uploadForm">
+                                    @csrf
+                                    <input type="hidden" name="bab" id="selectedBab" value="{{ $selectedBab }}">
 
-                                        <div class="mb-4">
-                                            <label for="dokumen" class="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
-                                            <div class="flex items-center">
-                                                <button type="button" onclick="document.getElementById('dokumen').click()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    Upload
-                                                </button>
-                                                <span id="file-selected" class="ml-3 text-sm text-gray-500">Belum ada file dipilih</span>
-                                            </div>
-                                            <input id="dokumen" name="dokumen" type="file" class="hidden" accept=".pdf,.doc,.docx">
-                                        </div>
-
-                                        <div class="mb-4">
-                                            <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
-                                            <textarea id="keterangan" name="keterangan" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Tambahkan keterangan untuk dokumen ini"></textarea>
-                                        </div>
-
-                                        <div class="flex justify-end">
-                                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                                Ajukan Dokumen
+                                    <div class="mb-4">
+                                        <label for="dokumen" class="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
+                                        <div class="flex items-center">
+                                            <button type="button" onclick="document.getElementById('dokumen').click()" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                                Upload
                                             </button>
+                                            <span id="file-selected" class="ml-3 text-sm text-gray-500">Belum ada file dipilih</span>
                                         </div>
-                                    </form>
-                                </div>
+                                        <input id="dokumen" name="dokumen" type="file" class="hidden" accept=".pdf,.doc,.docx">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-2">Keterangan</label>
+                                        <textarea id="keterangan" name="keterangan" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Tambahkan keterangan untuk dokumen ini"></textarea>
+                                    </div>
+
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                            Ajukan Dokumen
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
+                        </div>
                         @endif
                     @else
                         <!-- Tampilan untuk metode offline -->
