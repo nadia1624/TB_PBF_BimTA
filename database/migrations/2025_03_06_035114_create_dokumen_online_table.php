@@ -8,8 +8,8 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('dokumen_online', function (Blueprint $table) {
             $table->id();
-            $table->enum('bab', ['bab 1', 'bab 2', 'bab 3', 'bab 4', 'bab 5', 'lengkap']);
-            $table->string('dokumen_mahasiswa');
+            $table->enum('bab', ['bab 1', 'bab 2', 'bab 3', 'bab 4', 'bab 5', 'lengkap'])->nullable();
+            $table->string('dokumen_mahasiswa')->nullable();
             $table->text('keterangan_mahasiswa')->nullable();
             $table->enum('status', ['menunggu', 'diproses', 'selesai']);
             $table->string('tanggal_review')->nullable();
@@ -24,4 +24,3 @@ return new class extends Migration {
         Schema::dropIfExists('dokumen_online');
     }
 };
-

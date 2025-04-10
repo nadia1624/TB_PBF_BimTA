@@ -44,9 +44,8 @@
 
                                 // Jika metode online dan status diterima, cek dokumen online
                                 if ($jadwal->metode == 'online' && $jadwal->status == 'diterima') {
-                                    $dokumenOnline = $jadwal->dokumenOnline->first();
-                                    if ($dokumenOnline) {
-                                        $displayStatus = $dokumenOnline->status;
+                                    if ($jadwal->dokumenOnline) {
+                                        $displayStatus = $jadwal->dokumenOnline->status;
                                     } else {
                                         $displayStatus = 'menunggu';
                                     }
@@ -95,14 +94,18 @@
                         @php
                             // Cek bab yang dipilih jika ada dokumen
                             $selectedBab = '';
-                            if ($jadwal->dokumenOnline->count() > 0) {
-                                $selectedBab = $jadwal->dokumenOnline->first()->bab;
+                            if ($jadwal->dokumenOnline) {
+                                $selectedBab = $jadwal->dokumenOnline->bab ?? 'bab 1';
                             } else {
                                 $selectedBab = 'bab 1'; // Default value
                             }
 
                             // Menentukan apakah halaman dalam mode read-only
-                            $isReadOnly = $jadwal->status != 'diterima' || $jadwal->dokumenOnline->count() > 0;
+                            // Halaman read-only jika:
+                            // 1. Status jadwal tidak diterima, ATAU
+                            // 2. Ada dokumen online DAN dokumen tersebut bukan dalam status 'menunggu'
+                            $isReadOnly = $jadwal->status != 'diterima' ||
+                                        ($jadwal->dokumenOnline && $jadwal->dokumenOnline->status != 'menunggu');
                         @endphp
 
                         <div class="grid grid-cols-2 gap-4 mb-6">
@@ -133,52 +136,50 @@
                         </div>
 
                         <!-- Tampilkan Dokumen yang Sudah Diupload (Read-Only Mode) -->
-                        @if($jadwal->dokumenOnline->count() > 0)
+                        @if($jadwal->dokumenOnline && $jadwal->dokumenOnline->dokumen_mahasiswa)
                             <div class="mb-6">
                                 <div class="border border-gray-200 rounded-lg p-4">
                                     <h4 class="text-base font-medium text-gray-700 mb-3">Dokumen yang Diupload</h4>
 
-                                    @foreach($jadwal->dokumenOnline as $dokumen)
-                                        <div class="mb-4 pb-4 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
-                                            <div class="flex justify-between items-center mb-2">
-                                                <div>
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                        {{ ucfirst($dokumen->bab) }}
-                                                    </span>
-                                                    <span class="ml-2 text-sm text-gray-500">
-                                                        {{ \Carbon\Carbon::parse($dokumen->created_at)->format('d F Y H:i') }}
-                                                    </span>
-                                                </div>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                    {{ $dokumen->status == 'menunggu' ? 'bg-yellow-100 text-yellow-800' :
-                                                    ($dokumen->status == 'diproses' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
-                                                    {{ ucfirst($dokumen->status) }}
+                                    <div class="mb-4 pb-4">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <div>
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    {{ ucfirst($jadwal->dokumenOnline->bab) }}
+                                                </span>
+                                                <span class="ml-2 text-sm text-gray-500">
+                                                    {{ \Carbon\Carbon::parse($jadwal->dokumenOnline->created_at)->format('d F Y H:i') }}
                                                 </span>
                                             </div>
-
-                                            <div class="flex items-center mb-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
-                                                </svg>
-                                                <a href="{{ asset('storage/' . $dokumen->dokumen_mahasiswa) }}" target="_blank" class="text-blue-600 hover:text-blue-800">
-                                                    {{ basename($dokumen->dokumen_mahasiswa) }}
-                                                </a>
-                                            </div>
-
-                                            <div class="text-sm text-gray-600">
-                                                <p class="font-medium mb-1">Keterangan:</p>
-                                                <p>{{ $dokumen->keterangan_mahasiswa }}</p>
-                                            </div>
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                {{ $jadwal->dokumenOnline->status == 'menunggu' ? 'bg-yellow-100 text-yellow-800' :
+                                                ($jadwal->dokumenOnline->status == 'diproses' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
+                                                {{ ucfirst($jadwal->dokumenOnline->status) }}
+                                            </span>
                                         </div>
-                                    @endforeach
+
+                                        <div class="flex items-center mb-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                            </svg>
+                                            <a href="{{ asset('storage/' . $jadwal->dokumenOnline->dokumen_mahasiswa) }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                                {{ basename($jadwal->dokumenOnline->dokumen_mahasiswa) }}
+                                            </a>
+                                        </div>
+
+                                        <div class="text-sm text-gray-600">
+                                            <p class="font-medium mb-1">Keterangan:</p>
+                                            <p>{{ $jadwal->dokumenOnline->keterangan_mahasiswa }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         @endif
 
                         <!-- Form Upload File (Visible only if status = diterima and either no document yet or document status is "menunggu") -->
                         @if($jadwal->metode == 'online' && $jadwal->status == 'diterima' &&
-                        ($jadwal->dokumenOnline->count() == 0 ||
-                        ($jadwal->dokumenOnline->count() > 0 && $jadwal->dokumenOnline->first()->status == 'menunggu')))
+                        (!$jadwal->dokumenOnline ||
+                        ($jadwal->dokumenOnline && $jadwal->dokumenOnline->status == 'menunggu')))
                         <div class="mb-6">
                             <div class="border border-gray-200 rounded-lg p-4">
                                 <form method="POST" action="{{ route('mahasiswa.jadwal-bimbingan.upload-dokumen', $jadwal->id) }}" enctype="multipart/form-data" id="uploadForm">
@@ -243,20 +244,18 @@
                     <div class="mb-6">
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">Balasan Dosen</h3>
                         <div class="p-4 bg-gray-50 rounded-lg min-h-48">
-                            @if($jadwal->dokumenOnline->where('dokumen_dosen', '!=', null)->count() > 0)
-                                @foreach($jadwal->dokumenOnline->where('dokumen_dosen', '!=', null) as $dokumen)
-                                    <div class="mb-4">
-                                        <p class="text-sm text-gray-700">{{ $dokumen->keterangan_dosen ?? 'Tidak ada keterangan tambahan.' }}</p>
-                                        <div class="mt-2">
-                                            <a href="{{ asset('storage/' . $dokumen->dokumen_dosen) }}" target="_blank" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                Download Dokumen Revisi
-                                            </a>
-                                        </div>
+                            @if($jadwal->dokumenOnline && $jadwal->dokumenOnline->dokumen_dosen)
+                                <div class="mb-4">
+                                    <p class="text-sm text-gray-700">{{ $jadwal->dokumenOnline->keterangan_dosen ?? 'Tidak ada keterangan tambahan.' }}</p>
+                                    <div class="mt-2">
+                                        <a href="{{ asset('storage/' . $jadwal->dokumenOnline->dokumen_dosen) }}" target="_blank" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                            Download Dokumen Revisi
+                                        </a>
                                     </div>
-                                @endforeach
+                                </div>
                             @elseif($jadwal->status == 'ditolak')
                                 <p class="text-sm text-red-600">{{ $jadwal->keterangan_dosen ?? 'Jadwal bimbingan ditolak.' }}</p>
                             @else
