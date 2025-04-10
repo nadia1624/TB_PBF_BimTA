@@ -236,10 +236,13 @@ class JadwalBimbinganController extends Controller
 
         $jadwal->save();
 
-        // For online method, we need to handle the document creation differently
+        // For online method, create a new DokumenOnline record with 'menunggu' status
         if ($jadwal->metode == 'online') {
-            // We'll no longer create a dokumen_online record here
-            // Let the student create it when they upload
+            // Create a new dokumen_online record
+            DokumenOnline::create([
+                'jadwal_bimbingan_id' => $jadwal->id,
+                'status' => 'menunggu'
+            ]);
 
             return redirect()->route('dosen.dokumen.online')
                 ->with('success', 'Jadwal bimbingan online berhasil diterima');
@@ -247,6 +250,7 @@ class JadwalBimbinganController extends Controller
 
         return redirect()->back()->with('success', 'Jadwal bimbingan offline berhasil diterima');
     }
+
 
 
     /**

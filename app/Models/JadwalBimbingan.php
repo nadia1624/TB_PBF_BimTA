@@ -17,8 +17,8 @@ class JadwalBimbingan extends Model
         'status',
         'keterangan',
         'keterangan_ditolak',
+        'keterangan_diterima_offline',  // Menambahkan keterangan_diterima_offline
         'metode',
-        'keterangan_diterima_offline',
         'dosen_id',
         'pengajuan_judul_id'
     ];
@@ -44,6 +44,6 @@ class JadwalBimbingan extends Model
 
     public function dokumenOnline()
     {
-        return $this->hasMany(DokumenOnline::class);
+        return $this->hasOne(DokumenOnline::class);  // Mengubah relasi menjadi hasOne untuk 1 jadwal bimbingan 1 dokumen online
     }
 }

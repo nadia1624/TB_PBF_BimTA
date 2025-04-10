@@ -28,6 +28,6 @@ class DokumenOnline extends Model
 
     public function jadwalBimbingan()
     {
-        return $this->belongsTo(JadwalBimbingan::class);
+        return $this->belongsTo(JadwalBimbingan::class);  // Relasi kebalik dari jadwal bimbingan
     }
 }

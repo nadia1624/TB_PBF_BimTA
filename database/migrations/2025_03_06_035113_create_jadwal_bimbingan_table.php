@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->enum('status', ['diproses', 'diterima', 'ditolak'])->default('diproses');
             $table->text('keterangan')->nullable();
             $table->text('keterangan_ditolak')->nullable();
+            $table->text('keterangan_diterima_offline')->nullable(); // Menambahkan kolom keterangan_diterima_offline
             $table->enum('metode', ['online', 'offline'])->default('online');
             $table->foreignId('dosen_id')->constrained('dosen')->onDelete('cascade');
             $table->foreignId('pengajuan_judul_id')->constrained('pengajuan_judul')->onDelete('cascade');
@@ -24,4 +25,3 @@ return new class extends Migration {
         Schema::dropIfExists('jadwal_bimbingan');
     }
 };
-
