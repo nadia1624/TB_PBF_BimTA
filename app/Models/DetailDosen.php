@@ -9,7 +9,8 @@ class DetailDosen extends Pivot
 {
     use HasFactory;
 
-    protected $table = 'detail_dosen';
+    // Tambahkan ini di model DetailDosen
+protected $primaryKey = ['dosen_id', 'pengajuan_judul_id'];
 
     // Untuk primary key komposit, sebaiknya gunakan Pivot class daripada Model
     public $incrementing = false;
@@ -19,7 +20,8 @@ class DetailDosen extends Pivot
         'pengajuan_judul_id',
         'pembimbing',
         'status',
-        'alasan_dibatalkan'
+        'alasan_dibatalkan',
+        'komentar'
     ];
 
     // Relasi dengan Dosen

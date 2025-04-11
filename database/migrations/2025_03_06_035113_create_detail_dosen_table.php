@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->enum('pembimbing', ['pembimbing 1', 'pembimbing 2']);
             $table->enum('status', ['diproses', 'diterima', 'ditolak'])->default('diproses');
             $table->text('alasan_dibatalkan')->nullable();
+            $table->text('komentar')->nullable();
             $table->timestamps();
 
             $table->primary(['dosen_id', 'pengajuan_judul_id', 'pembimbing']);

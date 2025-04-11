@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\Dosen\JadwalBimbinganController;
 use App\Http\Controllers\Dosen\DokumenOnlineController;
+use App\Http\Controllers\Dosen\PengajuanJudulController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -34,4 +35,9 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
         ->name('dokumen.download-mahasiswa');
     Route::get('dokumen-online/download-dosen/{id}', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'downloadDosenDocument'])
         ->name('dokumen.download-dosen');
+
+      // Pengajuan Judul routes
+      Route::get('/pengajuanjudul', [PengajuanJudulController::class, 'index'])->name('pengajuan');
+      Route::get('/pengajuanjudul/{id}', [PengajuanJudulController::class, 'detail'])->name('pengajuan.detail');
+      Route::put('/pengajuanjudul/{id}/status', [PengajuanJudulController::class, 'updateStatus'])->name('pengajuan.status');
 });
