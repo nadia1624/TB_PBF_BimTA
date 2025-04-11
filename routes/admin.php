@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\MahasiswaController;
 use App\Http\Controllers\Admin\DosenController;
 use App\Http\Controllers\Admin\PengajuanController;
+use App\Http\Controllers\Admin\DetailPengajuanController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -19,16 +20,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/dosen', [DosenController::class, 'store'])->name('admin.dosen.store');
 
     Route::put('/admin/dosen/update', [DosenController::class, 'update'])->name('admin.dosen.update');
-    
+
     Route::delete('/admin/dosen/delete', [DosenController::class, 'delete'])->name('admin.dosen.delete');
 
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/pengajuan-ta', [App\Http\Controllers\Admin\PengajuanController::class, 'index'])->name('pengajuanta');
     Route::post('/pengajuan-ta/filter', [App\Http\Controllers\Admin\PengajuanController::class, 'filter'])->name('pengajuanta.filter');
-    Route::get('/pengajuan-ta/{id}/detail', [App\Http\Controllers\Admin\PengajuanController::class, 'detail'])->name('pengajuanta.detail');
-    Route::put('/pengajuan-ta/{id}/status', [App\Http\Controllers\Admin\PengajuanController::class, 'updateStatus'])->name('pengajuanta.status');
-});
+     // Detail Pengajuan TA routes
+     Route::get('/pengajuan-ta/{id}/detail', [DetailPengajuanController::class, 'index'])->name('pengajuanta.detail');
+     Route::put('/pengajuan-ta/{id}/status', [DetailPengajuanController::class, 'updateStatus'])->name('pengajuanta.status');
+ });
 
 
 });

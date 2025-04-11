@@ -63,7 +63,7 @@
                         <a href="#" onclick="selectFilter('status', 'Diproses', 'Diproses'); return false;" class="block px-4 py-2 hover:bg-gray-100">Diproses</a>
                     </li>
                     <li>
-                        <a href="#" onclick="selectFilter('status', 'Disetujui', 'Disetujui'); return false;" class="block px-4 py-2 hover:bg-gray-100">Disetujui</a>
+                        <a href="#" onclick="selectFilter('status', 'Diterima', 'Diterima'); return false;" class="block px-4 py-2 hover:bg-gray-100">Diterima</a>
                     </li>
                     <li>
                         <a href="#" onclick="selectFilter('status', 'Ditolak', 'Ditolak'); return false;" class="block px-4 py-2 hover:bg-gray-100">Ditolak</a>
@@ -105,8 +105,9 @@
                         @php
                             $statusLabel = 'Diproses';
                             $statusClass = 'bg-yellow-100 text-yellow-800';
+                            $status = 'diproses';
 
-                            // Get status from detail_dosen instead of approved_ta
+                            // Get status from detail_dosen
                             if($item->detailDosen->isNotEmpty()) {
                                 $detailDosen = $item->detailDosen->first();
                                 $status = $detailDosen->status;
@@ -126,7 +127,7 @@
                         <span class="{{ $statusClass }} text-xs font-medium px-2.5 py-0.5 rounded-full">{{ $statusLabel }}</span>
                     </td>
                     <td class="px-6 py-4 text-center">
-                        <button type="button" onclick="viewPengajuanDetail({{ $item->id }})" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-700 focus:ring-4 focus:ring-green-300 rounded-lg p-2" title="Lihat Detail">
+                        <button type="button" onclick="viewDetail({{ $item->id }})" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-700 focus:ring-4 focus:ring-green-300 rounded-lg p-2" title="Lihat Detail">
                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -139,59 +140,10 @@
         </table>
     </div>
 </div>
-
-<!-- Modal Detail Pengajuan -->
-<div id="detailPengajuanModal" class="hidden fixed top-0 left-0 right-0 z-50 w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center">
-    <div class="fixed inset-0 bg-black bg-opacity-50" onclick="closeModal('detailPengajuanModal')"></div>
-
-    <div class="relative w-full max-w-2xl max-h-full">
-        <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                    Detail Pengajuan TA
-                </h3>
-                <button type="button" onclick="closeModal('detailPengajuanModal')" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
-                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span class="sr-only">Tutup</span>
-                </button>
-            </div>
-            <!-- Modal body -->
-            <div class="p-4 md:p-5 max-h-[70vh] overflow-y-auto" id="pengajuanDetailContent">
-                <!-- Detail pengajuan will be loaded here via AJAX -->
-            </div>
-            <!-- Modal action buttons -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <div id="statusActionButtons" class="flex gap-2">
-                    <button type="button" id="btnApprove" onclick="updateStatus('Disetujui')" class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Setujui</button>
-                    <button type="button" id="btnReject" onclick="openRejectForm()" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Tolak</button>
-                </div>
-                <button type="button" onclick="closeModal('detailPengajuanModal')" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Tutup</button>
-            </div>
-
-            <!-- Rejection form (initially hidden) -->
-            <div id="rejectFormContainer" class="hidden p-4 md:p-5 border-t border-gray-200">
-                <h4 class="text-lg font-medium text-gray-900 mb-4">Alasan Penolakan</h4>
-                <form id="rejectForm">
-                    <textarea id="rejectReason" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-4" rows="3" placeholder="Masukkan alasan penolakan"></textarea>
-                    <div class="flex gap-2">
-                        <button type="button" onclick="updateStatus('Ditolak')" class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Konfirmasi Penolakan</button>
-                        <button type="button" onclick="closeRejectForm()" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5">Batal</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 @push('scripts')
 <script>
-    let currentPengajuanId = null;
-let currentDetailId = null;
 let filters = {
     bidang: 'all',
     status: 'all',
@@ -217,6 +169,20 @@ document.addEventListener('DOMContentLoaded', function() {
     @if(session('error'))
         showAlert('error', "{{ session('error') }}");
     @endif
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        const bidangDropdown = document.getElementById('bidangDropdown');
+        const statusDropdown = document.getElementById('statusDropdown');
+
+        if (!event.target.closest('[onclick="toggleDropdown(\'bidangDropdown\')"]') && !bidangDropdown.contains(event.target)) {
+            bidangDropdown.classList.add('hidden');
+        }
+
+        if (!event.target.closest('[onclick="toggleDropdown(\'statusDropdown\')"]') && !statusDropdown.contains(event.target)) {
+            statusDropdown.classList.add('hidden');
+        }
+    });
 });
 
 // Toggle dropdown
@@ -262,6 +228,18 @@ function applyFilters() {
     });
 }
 
+function getActionButton(item) {
+    const url = `/admin/pengajuan-ta/${item.id}/detail`;  // or generate this with a route helper if possible in JS
+    return `
+        <a href="${url}" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-700 focus:ring-4 focus:ring-green-300 rounded-lg p-2 inline-flex" title="Lihat Detail">
+            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+        </a>
+    `;
+}
+
 // Update table with filtered data
 function updateTable(pengajuan) {
     const tableBody = document.getElementById('pengajuanTableBody');
@@ -284,19 +262,22 @@ function updateTable(pengajuan) {
         row.setAttribute('data-id', item.id);
         row.setAttribute('data-mahasiswa', item.mahasiswa ? item.mahasiswa.id : '');
 
-        // Determine status and its class from detail_dosen instead of approved_ta
+        // Determine status and its class
+        let status = 'diproses';
         let statusLabel = 'Diproses';
         let statusClass = 'bg-yellow-100 text-yellow-800';
 
         if (item.detail_dosen && item.detail_dosen.length > 0) {
             const detailDosen = item.detail_dosen[0];
-            if (detailDosen.status === 'disetujui') {
-                statusLabel = 'Disetujui';
+            status = detailDosen.status;
+
+            if (status === 'diterima') {
+                statusLabel = 'Diterima';
                 statusClass = 'bg-green-100 text-green-800';
-            } else if (detailDosen.status === 'ditolak') {
+            } else if (status === 'ditolak') {
                 statusLabel = 'Ditolak';
                 statusClass = 'bg-red-100 text-red-800';
-            } else if (detailDosen.status === 'diproses') {
+            } else if (status === 'diproses') {
                 statusLabel = 'Diproses';
                 statusClass = 'bg-yellow-100 text-yellow-800';
             }
@@ -327,12 +308,7 @@ function updateTable(pengajuan) {
                 <span class="${statusClass} text-xs font-medium px-2.5 py-0.5 rounded-full">${statusLabel}</span>
             </td>
             <td class="px-6 py-4 text-center">
-                <button type="button" onclick="viewPengajuanDetail(${item.id})" class="text-green-700 hover:text-white border border-green-700 hover:bg-green-700 focus:ring-4 focus:ring-green-300 rounded-lg p-2" title="Lihat Detail">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                </button>
+                ${getActionButton(item)}
             </td>
         `;
 
@@ -340,243 +316,9 @@ function updateTable(pengajuan) {
     });
 }
 
-// Show or hide a modal
-function openModal(modalId) {
-    document.getElementById(modalId).classList.remove('hidden');
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
-    // Reset rejection form if closing main modal
-    if (modalId === 'detailPengajuanModal') {
-        closeRejectForm();
-    }
-}
-
-// Show rejection form
-function openRejectForm() {
-    document.getElementById('statusActionButtons').classList.add('hidden');
-    document.getElementById('rejectFormContainer').classList.remove('hidden');
-}
-
-// Hide rejection form
-function closeRejectForm() {
-    document.getElementById('statusActionButtons').classList.remove('hidden');
-    document.getElementById('rejectFormContainer').classList.add('hidden');
-    document.getElementById('rejectReason').value = '';
-}
-
-// View pengajuan detail
-function viewPengajuanDetail(id) {
-    fetch(`/admin/pengajuan-ta/${id}/detail`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            const pengajuan = data.data;
-            currentPengajuanId = pengajuan.id;
-
-            // Find the first detailDosen entry to get the ID for status updates
-            if (pengajuan.detail_dosen && pengajuan.detail_dosen.length > 0) {
-                currentDetailId = pengajuan.detail_dosen[0].id;
-            }
-
-            const detailContainer = document.getElementById('pengajuanDetailContent');
-
-            // Format date
-            const createdAt = new Date(pengajuan.created_at);
-            const formattedDate = `${createdAt.getDate().toString().padStart(2, '0')}/${(createdAt.getMonth() + 1).toString().padStart(2, '0')}/${createdAt.getFullYear()}`;
-
-            // Get status information
-            let statusLabel = 'Diproses';
-            let statusClass = 'bg-yellow-100 text-yellow-800';
-            let alasanDibatalkan = '';
-
-            if (pengajuan.approved_ta === 'disetujui') {
-                statusLabel = 'Disetujui';
-                statusClass = 'bg-green-100 text-green-800';
-            } else if (pengajuan.approved_ta === 'ditolak') {
-                statusLabel = 'Ditolak';
-                statusClass = 'bg-red-100 text-red-800';
-            }
-
-            if (pengajuan.detail_dosen && pengajuan.detail_dosen.length > 0) {
-                alasanDibatalkan = pengajuan.detail_dosen[0].alasan_dibatalkan || '';
-            }
-
-            // Show/hide action buttons based on status
-            const btnApprove = document.getElementById('btnApprove');
-            const btnReject = document.getElementById('btnReject');
-
-            if (pengajuan.approved_ta === 'disetujui' || pengajuan.approved_ta === 'ditolak') {
-                btnApprove.classList.add('hidden');
-                btnReject.classList.add('hidden');
-            } else {
-                btnApprove.classList.remove('hidden');
-                btnReject.classList.remove('hidden');
-            }
-
-            // Build detail HTML
-            let detailHtml = `
-                <div class="space-y-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <h4 class="text-lg font-medium text-gray-900">Detail Pengajuan</h4>
-                        <span class="${statusClass} text-xs font-medium px-3 py-1 rounded-full">${statusLabel}</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-4">
-                        <div class="text-sm">
-                            <p class="text-gray-500">Tanggal Pengajuan</p>
-                            <p class="font-medium text-gray-900">${formattedDate}</p>
-                        </div>
-                        <div class="text-sm">
-                            <p class="text-gray-500">Status</p>
-                            <p class="font-medium text-gray-900">${statusLabel}</p>
-                        </div>
-                    </div>
-
-                    <div class="border-b pb-4">
-                        <h4 class="text-lg font-medium text-gray-900 mb-4">Informasi Mahasiswa</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="text-sm">
-                                <p class="text-gray-500">Nama Mahasiswa</p>
-                                <p class="font-medium text-gray-900">${pengajuan.mahasiswa ? pengajuan.mahasiswa.nama_lengkap : '-'}</p>
-                            </div>
-                            <div class="text-sm">
-                                <p class="text-gray-500">NIM</p>
-                                <p class="font-medium text-gray-900">${pengajuan.mahasiswa ? pengajuan.mahasiswa.nim : '-'}</p>
-                            </div>
-                            <div class="text-sm">
-                                <p class="text-gray-500">Program Studi</p>
-                                <p class="font-medium text-gray-900">${pengajuan.mahasiswa ? pengajuan.mahasiswa.program_studi : '-'}</p>
-                            </div>
-                            <div class="text-sm">
-                                <p class="text-gray-500">Angkatan</p>
-                                <p class="font-medium text-gray-900">${pengajuan.mahasiswa ? pengajuan.mahasiswa.angkatan : '-'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-b pb-4">
-                        <h4 class="text-lg font-medium text-gray-900 mb-4">Detail Tugas Akhir</h4>
-                        <div class="space-y-4">
-                            <div class="text-sm">
-                                <p class="text-gray-500">Judul</p>
-                                <p class="font-medium text-gray-900">${pengajuan.judul}</p>
-                            </div>
-                            <div class="text-sm">
-                                <p class="text-gray-500">Deskripsi</p>
-                                <p class="text-gray-900">${pengajuan.deskripsi || '-'}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="border-b pb-4">
-                        <h4 class="text-lg font-medium text-gray-900 mb-4">Dosen Pembimbing</h4>
-            `;
-
-            if (pengajuan.detail_dosen && pengajuan.detail_dosen.length > 0) {
-                pengajuan.detail_dosen.forEach(detail => {
-                    if (detail.dosen) {
-                        detailHtml += `
-                            <div class="mb-3 p-3 border rounded-lg">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="text-sm">
-                                        <p class="text-gray-500">Nama Dosen</p>
-                                        <p class="font-medium text-gray-900">${detail.dosen.nama_lengkap}</p>
-                                    </div>
-                                    <div class="text-sm">
-                                        <p class="text-gray-500">NIP</p>
-                                        <p class="font-medium text-gray-900">${detail.dosen.nip}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-            } else {
-                detailHtml += `<p class="text-gray-500 text-center py-3">Belum ada dosen pembimbing yang ditentukan</p>`;
-            }
-
-            detailHtml += `</div>`;
-
-            // Add rejection reason if applicable
-            if (pengajuan.approved_ta === 'ditolak' && pengajuan.komentar) {
-                detailHtml += `
-                    <div class="border-b pb-4">
-                        <h4 class="text-lg font-medium text-red-700 mb-2">Alasan Penolakan</h4>
-                        <div class="p-3 bg-red-50 rounded-lg text-red-800">
-                            ${pengajuan.komentar}
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Close the space-y-6 div
-            detailHtml += `</div>`;
-
-            // Set the HTML content
-            detailContainer.innerHTML = detailHtml;
-
-            // Open the modal
-            openModal('detailPengajuanModal');
-        } else {
-            showAlert('error', data.message || 'Gagal mengambil detail pengajuan');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('error', 'Terjadi kesalahan saat mengambil detail pengajuan');
-    });
-}
-
-// Update status
-function updateStatus(status) {
-    if (!currentPengajuanId) {
-        showAlert('error', 'ID pengajuan tidak ditemukan');
-        return;
-    }
-
-    let data = {
-        status: status
-    };
-
-    // Add rejection reason if rejecting
-    if (status === 'Ditolak') {
-        const reason = document.getElementById('rejectReason').value.trim();
-        if (!reason) {
-            showAlert('error', 'Harap isi alasan penolakan');
-            return;
-        }
-        data.komentar = reason;
-    }
-
-    fetch(`/admin/pengajuan-ta/${currentPengajuanId}/status`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showAlert('success', data.message || 'Status berhasil diperbarui');
-            closeModal('detailPengajuanModal');
-            // Refresh the data
-            applyFilters();
-        } else {
-            showAlert('error', data.message || 'Gagal memperbarui status');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showAlert('error', 'Terjadi kesalahan saat memperbarui status');
-    });
+// Action function
+function viewDetail(id) {
+    window.location.href = '/admin/pengajuan-ta/' + id + '/detail';
 }
 
 // Show alert message
@@ -600,3 +342,5 @@ function showAlert(type, message) {
         alertContainer.classList.add('hidden');
     }, 5000);
 }
+</script>
+@endpush

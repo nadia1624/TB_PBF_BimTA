@@ -175,7 +175,7 @@
                         </div>
 
                         <div class="flex justify-end mt-4">
-                            <a href="{{ route('pengajuan-judul.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <a href="{{ route('mahasiswa.pengajuan-judul.create') }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                                 Ajukan Kembali
                             </a>
                         </div>
