@@ -23,6 +23,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::delete('/admin/dosen/delete', [DosenController::class, 'delete'])->name('admin.dosen.delete');
 
+    Route::delete('/admin/keahlian/delete', [DosenController::class, 'destroy'])->name('admin.keahlian.delete');
+
+    Route::put('/admin/keahlian/update', [DosenController::class, 'edit'])->name('admin.keahlian.update');
+
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/pengajuan-ta', [App\Http\Controllers\Admin\PengajuanController::class, 'index'])->name('pengajuanta');
