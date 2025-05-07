@@ -21,7 +21,6 @@ class PengajuanJudul extends Model
         'mahasiswa_id'
     ];
 
-    // Relasi many-to-one dengan Mahasiswa
     public function mahasiswa()
     {
         return $this->belongsTo(Mahasiswa::class);
@@ -31,8 +30,6 @@ class PengajuanJudul extends Model
     {
         return $this->hasMany(JadwalBimbingan::class);
     }
-
-    // Relasi many-to-many dengan Dosen melalui DetailDosen
     public function dosen()
     {
         return $this->belongsToMany(Dosen::class, 'detail_dosen')
@@ -40,7 +37,6 @@ class PengajuanJudul extends Model
             ->withTimestamps();
     }
 
-    // Relasi one-to-many dengan DetailDosen
     public function detailDosen()
     {
         return $this->hasMany(DetailDosen::class);

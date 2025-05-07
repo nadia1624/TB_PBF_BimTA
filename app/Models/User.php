@@ -21,7 +21,6 @@ class User extends Authenticatable
         return $this->hasOne(Mahasiswa::class);
     }
 
-    // Relasi one-to-one dengan Dosen
     public function dosen()
     {
         return $this->hasOne(Dosen::class);

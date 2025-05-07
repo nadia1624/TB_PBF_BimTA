@@ -205,6 +205,56 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="mt-6">
+                <h2 class="text-2xl font-semibold text-gray-800">Kelola Bidang Keahlian</h2>
+
+                <div class="overflow-x-auto shadow-xl rounded-lg bg-white mt-4">
+                    <table class="w-full text-sm text-left text-gray-800">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                            <tr>
+                                <th scope="col" class="px-6 py-4">No</th>
+                                <th scope="col" class="px-6 py-4">Bidang Keahlian</th>
+                                <th scope="col" class="px-6 py-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bidangTableBody">
+                            @foreach ($bidang_keahlian as $bidang )
+                            <tr class="bg-white border-b hover:bg-gray-50 bidang-row">
+                                <td class="px-6 py-4 font-medium">{{ $loop->iteration }}</td>
+                                <td class="px-6 py-4">{{ $bidang->nama_keahlian }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex justify-center space-x-2">
+                                        <button type="button"
+                                            x-on:click="openModal('editBidangModal',{{ json_encode($bidang) }})"
+                                            class="bg-[#FBDA00] text-white hover:bg-yellow-300 border border-transparent focus:ring-4 focus:ring-[#FBDA00]-300 rounded-lg p-2"
+                                            title="Edit">
+                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </button>
+
+                                        <button type="button"
+                                            x-on:click="openModal('deleteBidangModal',{{ json_encode($bidang) }})"
+                                            class="bg-red-700 text-white hover:text-white border border-red-700 hover:bg-red-500 focus:ring-4 focus:ring-red-300 rounded-lg p-2"
+                                            title="Hapus">
+                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
         <!-- Modal Tambah Bidang -->
@@ -313,7 +363,7 @@
                                     <button type="button"
                                         @click="if(currentBidang && !bidangKeahlian.includes(currentBidang)) { bidangKeahlian.push(currentBidang); currentBidang = ''; }"
                                         class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center">
-                                        + Tambah
+                                        Tambah
                                     </button>
                                 </div>
 
@@ -445,7 +495,7 @@
                                     <button type="button"
                                         @click="if(currentBidang && !bidangKeahlian.includes(currentBidang)) { bidangKeahlian.push(currentBidang); currentBidang = ''; }"
                                         class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center">
-                                        + Tambah
+                                            Tambah
                                     </button>
                                 </div>
 
@@ -641,5 +691,94 @@
                 </div>
             </div>
         </x-modal>
+
+        <x-modal name="deleteBidangModal">
+            <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-white-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-black">
+                        Konfirmasi Hapus
+                    </h3>
+                    <button type="button" x-on:click="closeModal()"
+                        class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Tutup</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="p-4 md:p-5 text-center">
+                    <svg class="mx-auto mb-4 text-red-600 w-12 h-12 dark:text-black-200" aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <h3 class="mb-5 text-lg font-normal text-gray-800 dark:text-black-400">Apakah Anda yakin ingin
+                        menghapus bidang keahlian ini?</h3>
+                    <p class="mb-5 text-sm text-gray-700 dark:text-black-300">Tindakan ini tidak dapat dibatalkan dan
+                        akan
+                        menghapus semua data terkait bidang keahlian ini.</p>
+                    <form id="deleteKeahlianForm" action="{{ route('admin.keahlian.delete') }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <input x-model="user?.id" type="hidden" name="bidang_keahlian_id" id="delete_keahlian_id">
+                        <div class="flex justify-center gap-4">
+                            <button type="submit"
+                                class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
+                                Ya, hapus
+                            </button>
+                            <button type="button" onclick="closeModal()"
+                                class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </x-modal>
+
+        <x-modal name="editBidangModal">
+            <!-- Modal content -->
+            <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-black">
+                        Edit Bidang Keahlian
+                    </h3>
+                    <button type="button" x-on:click="closeModal()"
+                        class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Tutup</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <form id="editDosenForm" action="{{ route('admin.keahlian.update') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" x-model="user?.id" name="bidang_keahlian_id" id="edit_keahlian_id">
+                    <div class="p-4 md:p-5 space-y-4 max-h-[60vh] overflow-y-auto">
+                        <label for="edit_nama_keahlian"
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Nama Bidang Keahlian</label>
+                    <input x-model="user?.nama_keahlian" type="text" name="nama_keahlian" id="nama_keahlian"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
+                        placeholder="Nama Bidang keahlian" required>
+                </div>
+                    <!-- Modal footer -->
+                    <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                        <button type="submit"
+                            class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#638B35]-700 dark:hover:bg-lime-700 dark:focus:ring-lime-800">Simpan
+                            Perubahan</button>
+                        <button type="button" x-on:click="closeModal()"
+                            class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
+                    </div>
+                </form>
+            </div>
+        </x-modal>
+
     </div>
 @endsection

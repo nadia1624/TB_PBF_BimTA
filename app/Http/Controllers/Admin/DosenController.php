@@ -246,4 +246,70 @@ class DosenController extends Controller
                 ->with('error', 'Gagal menghapus dosen: ' . $e->getMessage());
         }
     }
+
+    public function destroy(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
+        ], [
+            'bidang_keahlian_id.required' => 'ID bidang keahlian tidak valid',
+            'bidang_keahlian_id.exists' => 'Bidang keahlian tidak ditemukan',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.dosen')
+                ->withErrors($validator);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Delete bidang keahlian
+            BidangKeahlian::destroy($request->bidang_keahlian_id);
+
+            // Delete related expertise
+            DetailBidang::where('bidang_keahlian_id', $request->bidang_keahlian_id)->delete();
+
+            DB::commit();
+
+            return redirect()->route('admin.dosen')
+                ->with('success', 'Bidang keahlian berhasil dihapus');
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return redirect()->route('admin.dosen')
+                ->with('error', 'Gagal menghapus bidang keahlian: ' . $e->getMessage());
+        }
+    }
+
+    public function edit(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'bidang_keahlian_id' => 'required|exists:bidang_keahlian,id',
+            'nama_keahlian' => 'required|string|max:100|unique:bidang_keahlian,nama_keahlian,' . $request->bidang_keahlian_id,
+        ], [
+            'bidang_keahlian_id.required' => 'ID bidang keahlian tidak valid',
+            'bidang_keahlian_id.exists' => 'Bidang keahlian tidak ditemukan',
+            'nama_keahlian.required' => 'Nama keahlian wajib diisi',
+            'nama_keahlian.unique' => 'Nama keahlian sudah ada'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.dosen')
+                ->withErrors($validator);
+        }
+
+        try {
+            // Update bidang keahlian
+            $bidang = BidangKeahlian::findOrFail($request->bidang_keahlian_id);
+            $bidang->nama_keahlian = $request->nama_keahlian;
+            $bidang->save();
+
+            return redirect()->route('admin.dosen')
+                ->with('success', 'Bidang keahlian berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.dosen')
+                ->with('error', 'Gagal memperbarui bidang keahlian: ' . $e->getMessage());
+        }
+    }
 }
