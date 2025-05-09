@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dosen;
 use App\Http\Controllers\Controller;
 use App\Models\JadwalBimbingan;
 use App\Models\DokumenOnline;
+use App\Models\Dosen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -18,17 +19,20 @@ class DokumenOnlineController extends Controller
      */
     public function index()
     {
-        // Get the authenticated lecturer ID
-        $dosenId = Auth::id();
+        // Get the authenticated user ID
+        $userId = Auth::id();
 
-        // Log untuk debugging
-        Log::info('Current Dosen ID: ' . $dosenId);
+        // Get the dosen ID associated with this user
+        $dosen = Dosen::where('user_id', $userId)->first();
+        $dosenId = $dosen ? $dosen->id : null;
+
 
         // PENTING: Cek apakah ada jadwal yang sudah diterima tapi belum ada dokumennya
         $jadwalDiterima = JadwalBimbingan::where('dosen_id', $dosenId)
             ->where('status', 'diterima')
             ->where('metode', 'online')
             ->get();
+
 
         // Buat dokumen online untuk jadwal yang belum punya
         foreach ($jadwalDiterima as $jadwal) {
@@ -37,6 +41,7 @@ class DokumenOnlineController extends Controller
                 ['status' => 'menunggu']
             );
         }
+
 
         // Query dokumen online, TANPA filter dokumen_mahasiswa
         $dokumen = DokumenOnline::whereHas('jadwalBimbingan', function($query) use ($dosenId) {
@@ -47,25 +52,21 @@ class DokumenOnlineController extends Controller
         ->with(['jadwalBimbingan.pengajuanJudul.mahasiswa'])
         ->get();
 
-        // Log untuk debugging
-        Log::info('Found documents count: ' . $dokumen->count());
-        foreach ($dokumen as $index => $doc) {
-            Log::info("Dokumen #{$index}: ID={$doc->id}, Jadwal ID={$doc->jadwal_bimbingan_id}, Status={$doc->status}, Dokumen=" .
-                     ($doc->dokumen_mahasiswa ? 'Ada' : 'Tidak ada'));
-        }
 
         // Statistics - hitung berdasarkan status
         $totalDokumen = $dokumen->count();
         $perluReview = $dokumen->where('status', 'diproses')->count();
         $sudahReview = $dokumen->where('status', 'selesai')->count();
 
+
         return view('dosen.dokumen-online', compact(
             'dokumen',
             'totalDokumen',
             'perluReview',
-            'sudahReview'
+            'sudahReview',
         ));
     }
+
 
     /**
      * Update document with lecturer's review
@@ -77,13 +78,22 @@ class DokumenOnlineController extends Controller
             'dokumen_dosen' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
+
         $dokumen = DokumenOnline::findOrFail($id);
 
+
+        // Get the authenticated user's dosen ID
+        $userId = Auth::id();
+        $dosen = Dosen::where('user_id', $userId)->first();
+        $dosenId = $dosen ? $dosen->id : null;
+
+
         // Check if jadwal belongs to authenticated lecturer
-        if ($dokumen->jadwalBimbingan->dosen_id != Auth::id()) {
+        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
             return redirect()->route('dosen.dokumen.online')
                 ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
         }
+
 
         // Upload document if provided
         if ($request->hasFile('dokumen_dosen')) {
@@ -92,17 +102,21 @@ class DokumenOnlineController extends Controller
                 Storage::disk('public')->delete($dokumen->dokumen_dosen);
             }
 
+
             $file = $request->file('dokumen_dosen');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('dokumen_dosen', $filename, 'public');
 
+
             $dokumen->dokumen_dosen = $path;
         }
+
 
         $dokumen->keterangan_dosen = $request->keterangan_dosen;
         $dokumen->tanggal_review = Carbon::now()->format('Y-m-d');
         $dokumen->status = 'selesai';
         $dokumen->save();
+
 
         return redirect()->route('dosen.dokumen.online')
             ->with('success', 'Review dokumen berhasil disimpan');
