@@ -26,13 +26,11 @@ class DokumenOnlineController extends Controller
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
 
-
         // PENTING: Cek apakah ada jadwal yang sudah diterima tapi belum ada dokumennya
         $jadwalDiterima = JadwalBimbingan::where('dosen_id', $dosenId)
             ->where('status', 'diterima')
             ->where('metode', 'online')
             ->get();
-
 
         // Buat dokumen online untuk jadwal yang belum punya
         foreach ($jadwalDiterima as $jadwal) {
@@ -41,7 +39,6 @@ class DokumenOnlineController extends Controller
                 ['status' => 'menunggu']
             );
         }
-
 
         // Query dokumen online, TANPA filter dokumen_mahasiswa
         $dokumen = DokumenOnline::whereHas('jadwalBimbingan', function($query) use ($dosenId) {
@@ -52,12 +49,10 @@ class DokumenOnlineController extends Controller
         ->with(['jadwalBimbingan.pengajuanJudul.mahasiswa'])
         ->get();
 
-
         // Statistics - hitung berdasarkan status
         $totalDokumen = $dokumen->count();
         $perluReview = $dokumen->where('status', 'diproses')->count();
         $sudahReview = $dokumen->where('status', 'selesai')->count();
-
 
         return view('dosen.dokumen-online', compact(
             'dokumen',
@@ -66,7 +61,6 @@ class DokumenOnlineController extends Controller
             'sudahReview',
         ));
     }
-
 
     /**
      * Update document with lecturer's review
@@ -78,22 +72,18 @@ class DokumenOnlineController extends Controller
             'dokumen_dosen' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
-
         $dokumen = DokumenOnline::findOrFail($id);
-
 
         // Get the authenticated user's dosen ID
         $userId = Auth::id();
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
 
-
         // Check if jadwal belongs to authenticated lecturer
         if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
             return redirect()->route('dosen.dokumen.online')
                 ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
         }
-
 
         // Upload document if provided
         if ($request->hasFile('dokumen_dosen')) {
@@ -102,35 +92,36 @@ class DokumenOnlineController extends Controller
                 Storage::disk('public')->delete($dokumen->dokumen_dosen);
             }
 
-
             $file = $request->file('dokumen_dosen');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('dokumen_dosen', $filename, 'public');
 
-
             $dokumen->dokumen_dosen = $path;
         }
-
 
         $dokumen->keterangan_dosen = $request->keterangan_dosen;
         $dokumen->tanggal_review = Carbon::now()->format('Y-m-d');
         $dokumen->status = 'selesai';
         $dokumen->save();
 
-
         return redirect()->route('dosen.dokumen.online')
             ->with('success', 'Review dokumen berhasil disimpan');
     }
 
     /**
-     * Download student's document
+     * Display student's document
      */
-    public function downloadMahasiswaDocument($id)
+    public function viewMahasiswaDocument($id)
     {
         $dokumen = DokumenOnline::findOrFail($id);
 
+        // Get the authenticated user's dosen ID
+        $userId = Auth::id();
+        $dosen = Dosen::where('user_id', $userId)->first();
+        $dosenId = $dosen ? $dosen->id : null;
+
         // Check if jadwal belongs to authenticated lecturer
-        if ($dokumen->jadwalBimbingan->dosen_id != Auth::id()) {
+        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
             return redirect()->route('dosen.dokumen.online')
                 ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
         }
@@ -140,7 +131,38 @@ class DokumenOnlineController extends Controller
                 ->with('error', 'Dokumen mahasiswa belum diunggah');
         }
 
-        return Storage::download('dokumen_mahasiswa/' . $dokumen->dokumen_mahasiswa);
+        $path = Storage::disk('public')->path($dokumen->dokumen_mahasiswa);
+
+        return response()->file($path);
+    }
+
+    /**
+     * Download student's document
+     */
+    public function downloadMahasiswaDocument($id)
+    {
+        $dokumen = DokumenOnline::findOrFail($id);
+
+        // Get the authenticated user's dosen ID
+        $userId = Auth::id();
+        $dosen = Dosen::where('user_id', $userId)->first();
+        $dosenId = $dosen ? $dosen->id : null;
+
+        // Check if jadwal belongs to authenticated lecturer
+        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
+            return redirect()->route('dosen.dokumen.online')
+                ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
+        }
+
+        if (!$dokumen->dokumen_mahasiswa) {
+            return redirect()->back()
+                ->with('error', 'Dokumen mahasiswa belum diunggah');
+        }
+
+        $path = Storage::disk('public')->path($dokumen->dokumen_mahasiswa);
+        $filename = basename($dokumen->dokumen_mahasiswa);
+
+        return response()->download($path, $filename);
     }
 
     /**
@@ -150,8 +172,13 @@ class DokumenOnlineController extends Controller
     {
         $dokumen = DokumenOnline::findOrFail($id);
 
+        // Get the authenticated user's dosen ID
+        $userId = Auth::id();
+        $dosen = Dosen::where('user_id', $userId)->first();
+        $dosenId = $dosen ? $dosen->id : null;
+
         // Check if jadwal belongs to authenticated lecturer
-        if ($dokumen->jadwalBimbingan->dosen_id != Auth::id()) {
+        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
             return redirect()->route('dosen.dokumen.online')
                 ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
         }
@@ -161,6 +188,9 @@ class DokumenOnlineController extends Controller
                 ->with('error', 'Dokumen dosen belum diunggah');
         }
 
-        return Storage::download('dokumen_dosen/' . $dokumen->dokumen_dosen);
+        $path = Storage::disk('public')->path($dokumen->dokumen_dosen);
+        $filename = basename($dokumen->dokumen_dosen);
+
+        return response()->download($path, $filename);
     }
 }

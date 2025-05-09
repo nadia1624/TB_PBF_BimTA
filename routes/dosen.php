@@ -27,14 +27,16 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
 
 
     // Dokumen Online
-    Route::get('dokumen-online', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'index'])
+    Route::get('/dokumen-online', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'index'])
         ->name('dokumen.online');
-    Route::put('dokumen-online/{id}', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'update'])
-        ->name('dokumen.update');
-    Route::get('dokumen-online/download-mahasiswa/{id}', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'downloadMahasiswaDocument'])
-        ->name('dokumen.download-mahasiswa');
-    Route::get('dokumen-online/download-dosen/{id}', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'downloadDosenDocument'])
-        ->name('dokumen.download-dosen');
+    Route::post('/dokumen-online/{id}', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'update'])
+        ->name('dokumen.online.update');
+    Route::get('/dokumen-online/{id}/view', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'viewMahasiswaDocument'])
+        ->name('dokumen.online.view');
+    Route::get('/dokumen-online/{id}/download', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'downloadMahasiswaDocument'])
+        ->name('dokumen.online.download');
+    Route::get('/dokumen-online/{id}/download-dosen', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'downloadDosenDocument'])
+        ->name('dokumen.online.download.dosen');
 
       // Pengajuan Judul routes
 Route::get('/pengajuanjudul', [PengajuanJudulController::class, 'index'])->name('dosen.pengajuan.index');
