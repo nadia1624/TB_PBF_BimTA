@@ -32,7 +32,7 @@
                     </svg>
                 </div>
                 <div class="text-center">
-                    <p class="text-gray-700 text-sm">Menunggu Verifikasi</p>
+                    <p class="text-gray-700 text-sm">Menunggu Review</p>
                     <p class="text-3xl font-bold">{{ $menungguVerifikasi }}</p>
                 </div>
             </div>
@@ -58,9 +58,10 @@
     <div class="flex justify-end mb-4">
         <select id="statusFilter" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
             <option value="all">Semua Status</option>
-            <option value="diproses">Menunggu Verifikasi</option>
+            <option value="diproses">Menunggu Review</option>
             <option value="diterima">Disetujui</option>
             <option value="ditolak">Ditolak</option>
+            <option value="dibatalkan">Dibatalkan</option>
         </select>
     </div>
 
@@ -69,52 +70,98 @@
         <p id="alertMessage"></p>
     </div>
 
-    <!-- Pengajuan Card -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
-        <div class="p-6">
-            @if($pengajuan)
-            <div class="flex items-center mb-4">
-                <div class="mr-4">
-                    @if($pengajuan->mahasiswa->gambar)
-                    <div class="w-12 h-12 rounded-full overflow-hidden">
-                        <img src="{{ asset('storage/' . $pengajuan->mahasiswa->gambar) }}" alt="Foto {{ $pengajuan->mahasiswa->nama_lengkap }}" class="w-full h-full object-cover">
+    <!-- Daftar Pengajuan Cards -->
+    <div class="space-y-4 mb-8">
+        @if(isset($pengajuanList) && count($pengajuanList) > 0)
+            @foreach($pengajuanList as $item)
+                <div class="bg-white rounded-lg shadow-md overflow-hidden" data-pengajuan-id="{{ $item->id }}">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="mr-4">
+                                @if($item->mahasiswa->gambar)
+                                <div class="w-12 h-12 rounded-full overflow-hidden">
+                                    <img src="{{ asset('storage/' . $item->mahasiswa->gambar) }}" alt="Foto {{ $item->mahasiswa->nama_lengkap }}" class="w-full h-full object-cover">
+                                </div>
+                                @else
+                                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                @endif
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-medium">{{ $item->mahasiswa->nama_lengkap }}</h3>
+                                <p class="text-gray-600 text-sm">{{ $item->mahasiswa->nim }}</p>
+                            </div>
+
+                            <!-- Status Badge -->
+                            <div class="ml-auto">
+                                @if($item->detailDosen[0]->status == 'diproses')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <span class="mr-1 h-2 w-2 rounded-full bg-yellow-400"></span>
+                                    Menunggu Review
+                                </span>
+                                @elseif($item->detailDosen[0]->status == 'diterima')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <span class="mr-1 h-2 w-2 rounded-full bg-green-400"></span>
+                                    Disetujui
+                                </span>
+                                @elseif($item->detailDosen[0]->status == 'ditolak')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <span class="mr-1 h-2 w-2 rounded-full bg-red-400"></span>
+                                    Ditolak
+                                </span>
+                                @elseif($item->detailDosen[0]->status == 'dibatalkan')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <span class="mr-1 h-2 w-2 rounded-full bg-gray-400"></span>
+                                    Dibatalkan
+                                </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Timestamp -->
+                        <div class="text-right text-sm text-gray-500 mb-4">
+                            <span>{{ $item->created_at->format('d F Y') }} &bull; {{ $item->created_at->format('H:i') }}</span>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4 class="font-medium mb-1">Judul Tugas Akhir:</h4>
+                            <p>{{ $item->judul }}</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h4 class="font-medium mb-1">Deskripsi:</h4>
+                            <p>{{ $item->deskripsi }}</p>
+                        </div>
+
+
+
+                        @if($item->detailDosen[0]->status == 'diproses')
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            <button class="rejectButton bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded" data-id="{{ $item->id }}">
+                                Tolak Judul
+                            </button>
+                            <button class="approveButton bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded" data-id="{{ $item->id }}">
+                                Setujui Judul
+                            </button>
+                        </div>
+                        @elseif($item->detailDosen[0]->status == 'diterima')
+                        <div class="flex justify-end mt-6">
+                            <button class="cancelButton bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded" data-id="{{ $item->id }}">
+                                Batalkan Mahasiswa
+                            </button>
+                        </div>
+                        @endif
                     </div>
-                    @else
-                    <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    </div>
-                    @endif
                 </div>
-                <div>
-                    <h3 class="text-lg font-medium">{{ $pengajuan->mahasiswa->nama_lengkap }}</h3>
-                    <p class="text-gray-600 text-sm">{{ $pengajuan->mahasiswa->nim }}</p>
-                </div>
+            @endforeach
+        @else
+            <div class="bg-white rounded-lg shadow-md overflow-hidden p-6">
+                <p class="text-center text-gray-600">Tidak ada pengajuan judul yang tersedia</p>
             </div>
-
-            <div class="mb-4">
-                <h4 class="font-medium mb-1">Judul TA:</h4>
-                <p>{{ $pengajuan->judul }}</p>
-            </div>
-
-            <div class="mb-4">
-                <h4 class="font-medium mb-1">Deskripsi:</h4>
-                <p>{{ $pengajuan->deskripsi }}</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mt-6">
-                <button id="rejectButton" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
-                    Tolak Judul
-                </button>
-                <button id="approveButton" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded">
-                    Setujui Judul
-                </button>
-            </div>
-            @else
-            <p class="text-center text-gray-600">Tidak ada pengajuan judul yang tersedia</p>
-            @endif
-        </div>
+        @endif
     </div>
 </div>
 
@@ -125,6 +172,7 @@
             <h3 class="text-lg font-semibold">Setujui Pengajuan Judul</h3>
         </div>
         <form id="approveForm" class="p-4">
+            <input type="hidden" id="approvePengajuanId" value="">
             <div class="mb-4">
                 <label for="approveComment" class="block text-sm font-medium text-gray-700 mb-1">Berikan Komentar</label>
                 <textarea id="approveComment" class="w-full border rounded p-2" rows="3" placeholder="Masukkan komentar (opsional)"></textarea>
@@ -148,6 +196,7 @@
             <h3 class="text-lg font-semibold">Tolak Pengajuan Judul</h3>
         </div>
         <form id="rejectForm" class="p-4">
+            <input type="hidden" id="rejectPengajuanId" value="">
             <div class="mb-4">
                 <label for="rejectReason" class="block text-sm font-medium text-gray-700 mb-1">Berikan Alasan</label>
                 <textarea id="rejectReason" class="w-full border rounded p-2" rows="3" placeholder="Masukkan alasan penolakan" required></textarea>
@@ -158,6 +207,30 @@
                 </button>
                 <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
                     Tolak
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Cancel Modal -->
+<div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg w-full max-w-md mx-4">
+        <div class="p-4 border-b">
+            <h3 class="text-lg font-semibold">Batalkan Mahasiswa</h3>
+        </div>
+        <form id="cancelForm" class="p-4">
+            <input type="hidden" id="cancelPengajuanId" value="">
+            <div class="mb-4">
+                <label for="cancelReason" class="block text-sm font-medium text-gray-700 mb-1">Berikan Alasan Pembatalan</label>
+                <textarea id="cancelReason" class="w-full border rounded p-2" rows="3" placeholder="Masukkan alasan pembatalan" required></textarea>
+            </div>
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="button" id="cancelCancelModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
+                    Batal
+                </button>
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
+                    Batalkan
                 </button>
             </div>
         </form>
@@ -178,31 +251,52 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const approveButton = document.getElementById('approveButton');
-    const rejectButton = document.getElementById('rejectButton');
+    const approveButtons = document.querySelectorAll('.approveButton');
+    const rejectButtons = document.querySelectorAll('.rejectButton');
+    const cancelButtons = document.querySelectorAll('.cancelButton');
     const approveModal = document.getElementById('approveModal');
     const rejectModal = document.getElementById('rejectModal');
+    const cancelModal = document.getElementById('cancelModal');
     const cancelApprove = document.getElementById('cancelApprove');
     const cancelReject = document.getElementById('cancelReject');
+    const cancelCancelModal = document.getElementById('cancelCancelModal');
     const approveForm = document.getElementById('approveForm');
     const rejectForm = document.getElementById('rejectForm');
+    const cancelForm = document.getElementById('cancelForm');
     const loadingOverlay = document.getElementById('loadingOverlay');
+    const approvePengajuanId = document.getElementById('approvePengajuanId');
+    const rejectPengajuanId = document.getElementById('rejectPengajuanId');
+    const cancelPengajuanId = document.getElementById('cancelPengajuanId');
 
     // Show approve modal
-    if (approveButton) {
-        approveButton.addEventListener('click', function() {
+    approveButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const pengajuanId = this.getAttribute('data-id');
+            approvePengajuanId.value = pengajuanId;
             approveModal.classList.remove('hidden');
             approveModal.classList.add('flex');
         });
-    }
+    });
 
     // Show reject modal
-    if (rejectButton) {
-        rejectButton.addEventListener('click', function() {
+    rejectButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const pengajuanId = this.getAttribute('data-id');
+            rejectPengajuanId.value = pengajuanId;
             rejectModal.classList.remove('hidden');
             rejectModal.classList.add('flex');
         });
-    }
+    });
+
+    // Show cancel modal
+    cancelButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const pengajuanId = this.getAttribute('data-id');
+            cancelPengajuanId.value = pengajuanId;
+            cancelModal.classList.remove('hidden');
+            cancelModal.classList.add('flex');
+        });
+    });
 
     // Hide approve modal
     if (cancelApprove) {
@@ -220,13 +314,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Hide cancel modal
+    if (cancelCancelModal) {
+        cancelCancelModal.addEventListener('click', function() {
+            cancelModal.classList.add('hidden');
+            cancelModal.classList.remove('flex');
+        });
+    }
+
     // Handle approve form submission
     if (approveForm) {
         approveForm.addEventListener('submit', function(e) {
             e.preventDefault();
-
+            const pengajuanId = approvePengajuanId.value;
             const comment = document.getElementById('approveComment').value;
-            updateStatus('diterima', comment);
+            updateStatus(pengajuanId, 'diterima', comment);
         });
     }
 
@@ -234,76 +336,236 @@ document.addEventListener('DOMContentLoaded', function() {
     if (rejectForm) {
         rejectForm.addEventListener('submit', function(e) {
             e.preventDefault();
-
+            const pengajuanId = rejectPengajuanId.value;
             const reason = document.getElementById('rejectReason').value;
+
             if (!reason.trim()) {
                 alert('Alasan penolakan harus diisi');
                 return;
             }
 
-            updateStatus('ditolak', reason);
+            updateStatus(pengajuanId, 'ditolak', reason);
+        });
+    }
+
+    // Handle cancel form submission
+    if (cancelForm) {
+        cancelForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pengajuanId = cancelPengajuanId.value;
+            const reason = document.getElementById('cancelReason').value;
+
+            if (!reason.trim()) {
+                alert('Alasan pembatalan harus diisi');
+                return;
+            }
+
+            updateStatus(pengajuanId, 'dibatalkan', reason);
         });
     }
 
     // Function to update status
-    // Function to update status
-function updateStatus(status, komentar = '') {
-    // Show loading overlay
-    loadingOverlay.classList.remove('hidden');
-    loadingOverlay.classList.add('flex');
+    function updateStatus(id, status, komentar = '') {
+        // Show loading overlay
+        loadingOverlay.classList.remove('hidden');
+        loadingOverlay.classList.add('flex');
 
-    // Create form data
-    const formData = new FormData();
-    formData.append('status', status);
-    formData.append('komentar', komentar);
-    formData.append('_method', 'PUT');
-    formData.append('_token', '{{ csrf_token() }}');  // Pastikan token CSRF ada di formData
+        // Create form data
+        const formData = new FormData();
+        formData.append('status', status);
+        formData.append('komentar', komentar);
+        formData.append('_method', 'PUT');
+        formData.append('_token', '{{ csrf_token() }}');
 
-    // Send request
-    fetch('{{ route("dosen.pengajuan.status", $pengajuan->id ?? 0) }}', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok: ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Hide loading overlay
-        loadingOverlay.classList.add('hidden');
-        loadingOverlay.classList.remove('flex');
+        // Menggunakan URL absolut untuk menghindari masalah route
+        const url = `/dosen/pengajuanjudul/${id}/status`;
 
-        // Hide modals
-        approveModal.classList.add('hidden');
-        approveModal.classList.remove('flex');
-        rejectModal.classList.add('hidden');
-        rejectModal.classList.remove('flex');
+        // Send request
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Hide loading overlay
+            loadingOverlay.classList.add('hidden');
+            loadingOverlay.classList.remove('flex');
 
-        if (data.success) {
-            // Show success message
-            showAlert('success', data.message || 'Status berhasil diperbarui');
-            // Reload page after a delay
-            setTimeout(() => {
-                window.location.reload();
-            }, 1500);
-        } else {
+            // Hide modals
+            approveModal.classList.add('hidden');
+            approveModal.classList.remove('flex');
+            rejectModal.classList.add('hidden');
+            rejectModal.classList.remove('flex');
+            cancelModal.classList.add('hidden');
+            cancelModal.classList.remove('flex');
+
+            if (data.success) {
+                // Show success message
+                showAlert('success', data.message || 'Status berhasil diperbarui');
+
+                // Update UI tanpa refresh halaman
+                const pengajuanId = id;
+                const cardElement = document.querySelector(`[data-pengajuan-id="${pengajuanId}"]`);
+
+                if (cardElement) {
+                    // Memastikan card terlihat (tidak hidden)
+                    cardElement.style.display = 'block';
+
+                    // Update status badge
+                    const badgeContainer = cardElement.querySelector('.ml-auto');
+                    if (badgeContainer) {
+                        if (status === 'diterima') {
+                            badgeContainer.innerHTML = `
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <span class="mr-1 h-2 w-2 rounded-full bg-green-400"></span>
+                                    Disetujui
+                                </span>
+                            `;
+
+                            // Update action buttons - tambahkan tombol batalkan
+                            const actionContainer = cardElement.querySelector('.grid.grid-cols-2.gap-4.mt-6');
+                            if (actionContainer) {
+                                actionContainer.outerHTML = `
+                                    <div class="flex justify-end mt-6">
+                                        <button class="cancelButton bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded" data-id="${pengajuanId}">
+                                            Batalkan Mahasiswa
+                                        </button>
+                                    </div>
+                                `;
+
+                                // Tambahkan event listener untuk tombol batalkan yang baru
+                                const newCancelButton = cardElement.querySelector('.cancelButton');
+                                if (newCancelButton) {
+                                    newCancelButton.addEventListener('click', function() {
+                                        cancelPengajuanId.value = this.getAttribute('data-id');
+                                        cancelModal.classList.remove('hidden');
+                                        cancelModal.classList.add('flex');
+                                    });
+                                }
+                            }
+                        } else if (status === 'ditolak') {
+                            badgeContainer.innerHTML = `
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <span class="mr-1 h-2 w-2 rounded-full bg-red-400"></span>
+                                    Ditolak
+                                </span>
+                            `;
+
+                            // Hapus action buttons jika status ditolak
+                            const actionContainer = cardElement.querySelector('.grid.grid-cols-2.gap-4.mt-6');
+                            if (actionContainer) {
+                                actionContainer.remove();
+                            }
+                        } else if (status === 'dibatalkan') {
+                            badgeContainer.innerHTML = `
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <span class="mr-1 h-2 w-2 rounded-full bg-gray-400"></span>
+                                    Dibatalkan
+                                </span>
+                            `;
+
+                            // Hapus action buttons jika status dibatalkan
+                            const actionContainer = cardElement.querySelector('.flex.justify-end.mt-6');
+                            if (actionContainer) {
+                                actionContainer.remove();
+                            }
+                        }
+                    }
+
+                    // Apply current filter after update
+                    setTimeout(() => {
+                        const statusFilter = document.getElementById('statusFilter');
+                        if (statusFilter) {
+                            filterCards(statusFilter.value);
+                        }
+                    }, 100);
+                }
+            } else {
+                // Show error message
+                showAlert('error', data.message || 'Terjadi kesalahan');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+
+            // Hide loading overlay
+            loadingOverlay.classList.add('hidden');
+            loadingOverlay.classList.remove('flex');
+
             // Show error message
-            showAlert('error', data.message || 'Terjadi kesalahan');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
+            showAlert('error', 'Terjadi kesalahan pada server: ' + error.message);
+        });
+    }
 
-        // Hide loading overlay
-        loadingOverlay.classList.add('hidden');
-        loadingOverlay.classList.remove('flex');
+    // Status filter functionality with direct DOM manipulation
+    const statusFilter = document.getElementById('statusFilter');
 
-        // Show error message
-        showAlert('error', 'Terjadi kesalahan pada server: ' + error.message);
-    });
-}
+    if (statusFilter) {
+        // Set initial filter value
+        statusFilter.value = '{{ $statusFilter ?? "all" }}';
+
+        // Apply initial filtering
+        filterCards(statusFilter.value);
+
+        // Add event listener
+        statusFilter.addEventListener('change', function() {
+            const selectedStatus = this.value;
+
+            // Directly apply the filter
+            filterCards(selectedStatus);
+
+            // Update URL
+            const url = new URL(window.location);
+            url.searchParams.set('status', selectedStatus);
+            history.pushState({}, '', url);
+        });
+    }
+
+    // Direct filtering function
+    function filterCards(selectedStatus) {
+        console.log("Filtering cards with status:", selectedStatus);
+
+        // Get all cards
+        const cards = document.querySelectorAll('[data-pengajuan-id]');
+
+        cards.forEach(card => {
+            // First make all cards visible
+            card.style.display = 'block';
+
+            // If filter is not 'all', check if we need to hide this card
+            if (selectedStatus !== 'all') {
+                const statusBadge = card.querySelector('.ml-auto span');
+                let cardStatus = '';
+
+                if (statusBadge) {
+                    const badgeText = statusBadge.textContent.trim();
+                    console.log("Badge text:", badgeText);
+
+                    if (badgeText.includes('Menunggu Review')) {
+                        cardStatus = 'diproses';
+                    } else if (badgeText.includes('Disetujui')) {
+                        cardStatus = 'diterima';
+                    } else if (badgeText.includes('Ditolak')) {
+                        cardStatus = 'ditolak';
+                    } else if (badgeText.includes('Dibatalkan')) {
+                        cardStatus = 'dibatalkan';
+                    }
+
+                    console.log("Card status:", cardStatus, "Selected status:", selectedStatus);
+
+                    // Hide cards that don't match the filter
+                    if (cardStatus !== selectedStatus) {
+                        card.style.display = 'none';
+                    }
+                }
+            }
+        });
+    }
 
     // Show success/error messages
     @if(session('success'))
