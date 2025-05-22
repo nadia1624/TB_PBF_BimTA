@@ -293,7 +293,7 @@
                     <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                         <button type="submit"
                             class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Simpan</button>
-                        <button type="button" onclick="closeModal('tambahBidangModal')"
+                        <button type="button" x-on:click="closeModal('tambahBidangModal')"
                             class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                     </div>
                 </form>
@@ -421,7 +421,7 @@
                     <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                         <button type="submit"
                             class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-[#638B35]-600 dark:hover:bg-lime-700 dark:focus:ring-lime-800">Simpan</button>
-                        <button type="button" onclick="closeModal('tambahDosenModal')"
+                        <button type="button" x-on:click="closeModal('tambahDosenModal')"
                             class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                     </div>
                 </form>
@@ -626,7 +626,7 @@
                                 class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
                                 Ya, hapus
                             </button>
-                            <button type="button" onclick="closeModal()"
+                            <button type="button" x-on:click="closeModal()"
                                 class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                         </div>
                     </form>
@@ -730,7 +730,7 @@
                                 class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center">
                                 Ya, hapus
                             </button>
-                            <button type="button" onclick="closeModal()"
+                            <button type="button" x-on:click="closeModal()"
                                 class="ms-3 text-black-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Batal</button>
                         </div>
                     </form>

@@ -13,6 +13,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/mahasiswa', [MahasiswaController::class, 'index'])->name('admin.mahasiswa');
 
+    Route::post('/admin/mahasiswa', [MahasiswaController::class, 'create'])->name('admin.mahasiswa.create');
+
+    Route::patch('/admin/mahasiswa/update', [MahasiswaController::class, 'update'])->name('admin.mahasiswa.update');
+
     Route::get('/admin/dosen', [DosenController::class, 'index'])->name('admin.dosen');
 
     Route::post('/admin/bidang', [DosenController::class, 'create'])->name('admin.bidang.create');
