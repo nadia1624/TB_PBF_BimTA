@@ -180,7 +180,7 @@
                         @enderror
                     </div>
 
-                    <div class="space-y-4 mb-6">
+                    {{-- <div class="space-y-4 mb-6">
                         <label class="block text-gray-700 font-medium mb-2" for="metode">
                             Metode Bimbingan
                         </label>
@@ -226,7 +226,7 @@
                         @error('metode')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <div class="flex items-center justify-between pt-4">
                         <button type="reset" id="resetBtn" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg shadow-sm transition-all duration-200 flex items-center">
@@ -316,17 +316,17 @@
                                     <div class="text-sm text-gray-900">{{ $jadwal->waktu_pengajuan->format('H:i') }} WIB</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    @if(isset($jadwal->metode))
+                                    @if(isset($jadwal->metode) && !empty($jadwal->metode))
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
                                             {{ $jadwal->metode == 'online' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
                                             {{ $jadwal->metode == 'online' ? 'Online Meeting' : 'Offline Meeting' }}
                                         </span>
-                                    @else
+                                    @elseif(isset($jadwal->keterangan) && !empty($jadwal->keterangan))
                                         @if(strpos($jadwal->keterangan, 'Online') !== false || strpos($jadwal->keterangan, 'online') !== false)
                                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                                                 Online Meeting
                                             </span>
-                                        @else
+                                        @elseif(strpos($jadwal->keterangan, 'Offline') !== false || strpos($jadwal->keterangan, 'offline') !== false)
                                             <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
                                                 Offline Meeting
                                             </span>

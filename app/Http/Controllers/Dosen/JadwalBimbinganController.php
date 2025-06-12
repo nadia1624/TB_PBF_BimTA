@@ -227,18 +227,22 @@ class JadwalBimbinganController extends Controller
             return redirect()->back()->with('error', 'Jadwal bimbingan tidak ditemukan');
         }
 
-        $jadwal->status = 'diterima';
+        // Validasi metode wajib dipilih oleh dosen
+        $request->validate([
+            'metode' => 'required|in:online,offline',
+            'keterangan' => 'nullable|string|max:1000'
+        ]);
 
-        // Add location details if it's an offline meeting
-        if ($jadwal->metode == 'offline') {
+        $jadwal->status = 'diterima';
+        $jadwal->metode = $request->metode;
+
+        if ($request->metode === 'offline') {
             $jadwal->keterangan_diterima_offline = $request->keterangan;
         }
 
         $jadwal->save();
 
-        // For online method, create a new DokumenOnline record with 'menunggu' status
-        if ($jadwal->metode == 'online') {
-            // Create a new dokumen_online record
+        if ($request->metode === 'online') {
             DokumenOnline::create([
                 'jadwal_bimbingan_id' => $jadwal->id,
                 'status' => 'menunggu'
@@ -250,6 +254,7 @@ class JadwalBimbinganController extends Controller
 
         return redirect()->back()->with('success', 'Jadwal bimbingan offline berhasil diterima');
     }
+
 
 
 
