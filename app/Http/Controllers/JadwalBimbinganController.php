@@ -57,7 +57,7 @@ class JadwalBimbinganController extends Controller
             'waktu_pengajuan' => 'required',
             'keterangan' => 'required|string|max:1000',
             'pengajuan_judul_id' => 'required|exists:pengajuan_judul,id',
-            'metode' => 'required|in:online,offline',
+            // 'metode' => 'required|in:online,offline',
         ]);
 
         // Create new guidance schedule
@@ -68,7 +68,7 @@ class JadwalBimbinganController extends Controller
         $jadwalBimbingan->waktu_pengajuan = $request->waktu_pengajuan;
         $jadwalBimbingan->status = 'diproses';
         $jadwalBimbingan->keterangan = $request->keterangan;
-        $jadwalBimbingan->metode = $request->metode; // Save the meeting method
+        // $jadwalBimbingan->metode = $request->metode;
         $jadwalBimbingan->save();
 
         return redirect()->route('mahasiswa.jadwal-bimbingan.index')

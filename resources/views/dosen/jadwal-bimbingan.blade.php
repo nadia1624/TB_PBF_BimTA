@@ -175,7 +175,7 @@
                         <td class="py-3 px-4">
                             <div class="flex space-x-2">
                                 @if($jadwal->status == 'diproses')
-                                <button type="button" class="approve-btn bg-green-100 text-green-800 p-2 rounded-md" title="Setujui">
+                                <button type="button" class="approve-btn bg-green-100 text-green-800 p-2 rounded-md" title="Setujui" data-id="{{ $jadwal->id }}">
                                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
@@ -204,6 +204,40 @@
             </table>
         </div>
     </div>
+
+    <!-- Fixed approve modal -->
+    <div id="approveModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Pilih Metode Bimbingan</h3>
+                <button type="button" class="text-gray-400 hover:text-gray-600" id="closeApproveModal">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form id="approveForm" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="metode" class="block text-sm font-medium text-gray-700 mb-1">Metode</label>
+                    <select id="metode" name="metode" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+                        <option value="">-- Pilih Metode --</option>
+                        <option value="online">Online</option>
+                        <option value="offline">Tatap Muka</option>
+                    </select>
+                </div>
+                <div class="mb-4" id="keteranganOfflineContainer" style="display: none;">
+                    <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
+                    <textarea id="keterangan" name="keterangan" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" id="cancelApprove" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2 hover:bg-gray-300">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Setujui</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Reject Modal -->
     <div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
@@ -239,6 +273,138 @@
 
 @push('scripts')
 <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements
+    const approveModal = document.getElementById('approveModal');
+    const rejectModal = document.getElementById('rejectModal');
+    const approveForm = document.getElementById('approveForm');
+    const rejectForm = document.getElementById('rejectForm');
+    const metodeSelect = document.getElementById('metode');
+    const keteranganOfflineContainer = document.getElementById('keteranganOfflineContainer');
+
+    // Get all approve buttons
+    const approveButtons = document.querySelectorAll('.approve-btn');
+    const rejectButtons = document.querySelectorAll('.reject-btn');
+
+    // Close buttons
+    const closeApproveModal = document.getElementById('closeApproveModal');
+    const closeRejectModal = document.getElementById('closeRejectModal');
+    const cancelApprove = document.getElementById('cancelApprove');
+    const cancelReject = document.getElementById('cancelReject');
+
+    // Current jadwal ID being processed
+    let currentJadwalId = null;
+
+    // Event listeners for approve buttons
+    approveButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentJadwalId = this.getAttribute('data-id');
+
+            // Set the form action with the correct ID
+            approveForm.action = `/dosen/jadwal-bimbingan/accept/${currentJadwalId}`;
+
+            // Pre-select metode if it exists in the row data
+            const row = this.closest('tr');
+            if (row) {
+                const metode = row.getAttribute('data-metode');
+                if (metode) {
+                    metodeSelect.value = metode;
+                    // Show/hide keterangan container based on metode
+                    keteranganOfflineContainer.style.display = metode === 'offline' ? 'block' : 'none';
+                }
+            }
+
+            // Show the modal
+            approveModal.classList.remove('hidden');
+        });
+    });
+
+    // Event listeners for reject buttons
+    rejectButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentJadwalId = this.closest('tr').getAttribute('data-id');
+
+            // Set the form action with the correct ID
+            rejectForm.action = `/jadwal-bimbingan/reject/${currentJadwalId}`;
+
+            // Show the modal
+            rejectModal.classList.remove('hidden');
+        });
+    });
+
+    // Handle metode change
+    metodeSelect.addEventListener('change', function() {
+        keteranganOfflineContainer.style.display = this.value === 'offline' ? 'block' : 'none';
+    });
+
+    // Close modal handlers
+    function closeApproveModalHandler() {
+        approveModal.classList.add('hidden');
+        currentJadwalId = null;
+    }
+
+    function closeRejectModalHandler() {
+        rejectModal.classList.add('hidden');
+        currentJadwalId = null;
+    }
+
+    // Attach close handlers
+    closeApproveModal.addEventListener('click', closeApproveModalHandler);
+    cancelApprove.addEventListener('click', closeApproveModalHandler);
+    closeRejectModal.addEventListener('click', closeRejectModalHandler);
+    cancelReject.addEventListener('click', closeRejectModalHandler);
+
+    // Form submission (prevent if needed)
+    approveForm.addEventListener('submit', function(e) {
+        // You can add validation here if needed
+        // If metode is required and not selected
+        if (!metodeSelect.value) {
+            e.preventDefault();
+            alert('Silakan pilih metode bimbingan terlebih dahulu');
+        }
+    });
+
+    rejectForm.addEventListener('submit', function(e) {
+        // You can add validation here if needed
+        const keteranganDitolak = document.getElementById('keterangan_ditolak');
+        if (!keteranganDitolak.value.trim()) {
+            e.preventDefault();
+            alert('Silakan isi alasan penolakan terlebih dahulu');
+        }
+    });
+});
+
+    // document.querySelectorAll('.approve-btn').forEach(button => {
+    //     button.addEventListener('click', function () {
+    //         const id = this.dataset.id;
+    //         const metode = this.closest('tr').dataset.metode;
+
+    //         const form = document.getElementById('approveForm');
+    //         form.action = `/dosen/jadwal-bimbingan/accept/${id}`;
+
+    //         // Show modal
+    //         document.getElementById('approveModal').classList.remove('hidden');
+
+    //         // Optional: set default value in select if needed
+    //         document.getElementById('metode').value = metode;
+    //     });
+    // });
+
+    // document.getElementById('closeApproveModal').addEventListener('click', () => {
+    //     document.getElementById('approveModal').classList.add('hidden');
+    // });
+
+    // document.getElementById('cancelApprove').addEventListener('click', () => {
+    //     document.getElementById('approveModal').classList.add('hidden');
+    // });
+
+    // // Tampilkan keterangan jika metode offline dipilih
+    // document.getElementById('metode').addEventListener('change', function () {
+    //     const isOffline = this.value === 'offline';
+    //     document.getElementById('keteranganOfflineContainer').style.display = isOffline ? 'block' : 'none';
+    // });
+
     // Search functionality
     document.getElementById('search').addEventListener('keyup', function() {
         let input = this.value.toLowerCase();
@@ -255,65 +421,38 @@
         });
     });
 
-    // Approve functionality
-    document.querySelectorAll('.approve-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            if(confirm('Apakah Anda yakin ingin menyetujui jadwal bimbingan ini?')) {
-                let row = this.closest('tr');
-                let id = row.dataset.id;
-                let metode = row.dataset.metode;
+    // // Reject Modal functionality
+    // const rejectModal = document.getElementById('rejectModal');
+    // const rejectForm = document.getElementById('rejectForm');
 
-                const form = document.getElementById('acceptForm');
-                form.action = '{{ url("dosen/jadwal-bimbingan/accept") }}/' + id;
+    // document.querySelectorAll('.reject-btn').forEach(button => {
+    //     button.addEventListener('click', function() {
+    //         let row = this.closest('tr');
+    //         currentJadwalId = row.dataset.id;
 
-                if (metode === 'offline') {
-                    // For offline meetings, prompt for location
-                    const keterangan = prompt('Masukkan lokasi bimbingan:', '');
-                    if (keterangan !== null) {
-                        document.getElementById('keterangan-input').value = keterangan;
-                        form.submit();
-                    }
-                } else {
-                    // For online meetings, just submit the form
-                    form.submit();
-                }
-            }
-        });
-    });
+    //         // Set the form action
+    //         rejectForm.action = '{{ url("dosen/jadwal-bimbingan/reject") }}/' + currentJadwalId;
 
-    // Reject Modal functionality
-    const rejectModal = document.getElementById('rejectModal');
-    const rejectForm = document.getElementById('rejectForm');
-    let currentJadwalId = null;
+    //         // Show modal
+    //         rejectModal.classList.remove('hidden');
+    //     });
+    // });
 
-    document.querySelectorAll('.reject-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            let row = this.closest('tr');
-            currentJadwalId = row.dataset.id;
+    // // Close modal
+    // document.getElementById('closeRejectModal').addEventListener('click', function() {
+    //     rejectModal.classList.add('hidden');
+    // });
 
-            // Set the form action
-            rejectForm.action = '{{ url("dosen/jadwal-bimbingan/reject") }}/' + currentJadwalId;
+    // document.getElementById('cancelReject').addEventListener('click', function() {
+    //     rejectModal.classList.add('hidden');
+    // });
 
-            // Show modal
-            rejectModal.classList.remove('hidden');
-        });
-    });
-
-    // Close modal
-    document.getElementById('closeRejectModal').addEventListener('click', function() {
-        rejectModal.classList.add('hidden');
-    });
-
-    document.getElementById('cancelReject').addEventListener('click', function() {
-        rejectModal.classList.add('hidden');
-    });
-
-    // Close modal when clicking outside
-    rejectModal.addEventListener('click', function(e) {
-        if (e.target === rejectModal) {
-            rejectModal.classList.add('hidden');
-        }
-    });
+    // // Close modal when clicking outside
+    // rejectModal.addEventListener('click', function(e) {
+    //     if (e.target === rejectModal) {
+    //         rejectModal.classList.add('hidden');
+    //     }
+    // });
 </script>
 @endpush
 @endsection
