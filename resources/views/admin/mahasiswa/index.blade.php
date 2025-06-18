@@ -143,7 +143,7 @@
                 </tr>
             </thead>
             <tbody id="mahasiswa-table-body">
-                @foreach ($mahasiswa as $mhs)
+                @forelse ($mahasiswa as $mhs)
                 <tr class="bg-white hover:bg-gray-50 border-b mahasiswa-row" data-angkatan="{{ $mhs->angkatan }}">
                     <td class="px-6 py-4 font-medium">{{ $mhs->nim }}</td>
                     <td class="px-6 py-4">{{ $mhs->nama_lengkap }}</td>
@@ -176,7 +176,11 @@
                            </button>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr class="bg-white hover:bg-gray-50 border-b">
+                    <td colspan="8" class="px-6 py-4 text-center text-gray-500">Tidak ada data mahasiswa.</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

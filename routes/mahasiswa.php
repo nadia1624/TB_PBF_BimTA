@@ -13,5 +13,6 @@ Route::middleware(['auth', 'verified', 'role:mahasiswa'])
         Route::get('/pengajuan-judul', [PengajuanJudulController::class, 'index'])->name('pengajuan-judul.index');
         Route::get('/pengajuan-judul/create', [PengajuanJudulController::class, 'create'])->name('pengajuan-judul.create');
         Route::post('/pengajuan-judul', [PengajuanJudulController::class, 'store'])->name('pengajuan-judul.store');
+        Route::delete('/pengajuan-judul/{id}', [PengajuanJudulController::class, 'destroy'])->name('pengajuan-judul.destroy');
     });
 

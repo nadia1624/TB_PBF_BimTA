@@ -88,7 +88,8 @@ class DosenController extends Controller
         if ($validator->fails()) {
             return redirect()->route('admin.dosen')
                 ->withErrors($validator)
-                ->withInput();
+                ->withInput()
+                ->with('openModal', 'tambahDosenModal');
         }
 
         DB::beginTransaction();
@@ -124,7 +125,9 @@ class DosenController extends Controller
             DB::rollback();
 
             return redirect()->route('admin.dosen')
-                ->with('error', 'Gagal menambahkan dosen: ' . $e->getMessage());
+                ->with('error', 'Gagal menambahkan dosen: ' . $e->getMessage())
+                ->withInput()
+                ->with('openModal', 'tambahDosenModal');
         }
     }
     public function update(Request $request)
@@ -195,12 +198,13 @@ class DosenController extends Controller
             DB::commit();
 
             return redirect()->route('admin.dosen')
-                ->with('success', 'Data dosen berhasil diperbarui');
+                ->with('success', 'Data dosen berhasil diperbarui')
+                ->with('openModal', 'messageModal');
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Gagal update dosen: ' . $e->getMessage());
 
-            return redirect()->back()
+            return redirect()->route('admin.dosen')
                 ->with('error', 'Gagal memperbarui data dosen. Silakan coba lagi.');
         }
     }
