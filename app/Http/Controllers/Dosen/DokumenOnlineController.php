@@ -10,153 +10,187 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class DokumenOnlineController extends Controller
 {
-    /**
-     * Display the list of all online documents
-     */
-    public function index()
+ public function index()
     {
-        // Get the authenticated user ID
-        $userId = Auth::id();
+        $userId = Auth::id(); // Get the authenticated user ID
 
         // Get the dosen ID associated with this user
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
 
-        // PENTING: Cek apakah ada jadwal yang sudah diterima tapi belum ada dokumennya
-        $jadwalDiterima = JadwalBimbingan::where('dosen_id', $dosenId)
-            ->where('status', 'diterima')
+        // Jika dosen tidak ditemukan, redirect atau tampilkan pesan error
+        if (!$dosenId) {
+            return redirect()->back()->with('error', 'Data dosen tidak ditemukan.');
+        }
+
+        // PENTING: Cek apakah ada jadwal bimbingan online yang sudah diterima
+        // dan belum memiliki entri di DokumenOnline.
+        $jadwalDiterimaOnline = JadwalBimbingan::where('dosen_id', $dosenId)
+            ->where('status', 'diterima') // Status jadwal bimbingan yang diterima
             ->where('metode', 'online')
             ->get();
 
-        // Buat dokumen online untuk jadwal yang belum punya
-        foreach ($jadwalDiterima as $jadwal) {
+        // Buat atau perbarui entri DokumenOnline untuk setiap jadwal yang relevan
+        foreach ($jadwalDiterimaOnline as $jadwal) {
             DokumenOnline::firstOrCreate(
                 ['jadwal_bimbingan_id' => $jadwal->id],
-                ['status' => 'menunggu']
+                [ // Default values if a new record is created
+                    'status' => 'menunggu', // Status awal dokumen online
+                    'bab' => null, // Bab mungkin belum diketahui di sini, akan diupdate oleh mahasiswa
+                    'dokumen_mahasiswa' => null,
+                    'keterangan_mahasiswa' => null,
+                    'dokumen_dosen' => null,
+                    'keterangan_dosen' => null,
+                    'tanggal_review' => null,
+                ]
             );
         }
 
-        // Query dokumen online, TANPA filter dokumen_mahasiswa
+        // Query semua dokumen online yang relevan dengan dosen ini
+        // Eager load relasi jadwalBimbingan, pengajuanJudul, dan mahasiswa
         $dokumen = DokumenOnline::whereHas('jadwalBimbingan', function($query) use ($dosenId) {
             $query->where('dosen_id', $dosenId)
                   ->where('status', 'diterima')
                   ->where('metode', 'online');
         })
         ->with(['jadwalBimbingan.pengajuanJudul.mahasiswa'])
+        ->orderBy('created_at', 'desc') // Urutkan berdasarkan tanggal terbaru
         ->get();
 
-        // Statistics - hitung berdasarkan status
+        // Statistics - hitung berdasarkan status dokumen_online
         $totalDokumen = $dokumen->count();
-        $perluReview = $dokumen->where('status', 'diproses')->count();
-        $sudahReview = $dokumen->where('status', 'selesai')->count();
+        $perluReview = $dokumen->where('status', 'diproses')->count(); // Dokumen yang diunggah mahasiswa dan butuh review
+        $sudahReview = $dokumen->where('status', 'selesai')->count(); // Dokumen yang sudah selesai direview
 
-        return view('dosen.dokumen-online', compact(
+        return view('dosen.dokumen-online', compact( // Pastikan nama view sesuai
             'dokumen',
             'totalDokumen',
             'perluReview',
-            'sudahReview',
+            'sudahReview'
         ));
     }
 
     /**
-     * Update document with lecturer's review
+     * Handle the review submission from the modal.
+     * This method is mapped to the 'dokumen.online.update' route.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id DokumenOnline ID
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id) // Menggunakan nama method 'update' sesuai route Anda
     {
         $request->validate([
-            'keterangan_dosen' => 'required',
-            'dokumen_dosen' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+            'catatan_review' => 'nullable|string', // Catatan dari dosen
+            'dokumen_review' => 'nullable|file|mimes:pdf,doc,docx,zip|max:5120', // File review opsional (5MB)
         ]);
 
         $dokumen = DokumenOnline::findOrFail($id);
 
-        // Get the authenticated user's dosen ID
+        // Verifikasi bahwa dosen yang login berhak mereview dokumen ini
         $userId = Auth::id();
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
 
-        // Check if jadwal belongs to authenticated lecturer
-        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
-            return redirect()->route('dosen.dokumen.online')
-                ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
+        if (!$dosenId || $dokumen->jadwalBimbingan->dosen_id != $dosenId) {
+            return redirect()->route('dosen.dokumen.online') // Ganti rute sesuai rute index Anda
+                ->with('error', 'Anda tidak memiliki akses untuk mereview dokumen ini.');
         }
 
-        // Upload document if provided
-        if ($request->hasFile('dokumen_dosen')) {
-            // Delete old file if exists
-            if ($dokumen->dokumen_dosen) {
-                Storage::disk('public')->delete($dokumen->dokumen_dosen);
+        try {
+            DB::beginTransaction();
+
+            // Handle file upload for dosen's review document
+            if ($request->hasFile('dokumen_review')) {
+                // Hapus file review dosen lama jika ada
+                if ($dokumen->dokumen_dosen && Storage::disk('public')->exists($dokumen->dokumen_dosen)) {
+                    Storage::disk('public')->delete($dokumen->dokumen_dosen);
+                }
+
+                $file = $request->file('dokumen_review');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('dokumen_review_dosen', $filename, 'public'); // Simpan di folder khusus
+
+                $dokumen->dokumen_dosen = $path; // Update kolom dokumen_dosen
             }
 
-            $file = $request->file('dokumen_dosen');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('dokumen_dosen', $filename, 'public');
+            // Update kolom-kolom lain berdasarkan input modal
+            $dokumen->status = 'selesai'; 
+            $dokumen->keterangan_dosen = $request->catatan_review; // Catatan dari textarea
+            $dokumen->tanggal_review = Carbon::now(); // Tanggal review saat ini
 
-            $dokumen->dokumen_dosen = $path;
+            $dokumen->save();
+
+            DB::commit();
+
+            return redirect()->route('dosen.dokumen.online')->with('success', 'Review dokumen berhasil disimpan!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error saat menyimpan review dokumen: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menyimpan review: ' . $e->getMessage());
         }
-
-        $dokumen->keterangan_dosen = $request->keterangan_dosen;
-        $dokumen->tanggal_review = Carbon::now()->format('Y-m-d');
-        $dokumen->status = 'selesai';
-        $dokumen->save();
-
-        return redirect()->route('dosen.dokumen.online')
-            ->with('success', 'Review dokumen berhasil disimpan');
     }
 
     /**
-     * Display student's document
+     * Display student's document (for viewing in browser).
+     *
+     * @param int $id DokumenOnline ID
+     * @return \Illuminate\Http\Response
      */
     public function viewMahasiswaDocument($id)
     {
         $dokumen = DokumenOnline::findOrFail($id);
 
-        // Get the authenticated user's dosen ID
         $userId = Auth::id();
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
 
-        // Check if jadwal belongs to authenticated lecturer
-        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
-            return redirect()->route('dosen.dokumen.online')
-                ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
+        if (!$dosenId || $dokumen->jadwalBimbingan->dosen_id != $dosenId) {
+            abort(403, 'Akses Ditolak. Anda tidak memiliki akses ke dokumen ini.');
         }
 
-        if (!$dokumen->dokumen_mahasiswa) {
+        if (!$dokumen->dokumen_mahasiswa || !Storage::disk('public')->exists($dokumen->dokumen_mahasiswa)) {
             return redirect()->back()
-                ->with('error', 'Dokumen mahasiswa belum diunggah');
+                ->with('error', 'Dokumen mahasiswa tidak ditemukan atau belum diunggah.');
         }
 
         $path = Storage::disk('public')->path($dokumen->dokumen_mahasiswa);
-
         return response()->file($path);
     }
 
     /**
-     * Download student's document
+     * Download student's document.
+     *
+     * @param int $id DokumenOnline ID
+     * @return \Illuminate\Http\Response
      */
     public function downloadMahasiswaDocument($id)
     {
         $dokumen = DokumenOnline::findOrFail($id);
 
-        // Get the authenticated user's dosen ID
         $userId = Auth::id();
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
 
-        // Check if jadwal belongs to authenticated lecturer
-        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
-            return redirect()->route('dosen.dokumen.online')
-                ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
+        if (!$dosenId || $dokumen->jadwalBimbingan->dosen_id != $dosenId) {
+            abort(403, 'Akses Ditolak. Anda tidak memiliki akses ke dokumen ini.');
         }
 
-        if (!$dokumen->dokumen_mahasiswa) {
+        if (!$dokumen->dokumen_mahasiswa || !Storage::disk('public')->exists($dokumen->dokumen_mahasiswa)) {
             return redirect()->back()
-                ->with('error', 'Dokumen mahasiswa belum diunggah');
+                ->with('error', 'Dokumen mahasiswa tidak ditemukan atau belum diunggah.');
         }
 
         $path = Storage::disk('public')->path($dokumen->dokumen_mahasiswa);
@@ -166,26 +200,26 @@ class DokumenOnlineController extends Controller
     }
 
     /**
-     * Download lecturer's document
+     * Download lecturer's review document.
+     *
+     * @param int $id DokumenOnline ID
+     * @return \Illuminate\Http\Response
      */
-    public function downloadDosenDocument($id)
+    public function downloadDosenDocument($id) // Menggunakan nama method 'downloadDosenDocument'
     {
         $dokumen = DokumenOnline::findOrFail($id);
 
-        // Get the authenticated user's dosen ID
         $userId = Auth::id();
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
 
-        // Check if jadwal belongs to authenticated lecturer
-        if ($dokumen->jadwalBimbingan->dosen_id != $dosenId) {
-            return redirect()->route('dosen.dokumen.online')
-                ->with('error', 'Anda tidak memiliki akses ke dokumen ini');
+        if (!$dosenId || $dokumen->jadwalBimbingan->dosen_id != $dosenId) {
+            abort(403, 'Akses Ditolak. Anda tidak memiliki akses ke dokumen ini.');
         }
 
-        if (!$dokumen->dokumen_dosen) {
+        if (!$dokumen->dokumen_dosen || !Storage::disk('public')->exists($dokumen->dokumen_dosen)) {
             return redirect()->back()
-                ->with('error', 'Dokumen dosen belum diunggah');
+                ->with('error', 'Dokumen review dosen tidak ditemukan atau belum diunggah.');
         }
 
         $path = Storage::disk('public')->path($dokumen->dokumen_dosen);

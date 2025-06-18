@@ -40,10 +40,11 @@ Route::middleware(['auth'])->group(function () {
             ->name('jadwal-bimbingan.upload-dokumen');
         Route::get('/jadwal-bimbingan/{jadwalId}/dokumen/{dokumenId}', [JadwalBimbinganController::class, 'showDokumen'])
             ->name('jadwal-bimbingan.show-dokumen');
+        Route::get('/dokumen-review/download/{id}', [JadwalBimbinganController::class, 'downloadReviewDocument'])->name('dokumen.review.download');
     });
 
     // Routes for Dosen
-    
+
 });
 
 require __DIR__.'/auth.php';

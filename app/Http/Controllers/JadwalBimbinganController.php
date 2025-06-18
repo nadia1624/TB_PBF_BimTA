@@ -214,4 +214,35 @@ class JadwalBimbinganController extends Controller
 
         return view('mahasiswa.jadwal-bimbingan.dokumen', compact('jadwal', 'dokumen'));
     }
+
+    public function downloadReviewDocument($id)
+    {
+        $dokumen = DokumenOnline::findOrFail($id);
+
+        // Verifikasi bahwa dokumen review ini terkait dengan mahasiswa yang sedang login
+        // Mahasiswa dapat mengunduh dokumen review hanya jika:
+        // 1. DokumenOnline terkait dengan jadwal bimbingan mereka.
+        // 2. Jadwal bimbingan tersebut terkait dengan pengajuan judul mereka.
+        // (Asumsi relasi: DokumenOnline -> JadwalBimbingan -> PengajuanJudul -> Mahasiswa)
+        $mahasiswaId = Auth::user()->mahasiswa->id ?? null;
+
+        if (!$mahasiswaId ||
+            !$dokumen->jadwalBimbingan ||
+            !$dokumen->jadwalBimbingan->pengajuanJudul ||
+            $dokumen->jadwalBimbingan->pengajuanJudul->mahasiswa_id != $mahasiswaId)
+        {
+            abort(403, 'Akses Ditolak. Anda tidak memiliki akses ke dokumen ini.');
+        }
+
+        if (!$dokumen->dokumen_dosen || !Storage::disk('public')->exists($dokumen->dokumen_dosen)) {
+            return redirect()->back()
+                ->with('error', 'Dokumen review dosen tidak ditemukan atau belum diunggah.');
+        }
+
+        $path = Storage::disk('public')->path($dokumen->dokumen_dosen);
+        $filename = basename($dokumen->dokumen_dosen);
+
+        return response()->download($path, $filename);
+    }
+
 }

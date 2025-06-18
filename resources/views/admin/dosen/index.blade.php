@@ -10,7 +10,12 @@
         bidangKeahlian: [],
         currentBidang: '',
         selectedBidang: null,
-
+        openModal: '{{ session('openModal') }}',
+        init() {
+            if (this.openModal) {
+                this.$dispatch('open-modal', this.openModal);
+            }
+        },
         // Tetap gunakan versi getBidangText yang mengambil dari <select>
         getBidangText(bidangId) {
             const option = document.querySelector(`select option[value='${bidangId}']`);
@@ -46,6 +51,7 @@
             filterDosen(bidangId);
         }
     }"
+    x-init="init()"
 >
         <div class="container mx-auto px-4 py-6">
             <!-- Header Section with Search -->
@@ -140,7 +146,7 @@
                         </tr>
                     </thead>
                     <tbody id="dosenTableBody">
-                        @foreach ($dosen as $item)
+                        @forelse ($dosen as $item)
                             <tr x-show="
                                         search === '' ||
                                         '{{ strtolower($item->nama_lengkap) }}'.includes(search.toLowerCase()) ||
@@ -201,7 +207,11 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">Tidak ada data dosen tersedia</td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -219,7 +229,7 @@
                             </tr>
                         </thead>
                         <tbody id="bidangTableBody">
-                            @foreach ($bidang_keahlian as $bidang )
+                            @forelse ($bidang_keahlian as $bidang )
                             <tr class="bg-white border-b hover:bg-gray-50 bidang-row">
                                 <td class="px-6 py-4 font-medium">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-4">{{ $bidang->nama_keahlian }}</td>
@@ -249,13 +259,45 @@
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="3" class="px-6 py-4 text-center text-gray-500">Tidak ada bidang keahlian
+                                    tersedia</td>
+                                    <tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
             </div>
 
         </div>
+
+        <!-- Modal untuk Pesan Error/Sukses -->
+<x-modal name="messageModal" class="max-w-md" focusable>
+    <div class="relative bg-white rounded-lg shadow dark:bg-[#FFFDF6]-700">
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-black">Sukses</h3>
+            <button type="button" x-on:click="closeModal()"
+                class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                </svg>
+                <span class="sr-only">Tutup</span>
+            </button>
+        </div>
+        <div class="p-4 md:p-5">
+            @if (session('success'))
+                <p class="text-green-600">{{ session('success') }}</p>
+            @endif
+        </div>
+        <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <button type="button" x-on:click="closeModal()"
+                class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-300 dark:text-black-300 dark:border-gray-300 dark:hover:text-black dark:hover:bg-gray-400 dark:focus:ring-gray-600">Tutup</button>
+        </div>
+    </div>
+</x-modal>
 
         <!-- Modal Tambah Bidang -->
         <x-modal name="tambahBidangModal" class="max-w-md" focusable>
@@ -320,9 +362,9 @@
                     </button>
                 </div>
                 <!-- Modal body -->
+                <div class="p-4 md:p-5 space-y-4 max-h-[60vh] overflow-y-auto">
                 <form id="dosenForm" action="{{ route('admin.dosen.store') }}" method="POST" x-data="{ currentBidang: '', bidangKeahlian: [] }">
                     @csrf
-                    <div class="p-4 md:p-5 space-y-4 max-h-[60vh] overflow-y-auto">
                         <!-- Informasi Pribadi Section -->
                         <div class="mb-4">
                             <h4 class="text-lg font-medium text-gray-900 dark:text-bklack border-b pb-2">Informasi
@@ -336,6 +378,9 @@
                                 <input type="text" name="nip" id="nip"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
                                     placeholder="Nomor Induk Pegawai" required>
+                                    @error('nip')
+                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                     @enderror
                             </div>
                             <div>
                                 <label for="nama_lengkap"
@@ -344,6 +389,9 @@
                                 <input type="text" name="nama_lengkap" id="nama_lengkap"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
                                     placeholder="Nama lengkap dosen" required>
+                                     @error('nama_lengkap')
+                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                     @enderror
                             </div>
                             <div class="md:col-span-2">
                                 <label for="bidang_keahlian"
@@ -366,6 +414,9 @@
                                         Tambah
                                     </button>
                                 </div>
+                                @error('bidang_keahlian_id')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                 @enderror
 
                                 <!-- Menampilkan bidang keahlian yang dipilih -->
                                 <div class="mt-3 space-y-2">
@@ -399,6 +450,9 @@
                                 <input type="email" name="email" id="email"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
                                     placeholder="Email dosen" required>
+                                    @error('email')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                 @enderror
                             </div>
                             <div>
                                 <label for="password"
@@ -406,6 +460,9 @@
                                 <input type="password" name="password" id="password"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
                                     placeholder="Password untuk login" required>
+                                    @error('password')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                 @enderror
                             </div>
                             <div>
                                 <label for="password_confirmation"
@@ -414,6 +471,9 @@
                                 <input type="password" name="password_confirmation" id="password_confirmation"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-white-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-black"
                                     placeholder="Ketik ulang password" required>
+                                    @error('password_confirmation')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                 @enderror
                             </div>
                         </div>
                     </div>
