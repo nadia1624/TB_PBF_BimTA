@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->foreignId('dosen_id')->constrained('dosen')->onDelete('cascade');
             $table->foreignId('pengajuan_judul_id')->constrained('pengajuan_judul')->onDelete('cascade');
             $table->enum('pembimbing', ['pembimbing 1', 'pembimbing 2']);
-            $table->enum('status', ['diproses', 'diterima', 'ditolak'])->default('diproses');
+            $table->enum('status', ['diproses', 'diterima', 'ditolak', 'dibatalkan'])->default('diproses');
             $table->text('alasan_dibatalkan')->nullable();
             $table->text('komentar')->nullable();
             $table->timestamps();
