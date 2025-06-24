@@ -123,7 +123,7 @@
 
                         <!-- Timestamp -->
                         <div class="text-right text-sm text-gray-500 mb-4">
-                            <span>{{ $item->created_at->format('d F Y') }} &bull; {{ $item->created_at->format('H:i') }}</span>
+                            <span>{{ $item->created_at->format('d F Y') }} • {{ $item->created_at->format('H:i') }}</span>
                         </div>
 
                         <div class="mb-4">
@@ -135,8 +135,6 @@
                             <h4 class="font-medium mb-1">Deskripsi:</h4>
                             <p>{{ $item->deskripsi }}</p>
                         </div>
-
-
 
                         @if($item->detailDosen[0]->status == 'diproses')
                         <div class="grid grid-cols-2 gap-4 mt-6">
@@ -152,6 +150,10 @@
                             <button class="cancelButton bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded" data-id="{{ $item->id }}">
                                 Batalkan Mahasiswa
                             </button>
+                        </div>
+                        @elseif($item->detailDosen[0]->status == 'dibatalkan')
+                        <div class="mt-6">
+                            <p><strong>Alasan Pembatalan:</strong> {{ $item->detailDosen[0]->alasan_dibatalkan }}</p>
                         </div>
                         @endif
                     </div>
@@ -350,37 +352,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle cancel form submission
     if (cancelForm) {
-        cancelForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pengajuanId = cancelPengajuanId.value;
-            const reason = document.getElementById('cancelReason').value;
+    cancelForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pengajuanId = cancelPengajuanId.value;
+        const reason = document.getElementById('cancelReason').value;
 
-            if (!reason.trim()) {
-                alert('Alasan pembatalan harus diisi');
-                return;
-            }
+        if (!reason.trim()) {
+            alert('Alasan pembatalan harus diisi');
+            return;
+        }
 
-            updateStatus(pengajuanId, 'dibatalkan', reason);
-        });
-    }
+        updateStatus(pengajuanId, 'dibatalkan', reason); // Ubah dari 'ditolak' ke 'dibatalkan'
+    });
+}
 
     // Function to update status
     function updateStatus(id, status, komentar = '') {
-        // Show loading overlay
         loadingOverlay.classList.remove('hidden');
         loadingOverlay.classList.add('flex');
 
-        // Create form data
         const formData = new FormData();
         formData.append('status', status);
         formData.append('komentar', komentar);
         formData.append('_method', 'PUT');
         formData.append('_token', '{{ csrf_token() }}');
 
-        // Menggunakan URL absolut untuk menghindari masalah route
         const url = `/dosen/pengajuanjudul/${id}/status`;
 
-        // Send request
         fetch(url, {
             method: 'POST',
             body: formData
@@ -392,11 +390,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            // Hide loading overlay
             loadingOverlay.classList.add('hidden');
             loadingOverlay.classList.remove('flex');
 
-            // Hide modals
             approveModal.classList.add('hidden');
             approveModal.classList.remove('flex');
             rejectModal.classList.add('hidden');
@@ -405,18 +401,14 @@ document.addEventListener('DOMContentLoaded', function() {
             cancelModal.classList.remove('flex');
 
             if (data.success) {
-                // Show success message
                 showAlert('success', data.message || 'Status berhasil diperbarui');
 
-                // Update UI tanpa refresh halaman
                 const pengajuanId = id;
                 const cardElement = document.querySelector(`[data-pengajuan-id="${pengajuanId}"]`);
 
                 if (cardElement) {
-                    // Memastikan card terlihat (tidak hidden)
                     cardElement.style.display = 'block';
 
-                    // Update status badge
                     const badgeContainer = cardElement.querySelector('.ml-auto');
                     if (badgeContainer) {
                         if (status === 'diterima') {
@@ -427,7 +419,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </span>
                             `;
 
-                            // Update action buttons - tambahkan tombol batalkan
                             const actionContainer = cardElement.querySelector('.grid.grid-cols-2.gap-4.mt-6');
                             if (actionContainer) {
                                 actionContainer.outerHTML = `
@@ -438,7 +429,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </div>
                                 `;
 
-                                // Tambahkan event listener untuk tombol batalkan yang baru
                                 const newCancelButton = cardElement.querySelector('.cancelButton');
                                 if (newCancelButton) {
                                     newCancelButton.addEventListener('click', function() {
@@ -456,7 +446,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </span>
                             `;
 
-                            // Hapus action buttons jika status ditolak
                             const actionContainer = cardElement.querySelector('.grid.grid-cols-2.gap-4.mt-6');
                             if (actionContainer) {
                                 actionContainer.remove();
@@ -469,15 +458,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </span>
                             `;
 
-                            // Hapus action buttons jika status dibatalkan
                             const actionContainer = cardElement.querySelector('.flex.justify-end.mt-6');
                             if (actionContainer) {
                                 actionContainer.remove();
                             }
+
+                            const alasanContainer = cardElement.querySelector('.mt-6');
+                            if (alasanContainer) {
+                                alasanContainer.innerHTML = `
+                                    <p><strong>Alasan Pembatalan:</strong> ${komentar}</p>
+                                `;
+                            }
                         }
                     }
 
-                    // Apply current filter after update
                     setTimeout(() => {
                         const statusFilter = document.getElementById('statusFilter');
                         if (statusFilter) {
@@ -486,88 +480,51 @@ document.addEventListener('DOMContentLoaded', function() {
                     }, 100);
                 }
             } else {
-                // Show error message
                 showAlert('error', data.message || 'Terjadi kesalahan');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-
-            // Hide loading overlay
             loadingOverlay.classList.add('hidden');
             loadingOverlay.classList.remove('flex');
-
-            // Show error message
             showAlert('error', 'Terjadi kesalahan pada server: ' + error.message);
         });
     }
 
-    // Status filter functionality with direct DOM manipulation
     const statusFilter = document.getElementById('statusFilter');
-
     if (statusFilter) {
-        // Set initial filter value
         statusFilter.value = '{{ $statusFilter ?? "all" }}';
-
-        // Apply initial filtering
         filterCards(statusFilter.value);
 
-        // Add event listener
         statusFilter.addEventListener('change', function() {
             const selectedStatus = this.value;
-
-            // Directly apply the filter
             filterCards(selectedStatus);
 
-            // Update URL
             const url = new URL(window.location);
             url.searchParams.set('status', selectedStatus);
             history.pushState({}, '', url);
         });
     }
 
-    // Direct filtering function
     function filterCards(selectedStatus) {
-        console.log("Filtering cards with status:", selectedStatus);
-
-        // Get all cards
         const cards = document.querySelectorAll('[data-pengajuan-id]');
-
         cards.forEach(card => {
-            // First make all cards visible
             card.style.display = 'block';
-
-            // If filter is not 'all', check if we need to hide this card
             if (selectedStatus !== 'all') {
                 const statusBadge = card.querySelector('.ml-auto span');
                 let cardStatus = '';
-
                 if (statusBadge) {
                     const badgeText = statusBadge.textContent.trim();
-                    console.log("Badge text:", badgeText);
-
-                    if (badgeText.includes('Menunggu Review')) {
-                        cardStatus = 'diproses';
-                    } else if (badgeText.includes('Disetujui')) {
-                        cardStatus = 'diterima';
-                    } else if (badgeText.includes('Ditolak')) {
-                        cardStatus = 'ditolak';
-                    } else if (badgeText.includes('Dibatalkan')) {
-                        cardStatus = 'dibatalkan';
-                    }
-
-                    console.log("Card status:", cardStatus, "Selected status:", selectedStatus);
-
-                    // Hide cards that don't match the filter
-                    if (cardStatus !== selectedStatus) {
-                        card.style.display = 'none';
-                    }
+                    if (badgeText.includes('Menunggu Review')) cardStatus = 'diproses';
+                    else if (badgeText.includes('Disetujui')) cardStatus = 'diterima';
+                    else if (badgeText.includes('Ditolak')) cardStatus = 'ditolak';
+                    else if (badgeText.includes('Dibatalkan')) cardStatus = 'dibatalkan';
+                    if (cardStatus !== selectedStatus) card.style.display = 'none';
                 }
             }
         });
     }
 
-    // Show success/error messages
     @if(session('success'))
         showAlert('success', "{{ session('success') }}");
     @endif
@@ -581,22 +538,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function showAlert(type, message) {
     const alertContainer = document.getElementById('alertContainer');
     const alertMessage = document.getElementById('alertMessage');
-
     alertContainer.classList.remove('hidden', 'bg-green-100', 'border-green-500', 'text-green-700', 'bg-red-100', 'border-red-500', 'text-red-700');
-
-    if (type === 'success') {
-        alertContainer.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
-    } else {
-        alertContainer.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
-    }
-
+    if (type === 'success') alertContainer.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+    else alertContainer.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
     alertMessage.textContent = message;
     alertContainer.classList.remove('hidden');
-
-    // Auto-hide alert after 5 seconds
-    setTimeout(() => {
-        alertContainer.classList.add('hidden');
-    }, 5000);
+    setTimeout(() => alertContainer.classList.add('hidden'), 5000);
 }
 </script>
 @endpush

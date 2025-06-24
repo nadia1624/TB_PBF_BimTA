@@ -39,7 +39,14 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
         ->name('dokumen.online.download.dosen');
 
       // Pengajuan Judul routes
-Route::get('/pengajuanjudul', [PengajuanJudulController::class, 'index'])->name('dosen.pengajuan.index');
-Route::get('/pengajuanjudul/{id}', [PengajuanJudulController::class, 'detail'])->name('dosen.pengajuan.detail');
-Route::put('/pengajuanjudul/{id}/status', [PengajuanJudulController::class, 'updateStatus'])->name('dosen.pengajuan.status');
+    Route::get('/pengajuanjudul', [PengajuanJudulController::class, 'index'])->name('dosen.pengajuan.index');
+    Route::get('/pengajuanjudul/{id}', [PengajuanJudulController::class, 'detail'])->name('dosen.pengajuan.detail');
+    Route::put('/pengajuanjudul/{id}/status', [PengajuanJudulController::class, 'updateStatus'])->name('dosen.pengajuan.status');
+
+    // Tambahan route untuk pengajuan judul
+    Route::get('/pengajuanjudul/create', [PengajuanJudulController::class, 'create'])->name('dosen.pengajuan.create');
+    Route::post('/pengajuanjudul', [PengajuanJudulController::class, 'store'])->name('dosen.pengajuan.store');
+    Route::get('/pengajuanjudul/{id}/edit', [PengajuanJudulController::class, 'edit'])->name('dosen.pengajuan.edit');
+    Route::put('/pengajuanjudul/{id}', [PengajuanJudulController::class, 'update'])->name('dosen.pengajuan.update');
+    Route::delete('/pengajuanjudul/{id}', [PengajuanJudulController::class, 'destroy'])->name('dosen.pengajuan.destroy');
 });

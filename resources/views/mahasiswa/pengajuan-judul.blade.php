@@ -90,18 +90,13 @@
                                     $itemStatusColor = 'yellow';
                                     $itemStatusText = 'Diproses';
 
-                                    // Check if both rejected
                                     if (($itemP1 && $itemP1->status === 'ditolak') && ($itemP2 && $itemP2->status === 'ditolak')) {
                                         $itemStatusColor = 'red';
                                         $itemStatusText = 'Ditolak (Keduanya)';
-                                    }
-                                    // Check if any rejected (but not both)
-                                    elseif (($itemP1 && $itemP1->status === 'ditolak') || ($itemP2 && $itemP2->status === 'ditolak')) {
+                                    } elseif (($itemP1 && $itemP1->status === 'ditolak') || ($itemP2 && $itemP2->status === 'ditolak')) {
                                         $itemStatusColor = 'red';
                                         $itemStatusText = 'Ditolak';
-                                    }
-                                    // Check if both accepted
-                                    elseif (($itemP1 && $itemP1->status === 'diterima') && (!$itemP2 || ($itemP2 && $itemP2->status === 'diterima'))) {
+                                    } elseif (($itemP1 && $itemP1->status === 'diterima') && (!$itemP2 || ($itemP2 && $itemP2->status === 'diterima'))) {
                                         $itemStatusColor = 'green';
                                         $itemStatusText = 'Diterima';
                                     }
@@ -125,7 +120,6 @@
                     <p class="text-gray-600 mb-8">Anda belum memiliki riwayat pengajuan judul.</p>
                 @endif
 
-
                 {{-- Bagian Aksi untuk Pengajuan TERAKHIR (jika ada) --}}
                 @if($pengajuan)
                     <div class="mb-6 border-t pt-6">
@@ -148,7 +142,6 @@
                                     $statusColor = 'yellow';
                                     $statusMessage = 'Anda sudah mengajukan judul dan masih dalam proses review. Silakan tunggu respons dari dosen pembimbing atau hubungi admin jika diperlukan.';
 
-                                    // LOGIKA BARU UNTUK KEDUA DOSEN MENOLAK
                                     if ($p1Rejected && $p2Rejected) {
                                         $overallStatusText = 'Ditolak oleh Kedua Dosen Pembimbing';
                                         $statusColor = 'red';
@@ -170,9 +163,7 @@
                                         } else {
                                             $statusMessage .= " Tidak ada alasan spesifik diberikan.";
                                         }
-                                    }
-                                    // LOGIKA LAMA UNTUK KASUS LAINNYA
-                                    elseif ($p1Rejected && $p2Accepted) {
+                                    } elseif ($p1Rejected && $p2Accepted) {
                                         $overallStatusText = 'Ditolak Pembimbing 1, Diterima Pembimbing 2';
                                         $statusColor = 'yellow';
                                         $statusMessage = 'Pengajuan Anda ditolak oleh dosen pembimbing 1 tetapi diterima oleh dosen pembimbing 2.';
@@ -180,7 +171,7 @@
                                         $overallStatusText = 'Ditolak Pembimbing 2, Diterima Pembimbing 1';
                                         $statusColor = 'yellow';
                                         $statusMessage = 'Pengajuan Anda ditolak oleh dosen pembimbing 2 tetapi diterima oleh dosen pembimbing 1.';
-                                    } elseif ($p1Rejected || $p2Rejected) { // Hanya satu yang menolak (jika tidak kasus campuran di atas)
+                                    } elseif ($p1Rejected || $p2Rejected) {
                                         $rejectedByDosenName = '';
                                         $reason = '';
                                         if ($p1Rejected) {
@@ -195,11 +186,11 @@
                                         $overallStatusText = "Ditolak oleh dosen";
                                         $statusColor = 'red';
                                         $statusMessage = "Judul tugas akhir Anda ditolak oleh dosen " . $rejectedByDosenName . ". Alasan: " . $reason;
-                                    } elseif ($p1Accepted && (!$p2Accepted || !$pembimbing2)) { // Diterima P1, P2 tidak ada atau belum diterima
+                                    } elseif ($p1Accepted && (!$p2Accepted || !$pembimbing2)) {
                                         $overallStatusText = 'Diterima oleh Pembimbing 1';
                                         $statusColor = 'green';
                                         $statusMessage = 'Anda sudah mengajukan judul dan sudah disetujui oleh dosen pembimbing 1.';
-                                    } elseif ($p1Accepted && $p2Accepted) { // Diterima kedua dosen
+                                    } elseif ($p1Accepted && $p2Accepted) {
                                         $overallStatusText = 'Diterima';
                                         $statusColor = 'green';
                                         $statusMessage = 'Anda sudah mengajukan judul dan sudah disetujui oleh kedua dosen pembimbing.';
@@ -239,7 +230,6 @@
                                 @endif
 
                                 <div class="mt-4 space-y-2">
-                                    {{-- LOGIKA BARU UNTUK KEDUA DOSEN MENOLAK --}}
                                     @if($p1Rejected && $p2Rejected)
                                         <form action="{{ route('mahasiswa.pengajuan-judul.destroy', $pengajuan->id) }}" method="POST" class="inline">
                                             @csrf
@@ -251,7 +241,6 @@
                                         <button data-action="resubmit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             Ajukan Judul BARU (dengan data ini)
                                         </button>
-                                    {{-- LOGIKA LAMA UNTUK KASUS LAINNYA --}}
                                     @elseif($p1Rejected && $p2Accepted)
                                         <button data-action="replace-advisor1" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             Ganti Dosen Pembimbing 1
@@ -273,7 +262,7 @@
                                         <button data-action="remove-advisor2" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                                             Tidak Gunakan Dosen Pembimbing 2
                                         </button>
-                                    @elseif($hasRejected && !$hasAccepted) {{-- Hanya satu yang menolak (jika tidak kasus campuran di atas) --}}
+                                    @elseif($hasRejected && !$hasAccepted)
                                         <form action="{{ route('mahasiswa.pengajuan-judul.destroy', $pengajuan->id) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
@@ -284,7 +273,7 @@
                                         <button data-action="resubmit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             Ajukan Judul BARU (dengan data ini)
                                         </button>
-                                    @else {{-- Status diterima atau diproses tanpa penolakan --}}
+                                    @else
                                         @if($overallStatusText === 'Diterima')
                                             <button data-action="new-submission" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
                                                 Ajukan Judul Lain (Baru)
@@ -298,7 +287,6 @@
                 @else
                     <p class="text-gray-600">Anda belum memiliki pengajuan judul. Silakan ajukan judul tugas akhir Anda.</p>
                 @endif
-
 
                 <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 mt-8">
                     <h2 class="text-xl font-semibold text-gray-800 mb-6">
@@ -338,35 +326,6 @@
                                             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
                                             required
                                         >{{ old('deskripsi', ( ($action === 'resubmit' && $pengajuan) || ($action === 'new-submission' && $pengajuan) ? $pengajuan->deskripsi : ($pengajuan->deskripsi ?? '') ) ) }}</textarea>
-                                    </div>
-                                    <div>
-                                        <label for="tanda_tangan" class="block text-sm font-medium text-gray-700 mb-1">Unggah Tanda Tangan</label>
-                                        <div class="flex">
-                                            <label for="tanda_tangan" class="w-full flex items-center">
-                                                <input
-                                                    type="text"
-                                                    readonly
-                                                    id="file_name"
-                                                    class="w-full border border-gray-300 bg-gray-50 rounded-l px-3 py-2"
-                                                    placeholder="{{ ($pengajuan && $pengajuan->tanda_tangan) && ($action !== 'resubmit' && $action !== 'new-submission') ? 'File ada' : 'Tidak ada file yang dipilih' }}"
-                                                >
-                                                <span class="bg-white border border-gray-300 border-l-0 rounded-r px-4 py-2 inline-flex items-center text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
-                                                    Upload
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                                    </svg>
-                                                </span>
-                                            </label>
-                                            <input
-                                                type="file"
-                                                id="tanda_tangan"
-                                                name="tanda_tangan"
-                                                class="hidden"
-                                                accept=".jpg,.jpeg,.png,.pdf"
-                                                onchange="document.getElementById('file_name').value = this.files[0].name"
-                                            >
-                                        </div>
-                                        <p class="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG, PDF. Maksimal ukuran: 2MB</p>
                                     </div>
                                 </div>
                                 <div class="space-y-4">
@@ -449,7 +408,7 @@
                         </form>
                     </div>
                 </div>
-            @endif {{-- End of isData check --}}
+            @endif
         </div>
     </div>
 
@@ -465,7 +424,6 @@
 
         const judulInput = document.getElementById('judul');
         const deskripsiInput = document.getElementById('deskripsi');
-        const fileNameInput = document.getElementById('file_name');
 
         function resetFormVisibilityAndRequirements() {
             form.classList.remove('hidden');
@@ -480,7 +438,6 @@
                 });
             });
 
-            // Kosongkan pilihan dosen saat reset
             dosenPembimbing1Select.value = '';
             dosenPembimbing2Select.value = '';
         }
@@ -491,20 +448,14 @@
                 resetFormVisibilityAndRequirements();
                 actionInput.value = action;
 
-                const phpPengajuan = @json($pengajuan); // Dapatkan data pengajuan terakhir dari PHP
+                const phpPengajuan = @json($pengajuan);
 
                 if (action === 'replace-advisor1' || action === 'promote-advisor' || action === 'replace-advisor2' || action === 'remove-advisor2') {
-                    // Untuk aksi update pengajuan yang sudah ada, isi form dengan data pengajuan terakhir
                     if (phpPengajuan) {
                         judulInput.value = phpPengajuan.judul;
                         deskripsiInput.value = phpPengajuan.deskripsi;
                         dosenPembimbing1Select.value = "{{ $pembimbing1 ?? '' }}";
                         dosenPembimbing2Select.value = "{{ $pembimbing2 ?? '' }}";
-                        if (phpPengajuan.tanda_tangan) {
-                            fileNameInput.placeholder = 'File ada';
-                        } else {
-                            fileNameInput.placeholder = 'Tidak ada file yang dipilih';
-                        }
                     }
 
                     if (action === 'replace-advisor1' || action === 'replace-advisor2') {
@@ -535,13 +486,10 @@
                             });
                         }
                     }
-
                 } else if (action === 'resubmit') {
-                    // Untuk aksi "resubmit", isi form dengan data pengajuan terakhir
                     if (phpPengajuan) {
                         judulInput.value = phpPengajuan.judul;
                         deskripsiInput.value = phpPengajuan.deskripsi;
-                        fileNameInput.placeholder = 'Tidak ada file yang dipilih';
                     }
 
                     advisor1Field.classList.remove('hidden');
@@ -551,7 +499,7 @@
 
                     const rejectedDosenId = '{{ $rejectedDosenId ?? '' }}';
                     if (rejectedDosenId) {
-                         [dosenPembimbing1Select, dosenPembimbing2Select].forEach(select => {
+                        [dosenPembimbing1Select, dosenPembimbing2Select].forEach(select => {
                             Array.from(select.options).forEach(option => {
                                 if (option.value === rejectedDosenId) {
                                     option.disabled = true;
@@ -560,10 +508,8 @@
                         });
                     }
                 } else if (action === 'new-submission') {
-                    // Untuk aksi "new-submission", kosongkan form
                     judulInput.value = '';
                     deskripsiInput.value = '';
-                    fileNameInput.placeholder = 'Tidak ada file yang dipilih';
                     dosenPembimbing1Select.value = '';
                     dosenPembimbing2Select.value = '';
 
@@ -577,7 +523,6 @@
             });
         });
 
-        // Logika tampilan form saat halaman pertama kali dimuat
         const initialDisplayForm = {{ $displayForm ? 'true' : 'false' }};
         if (!initialDisplayForm) {
             form.classList.add('hidden');
@@ -589,14 +534,14 @@
 
             if (initialRejectedDosenId) {
                 if (initialRejectedBy === 'pembimbing 1' || initialAction === 'resubmit' || initialAction === 'new-submission') {
-                     Array.from(dosenPembimbing1Select.options).forEach(option => {
+                    Array.from(dosenPembimbing1Select.options).forEach(option => {
                         if (option.value === initialRejectedDosenId) {
                             option.disabled = true;
                         }
                     });
                 }
                 if (initialRejectedBy === 'pembimbing 2' || initialAction === 'resubmit' || initialAction === 'new-submission') {
-                     Array.from(dosenPembimbing2Select.options).forEach(option => {
+                    Array.from(dosenPembimbing2Select.options).forEach(option => {
                         if (option.value === initialRejectedDosenId) {
                             option.disabled = true;
                         }
@@ -604,37 +549,24 @@
                 }
             }
 
-            // Isi form dengan data yang sesuai saat dimuat
             if (phpPengajuan && initialAction !== 'resubmit' && initialAction !== 'new-submission') {
                 judulInput.value = phpPengajuan.judul;
                 deskripsiInput.value = phpPengajuan.deskripsi;
                 dosenPembimbing1Select.value = "{{ $pembimbing1 ?? '' }}";
                 dosenPembimbing2Select.value = "{{ $pembimbing2 ?? '' }}";
-                if (phpPengajuan.tanda_tangan) {
-                    fileNameInput.placeholder = 'File ada';
-                } else {
-                    fileNameInput.placeholder = 'Tidak ada file yang dipilih';
-                }
             } else if (initialAction === 'new-submission' || !phpPengajuan) {
                 judulInput.value = '';
                 deskripsiInput.value = '';
                 dosenPembimbing1Select.value = '';
                 dosenPembimbing2Select.value = '';
-                fileNameInput.placeholder = 'Tidak ada file yang dipilih';
             } else if (initialAction === 'resubmit' && phpPengajuan) {
                 judulInput.value = phpPengajuan.judul;
                 deskripsiInput.value = phpPengajuan.deskripsi;
                 dosenPembimbing1Select.value = '';
                 dosenPembimbing2Select.value = '';
-                fileNameInput.placeholder = 'Tidak ada file yang dipilih';
             }
         }
 
-        document.getElementById('tanda_tangan').addEventListener('change', function() {
-            document.getElementById('file_name').value = this.files[0] ? this.files[0].name : 'Tidak ada file yang dipilih';
-        });
-
-        // Event listener untuk tombol "Ajukan Judul Lain (Baru)"
         const newSubmissionButton = document.querySelector('button[data-action="new-submission"]');
         if (newSubmissionButton) {
             newSubmissionButton.addEventListener('click', function() {
@@ -642,7 +574,6 @@
                 actionInput.value = 'new-submission';
                 judulInput.value = '';
                 deskripsiInput.value = '';
-                fileNameInput.placeholder = 'Tidak ada file yang dipilih';
                 form.scrollIntoView({ behavior: 'smooth' });
             });
         }
