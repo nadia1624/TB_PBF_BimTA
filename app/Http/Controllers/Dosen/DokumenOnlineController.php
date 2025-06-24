@@ -15,7 +15,12 @@ use Carbon\Carbon;
 
 class DokumenOnlineController extends Controller
 {
- public function index()
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
         $userId = Auth::id(); // Get the authenticated user ID
 
@@ -53,7 +58,7 @@ class DokumenOnlineController extends Controller
 
         // Query semua dokumen online yang relevan dengan dosen ini
         // Eager load relasi jadwalBimbingan, pengajuanJudul, dan mahasiswa
-        $dokumen = DokumenOnline::whereHas('jadwalBimbingan', function($query) use ($dosenId) {
+        $dokumen = DokumenOnline::whereHas('jadwalBimbingan', function ($query) use ($dosenId) {
             $query->where('dosen_id', $dosenId)
                   ->where('status', 'diterima')
                   ->where('metode', 'online');
@@ -67,7 +72,7 @@ class DokumenOnlineController extends Controller
         $perluReview = $dokumen->where('status', 'diproses')->count(); // Dokumen yang diunggah mahasiswa dan butuh review
         $sudahReview = $dokumen->where('status', 'selesai')->count(); // Dokumen yang sudah selesai direview
 
-        return view('dosen.dokumen-online', compact( // Pastikan nama view sesuai
+        return view('dosen.dokumen-online', compact(
             'dokumen',
             'totalDokumen',
             'perluReview',
@@ -83,7 +88,7 @@ class DokumenOnlineController extends Controller
      * @param  int  $id DokumenOnline ID
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id) // Menggunakan nama method 'update' sesuai route Anda
+    public function update(Request $request, $id)
     {
         $request->validate([
             'catatan_review' => 'nullable|string', // Catatan dari dosen
@@ -98,7 +103,7 @@ class DokumenOnlineController extends Controller
         $dosenId = $dosen ? $dosen->id : null;
 
         if (!$dosenId || $dokumen->jadwalBimbingan->dosen_id != $dosenId) {
-            return redirect()->route('dosen.dokumen.online') // Ganti rute sesuai rute index Anda
+            return redirect()->route('dosen.dokumen.online')
                 ->with('error', 'Anda tidak memiliki akses untuk mereview dokumen ini.');
         }
 
@@ -119,8 +124,7 @@ class DokumenOnlineController extends Controller
                 $dokumen->dokumen_dosen = $path; // Update kolom dokumen_dosen
             }
 
-            // Update kolom-kolom lain berdasarkan input modal
-            $dokumen->status = 'selesai'; 
+            // Tidak mengubah status menjadi 'selesai' di sini, biarkan method acc yang menanganinya
             $dokumen->keterangan_dosen = $request->catatan_review; // Catatan dari textarea
             $dokumen->tanggal_review = Carbon::now(); // Tanggal review saat ini
 
@@ -129,7 +133,6 @@ class DokumenOnlineController extends Controller
             DB::commit();
 
             return redirect()->route('dosen.dokumen.online')->with('success', 'Review dokumen berhasil disimpan!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error saat menyimpan review dokumen: ' . $e->getMessage(), [
@@ -205,7 +208,7 @@ class DokumenOnlineController extends Controller
      * @param int $id DokumenOnline ID
      * @return \Illuminate\Http\Response
      */
-    public function downloadDosenDocument($id) // Menggunakan nama method 'downloadDosenDocument'
+    public function downloadDosenDocument($id)
     {
         $dokumen = DokumenOnline::findOrFail($id);
 
@@ -226,5 +229,54 @@ class DokumenOnlineController extends Controller
         $filename = basename($dokumen->dokumen_dosen);
 
         return response()->download($path, $filename);
+    }
+
+    /**
+     * Handle the ACC action by the lecturer.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param int $id DokumenOnline ID
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function acc(Request $request, $id)
+    {
+        $dokumen = DokumenOnline::findOrFail($id);
+
+        // Verifikasi bahwa dosen yang login berhak mereview dokumen ini
+        $userId = Auth::id();
+        $dosen = Dosen::where('user_id', $userId)->first();
+        $dosenId = $dosen ? $dosen->id : null;
+
+        if (!$dosenId || $dokumen->jadwalBimbingan->dosen_id != $dosenId) {
+            return response()->json(['success' => false, 'message' => 'Anda tidak memiliki akses untuk meng-ACC dokumen ini.'], 403);
+        }
+
+        // Cek syarat: dokumen ada dan bab harus lengkap
+        if (!$dokumen->dokumen_mahasiswa || $dokumen->bab !== 'lengkap') {
+            return response()->json(['success' => false, 'message' => 'Dokumen harus lengkap (bab lengkap) untuk di-ACC.'], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Ubah status menjadi 'selesai' dan tambahkan keterangan
+            $dokumen->status = 'selesai';
+            $dokumen->keterangan_dosen = $request->input('keterangan', 'Dokumen telah di-ACC pada ' . Carbon::now());
+            $dokumen->tanggal_review = Carbon::now();
+            $dokumen->save();
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Dokumen telah di-ACC dan ditandai selesai.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error saat meng-ACC dokumen: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat meng-ACC dokumen.'], 500);
+        }
     }
 }
