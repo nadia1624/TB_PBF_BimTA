@@ -37,6 +37,8 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
         ->name('dokumen.online.download');
     Route::get('/dokumen-online/{id}/download-dosen', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'downloadDosenDocument'])
         ->name('dokumen.online.download.dosen');
+    Route::post('/dokumen-online/{id}/acc', [App\Http\Controllers\Dosen\DokumenOnlineController::class, 'acc'])
+    ->name('dokumen.online.acc');
 
       // Pengajuan Judul routes
     Route::get('/pengajuanjudul', [PengajuanJudulController::class, 'index'])->name('dosen.pengajuan.index');

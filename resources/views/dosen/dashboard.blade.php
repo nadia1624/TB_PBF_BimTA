@@ -3,159 +3,122 @@
 @section('title', 'Dashboard Dosen')
 
 @section('content')
-<div class="container-fluid px-4">
-    <h1 class="mt-4">Dashboard</h1>
+<div class="container-fluid px-4 py-6 bg-gray-50 min-h-screen">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 animate-fade-in">Dashboard Dosen</h1>
 
     <!-- Stats Cards -->
-    <div class="row my-4">
-        <div class="col-xl-4 col-md-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col-auto">
-                            <div class="icon-square rounded bg-light text-dark p-3 me-3">
-                                <i class="fas fa-users fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="text-xs text-uppercase mb-1">Total Mahasiswa Bimbingan</div>
-                            <div class="h1 mb-0 font-weight-bold">{{ $totalMahasiswa ?? 0 }}</div>
-                        </div>
-                    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100 transform hover:-translate-y-2">
+            <div class="flex items-center">
+                <div class="mr-4 p-3 bg-blue-100 rounded-full">
+                    <i class="fas fa-users text-blue-600 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 uppercase tracking-wide">Total Mahasiswa Bimbingan</p>
+                    <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ $totalMahasiswa ?? 0 }}</p>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-4 col-md-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col-auto">
-                            <div class="icon-square rounded bg-light text-dark p-3 me-3">
-                                <i class="fas fa-file-alt fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="text-xs text-uppercase mb-1">Pengajuan Judul</div>
-                            <div class="h1 mb-0 font-weight-bold">{{ $totalPengajuanJudul ?? 0 }}</div>
-                        </div>
-                    </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100 transform hover:-translate-y-2">
+            <div class="flex items-center">
+                <div class="mr-4 p-3 bg-green-100 rounded-full">
+                    <i class="fas fa-file-alt text-green-600 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 uppercase tracking-wide">Pengajuan Judul</p>
+                    <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ $totalPengajuanJudul ?? 0 }}</p>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-4 col-md-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="row no-gutters align-items-center">
-                        <div class="col-auto">
-                            <div class="icon-square rounded bg-light text-dark p-3 me-3">
-                                <i class="fas fa-calendar-alt fa-2x"></i>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="text-xs text-uppercase mb-1">Jadwal Bimbingan</div>
-                            <div class="h1 mb-0 font-weight-bold">{{ $totalJadwalBimbingan ?? 0 }}</div>
-                        </div>
-                    </div>
+        <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100 transform hover:-translate-y-2">
+            <div class="flex items-center">
+                <div class="mr-4 p-3 bg-purple-100 rounded-full">
+                    <i class="fas fa-calendar-alt text-purple-600 text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600 uppercase tracking-wide">Jadwal Bimbingan</p>
+                    <p class="text-3xl font-extrabold text-gray-900 mt-1">{{ $totalJadwalBimbingan ?? 0 }}</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Content Rows -->
-    <div class="row">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Pengajuan Judul Terbaru -->
-        <div class="col-lg-6 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 font-weight-bold">Pengajuan Judul Terbaru</h6>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    @if(isset($latestSubmissions) && $latestSubmissions->count() > 0)
-                        <div class="list-group list-group-flush">
-                            @foreach($latestSubmissions as $submission)
-                            <div class="list-group-item px-3 py-3 d-flex align-items-center">
-                                <div class="icon-square bg-light text-dark p-2 me-3">
-                                    <i class="fas fa-file-alt"></i>
-                                </div>
-                                <div class="ms-2 flex-grow-1">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1">{{ $submission->mahasiswa->nama }} - {{ $submission->mahasiswa->nim }}</h6>
-                                        <small>{{ \Carbon\Carbon::parse($submission->created_at)->format('d F Y') }} · {{ \Carbon\Carbon::parse($submission->created_at)->format('H:i') }}</small>
-                                    </div>
-                                    <p class="mb-1 text-muted small">{{ $submission->judul }}</p>
-                                </div>
-                                <div class="ms-auto">
-                                    <a href="#" class="text-decoration-none">
-                                        <small class="text-primary">Review <i class="fas fa-chevron-right ms-1"></i></small>
-                                    </a>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                        <div class="card-footer bg-white border-top-0 text-end">
-                            <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-decoration-none">
-                                Lihat Semua Jadwal <i class="fas fa-chevron-right ms-1"></i>
-                            </a>
-                        </div>
-                    @else
-                        <div class="text-center p-4">
-                            <p class="mb-0">Tidak ada pengajuan judul terbaru</p>
-                        </div>
-                    @endif
-                </div>
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Pengajuan Judul Terbaru</h2>
+                <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200">Lihat Semua</a>
             </div>
+            @if(isset($latestSubmissions) && $latestSubmissions->count() > 0)
+                <div class="space-y-4">
+                    @foreach($latestSubmissions as $submission)
+                    <div class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                        <div class="mr-4 p-2 bg-blue-100 rounded-full">
+                            <i class="fas fa-file-alt text-blue-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center">
+                                <h6 class="text-md font-medium text-gray-800">{{ $submission->mahasiswa->nama }} - {{ $submission->mahasiswa->nim }}</h6>
+                                <span class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d F Y, H:i') }}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">{{ $submission->judul }}</p>
+                        </div>
+                        <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-4">Review <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-file-alt text-gray-400 text-2xl"></i>
+                    </div>
+                    <p class="text-gray-500 mt-4">Tidak ada pengajuan judul terbaru</p>
+                </div>
+            @endif
         </div>
 
         <!-- Jadwal Bimbingan Hari Ini -->
-        <div class="col-lg-6 mb-4">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 font-weight-bold">Jadwal Bimbingan Hari Ini</h6>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @if(isset($todaySchedules) && $todaySchedules->count() > 0)
-                        <div class="list-group list-group-flush">
-                            @foreach($todaySchedules as $schedule)
-                            <div class="list-group-item px-3 py-3 border-0">
-                                <div class="d-flex align-items-center">
-                                    <div class="icon-square bg-light text-dark p-2 me-3">
-                                        <i class="fas fa-calendar-check"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1">{{ $schedule->pengajuanJudul->mahasiswa->nama }}</h6>
-                                        <p class="mb-1 text-muted small">{{ $schedule->pengajuanJudul->judul }}</p>
-                                        <div>
-                                            <span class="badge bg-primary">{{ \Carbon\Carbon::parse($schedule->waktu_pengajuan)->format('H:i') }}</span>
-                                            <span class="badge {{ $schedule->metode == 'online' ? 'bg-info' : 'bg-success' }}">{{ $schedule->metode == 'online' ? 'Online' : 'Offline' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="text-center py-5">
-                            <div class="icon-square d-inline-block bg-light text-secondary p-3 mb-3 rounded-circle">
-                                <i class="fas fa-calendar-check fa-3x"></i>
-                            </div>
-                            <h5 class="text-muted">Tidak ada jadwal bimbingan hari ini</h5>
-                        </div>
-                    @endif
-                </div>
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Jadwal Bimbingan Hari Ini</h2>
                 @if(isset($todaySchedules) && $todaySchedules->count() > 0)
-                <div class="card-footer bg-white border-top-0 text-end">
-                    <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-decoration-none">
-                        Lihat Semua Jadwal <i class="fas fa-chevron-right ms-1"></i>
-                    </a>
-                </div>
+                    <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200">Lihat Semua</a>
                 @endif
             </div>
+            @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+                <div class="space-y-4">
+                    @foreach($todaySchedules as $schedule)
+                    <div class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                        <div class="mr-4 p-2 bg-purple-100 rounded-full">
+                            <i class="fas fa-calendar-check text-purple-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h6 class="text-md font-medium text-gray-800">{{ $schedule->pengajuanJudul->mahasiswa->nama }}</h6>
+                            <p class="text-sm text-gray-600 mt-1">{{ $schedule->pengajuanJudul->judul }}</p>
+                            <div class="mt-2">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
+                                    {{ \Carbon\Carbon::parse($schedule->waktu_pengajuan)->format('H:i') }}
+                                </span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $schedule->metode == 'online' ? 'bg-info-100 text-info-800' : 'bg-green-100 text-green-800' }}">
+                                    {{ $schedule->metode == 'online' ? 'Online' : 'Offline' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-gray-400 text-2xl"></i>
+                    </div>
+                    <p class="text-gray-500 mt-4">Tidak ada jadwal bimbingan hari ini</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>
@@ -163,8 +126,28 @@
 
 @section('scripts')
 <script>
-    $(document).ready(function() {
-        // Any JavaScript functionality can go here
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animasi fade-in untuk judul
+        const fadeElements = document.querySelectorAll('.animate-fade-in');
+        fadeElements.forEach((el, index) => {
+            el.style.opacity = 0;
+            setTimeout(() => {
+                el.style.transition = 'opacity 0.5s ease-in-out';
+                el.style.opacity = 1;
+            }, index * 200);
+        });
     });
 </script>
+<style>
+    .icon-square {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .bg-info-100 { background-color: #e0f2fe; }
+    .text-info-800 { color: #1e40af; }
+    .animate-fade-in {
+        opacity: 0;
+    }
+</style>
 @endsection

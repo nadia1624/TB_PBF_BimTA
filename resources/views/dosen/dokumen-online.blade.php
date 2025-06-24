@@ -186,6 +186,14 @@
                             data-dokumen-review-path="{{ $item->dokumen_dosen ?? '' }}">
                         Review
                     </button>
+
+                    @if($item->dokumen_mahasiswa && $item->bab === 'lengkap')
+                    <button class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium acc-button"
+                            data-id="{{ $item->id }}"
+                            data-action="{{ route('dosen.dokumen.online.acc', $item->id) }}">
+                        ACC
+                    </button>
+                    @endif
                 </div>
 
                 @if($item->keterangan_dosen || $item->dokumen_dosen)
@@ -207,7 +215,7 @@
                             Unduh File Review Dosen
                         </a>
                     @endif
-                    <p class="text-xs text-gray-500 mt-2">Review Pada: {{ \Carbon\Carbon::parse($item->tanggal_review)->format('d F Y, H:i') }}</p> {{-- Format tanggal lebih lengkap --}}
+                    <p class="text-xs text-gray-500 mt-2">Review Pada: {{ \Carbon\Carbon::parse($item->tanggal_review)->format('d F Y, H:i') }}</p>
                 </div>
                 @endif
             </div>
@@ -235,7 +243,6 @@
         @endforelse
     </div>
 </div>
-
 
 <div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-4 md:mx-auto">
@@ -277,7 +284,7 @@
                 </div>
             </div>
 
-            <div class="mb-6"> 
+            <div class="mb-6">
                 <label for="catatan_review" class="block text-sm font-medium text-gray-700 mb-1">Catatan Review</label>
                 <textarea id="catatan_review" name="catatan_review" rows="5" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500" placeholder="Tuliskan catatan dan masukan untuk dokumen ini..."></textarea>
             </div>
@@ -294,6 +301,7 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const statusFilter = document.getElementById('status-filter');
@@ -325,7 +333,6 @@
         const cancelReviewModalButton = document.getElementById('cancelReviewModal');
         const reviewForm = document.getElementById('reviewForm');
         const modalDokumenId = document.getElementById('modal-dokumen-id');
-        // const reviewStatusSelect = document.getElementById('review_status'); // TIDAK PERLU LAGI
 
         const catatanReviewTextarea = document.getElementById('catatan_review');
         const fileReviewNameInput = document.getElementById('file_review_name');
@@ -335,14 +342,13 @@
         openReviewModalButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const id = this.dataset.id;
-                const currentStatus = this.dataset.currentStatus; // Tetap ambil untuk info
+                const currentStatus = this.dataset.currentStatus;
                 const catatanReview = this.dataset.catatanReview;
                 const dokumenReviewPath = this.dataset.dokumenReviewPath;
 
                 reviewForm.action = `{{ route('dosen.dokumen.online.update', '') }}/${id}`;
 
                 modalDokumenId.value = id;
-                // reviewStatusSelect.value = currentStatus; // TIDAK PERLU LAGI
 
                 catatanReviewTextarea.value = catatanReview;
 
@@ -376,6 +382,50 @@
 
         document.getElementById('file_review_input').addEventListener('change', function() {
             document.getElementById('file_review_name').value = this.files[0] ? this.files[0].name : 'Tidak ada file dipilih';
+        });
+
+        // --- ACC Button Functionality ---
+        document.querySelectorAll('.acc-button').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.dataset.id;
+                const actionUrl = this.dataset.action;
+
+                Swal.fire({
+                    title: 'Konfirmasi ACC Tugak Akhir',
+                    text: 'Apakah anda yakin ingin ACC tugas akhir mahasiswa ini? Setelah di-ACC, status akan berubah menjadi selesai dan tidak dapat diubah lagi.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, ACC',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(actionUrl, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ id: id })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Berhasil!', 'Dokumen telah di-ACC dan ditandai selesai.', 'success').then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire('Gagal!', data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error!', 'Terjadi kesalahan saat memproses.', 'error');
+                        });
+                    }
+                });
+            });
         });
     });
 </script>
