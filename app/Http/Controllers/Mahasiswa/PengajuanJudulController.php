@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 class PengajuanJudulController extends Controller
 {
-    public function index(Request $request)
+     public function index(Request $request)
     {
         $user = Auth::user();
         $dosenList = Dosen::all();
@@ -28,11 +28,13 @@ class PengajuanJudulController extends Controller
         $pembimbing1 = null;
         $pembimbing2 = null;
         $rejectedDosenId = null;
-        $acceptedDosenId = null;
         $rejectedBy = null;
         $rejectedDetailDosen = null;
         $hasAccepted = false;
         $hasRejected = false;
+        $overallStatusText = 'Belum Mengajukan';
+        $statusColor = 'gray';
+        $statusMessage = 'Anda belum memiliki pengajuan judul. Silakan ajukan judul tugas akhir Anda.';
         $action = $request->query('action');
         $displayForm = true;
 
@@ -42,11 +44,13 @@ class PengajuanJudulController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            $pengajuan = $allPengajuan->first();
+            // Ambil pengajuan terakhir yang aktif (bukan dibatalkan) untuk status utama
+            $pengajuan = $allPengajuan->where('approved_ta', '!=', 'dibatalkan')->first();
 
             if ($pengajuan) {
                 $detailDosen = $pengajuan->detailDosen;
 
+                // Pastikan $pembimbing1Detail dan $pembimbing2Detail selalu diinisialisasi
                 $pembimbing1Detail = $detailDosen->where('pembimbing', 'pembimbing 1')->first();
                 $pembimbing2Detail = $detailDosen->where('pembimbing', 'pembimbing 2')->first();
 
@@ -56,46 +60,117 @@ class PengajuanJudulController extends Controller
                 $p1Status = $pembimbing1Detail->status ?? null;
                 $p2Status = $pembimbing2Detail->status ?? null;
 
-                $allAccepted = true;
-                $anyRejected = false;
-                $anyPending = false;
+                // Determine overall status
+                $p1Rejected = $pembimbing1Detail && $pembimbing1Detail->status === 'ditolak';
+                $p2Rejected = $pembimbing2Detail && $pembimbing2Detail->status === 'ditolak';
+                $p1Accepted = $pembimbing1Detail && $pembimbing1Detail->status === 'diterima';
+                $p2Accepted = $pembimbing2Detail && $pembimbing2Detail->status === 'diterima';
 
-                foreach ($detailDosen as $detail) {
-                    if ($detail->status === 'ditolak') {
-                        $anyRejected = true;
-                        if ($detail->pembimbing === 'pembimbing 1' || ($detail->pembimbing === 'pembimbing 2' && !$rejectedBy)) {
-                            $rejectedDosenId = $detail->dosen_id;
-                            $rejectedBy = $detail->pembimbing;
-                            $rejectedDetailDosen = $detail;
-                        }
-                    } elseif ($detail->status === 'diproses') {
-                        $anyPending = true;
-                        $allAccepted = false;
-                    } elseif ($detail->status === 'diterima') {
-                        $hasAccepted = true;
-                    }
+                $hasRejected = false;
+                $rejectedDetailDosen = null;
+                $rejectedBy = null;
+                $rejectedDosenId = null;
+
+                if ($pengajuan->approved_ta === 'dibatalkan') {
+                    $overallStatusText = 'Dibatalkan';
+                    $statusColor = 'gray';
+                    $statusMessage = 'Pengajuan judul ini telah Anda batalkan.';
+                } elseif ($p1Rejected && $p2Rejected) {
+                    $overallStatusText = 'Ditolak oleh Kedua Dosen Pembimbing';
+                    $statusColor = 'red';
+                    $hasRejected = true;
+                    $rejectedDetailDosen = $pembimbing1Detail;
+                    $rejectedBy = 'keduanya';
+                    $rejectedDosenId = [$pembimbing1, $pembimbing2];
+                } elseif ($p1Rejected) {
+                    $overallStatusText = 'Ditolak oleh Pembimbing 1';
+                    $statusColor = 'red';
+                    $hasRejected = true;
+                    $rejectedDetailDosen = $pembimbing1Detail;
+                    $rejectedBy = 'pembimbing 1';
+                    $rejectedDosenId = $pembimbing1;
+                } elseif ($p2Rejected) {
+                    $overallStatusText = 'Ditolak oleh Pembimbing 2';
+                    $statusColor = 'red';
+                    $hasRejected = true;
+                    $rejectedDetailDosen = $pembimbing2Detail;
+                    $rejectedBy = 'pembimbing 2';
+                    $rejectedDosenId = $pembimbing2;
+                } elseif ($p1Accepted && ($p2Accepted || !$pembimbing2Detail)) {
+                    $overallStatusText = 'Diterima';
+                    $statusColor = 'green';
+                    $hasAccepted = true;
+                } elseif ($p1Accepted && $p2Status === 'diproses') {
+                    $overallStatusText = 'Diterima Pembimbing 1, Pembimbing 2 Diproses';
+                    $statusColor = 'yellow';
+                    $hasAccepted = true;
+                } elseif ($p1Status === 'diproses' || $p2Status === 'diproses') {
+                    $overallStatusText = 'Diproses';
+                    $statusColor = 'yellow';
                 }
 
-                $hasRejected = $anyRejected;
-
-                if ($p1Status === 'diterima' && ($p2Status === 'diterima' || $pembimbing2 === null)) {
+                // Logic for displayForm
+                if ($overallStatusText === 'Diterima' || $overallStatusText === 'Diproses' || $overallStatusText === 'Dibatalkan') {
                     $displayForm = false;
                 } elseif ($hasRejected) {
                     $displayForm = true;
-                } elseif ($anyPending) {
-                    $displayForm = false;
                 } else {
                     $displayForm = true;
                 }
 
-                if ($action === 'resubmit') {
+                // Override displayForm if an explicit action is requested via query parameter
+                if (in_array($action, ['resubmit', 'replace-advisor1', 'promote-advisor', 'replace-advisor2', 'remove-advisor2', 'new-submission'])) {
                     $displayForm = true;
+                }
+
+                // Set initial status message based on computed overallStatusText
+                if ($overallStatusText === 'Diproses') {
+                    $statusMessage = 'Anda sudah mengajukan judul dan masih dalam proses review. Silakan tunggu respons dari dosen pembimbing atau hubungi admin jika diperlukan.';
+                } elseif ($overallStatusText === 'Ditolak oleh Kedua Dosen Pembimbing') {
+                    $rejectedByDosenNames = [];
+                    $reasons = [];
+
+                    if ($pembimbing1Detail) {
+                        $rejectedByDosenNames[] = optional($pembimbing1Detail->dosen)->nama_lengkap . ' (Pembimbing 1)';
+                        if ($pembimbing1Detail->alasan_dibatalkan) $reasons[] = 'P1: ' . $pembimbing1Detail->alasan_dibatalkan;
+                    }
+                    // Safe check for $pembimbing2Detail before accessing properties
+                    if ($pembimbing2Detail) {
+                        $rejectedByDosenNames[] = optional($pembimbing2Detail->dosen)->nama_lengkap . ' (Pembimbing 2)';
+                        if ($pembimbing2Detail->alasan_dibatalkan) $reasons[] = 'P2: ' . $pembimbing2Detail->alasan_dibatalkan;
+                    }
+                    $statusMessage = "Judul tugas akhir Anda ditolak oleh " . implode(' dan ', $rejectedByDosenNames) . ".";
+                    if (!empty($reasons)) {
+                        $statusMessage .= " Alasan: " . implode('; ', $reasons);
+                    } else {
+                        $statusMessage .= " Tidak ada alasan spesifik diberikan.";
+                    }
+                } elseif ($p1Rejected || $p2Rejected) {
+                    $rejectedName = '';
+                    $reason = '';
+                    if ($p1Rejected) {
+                        $rejectedName = optional($pembimbing1Detail->dosen)->nama_lengkap . ' (Pembimbing 1)';
+                        $reason = $pembimbing1Detail->alasan_dibatalkan;
+                    } elseif ($p2Rejected) {
+                        $rejectedName = optional($pembimbing2Detail->dosen)->nama_lengkap . ' (Pembimbing 2)';
+                        $reason = $pembimbing2Detail->alasan_dibatalkan;
+                    }
+                    $reason = $reason ?? 'Tidak ada alasan spesifik diberikan.';
+                    $statusMessage = "Judul tugas akhir Anda ditolak oleh dosen " . $rejectedName . ". Alasan: " . $reason;
+                } elseif ($overallStatusText === 'Diterima') {
+                    $statusMessage = 'Anda sudah mengajukan judul dan sudah disetujui oleh kedua dosen pembimbing.';
                 }
             } else {
                 $displayForm = true;
+                $overallStatusText = 'Belum Mengajukan';
+                $statusColor = 'gray';
+                $statusMessage = 'Anda belum memiliki pengajuan judul. Silakan ajukan judul tugas akhir Anda.';
             }
         } else {
             $displayForm = false;
+            $overallStatusText = 'Data Belum Lengkap';
+            $statusColor = 'yellow';
+            $statusMessage = 'Perhatian! Data mahasiswa Anda belum lengkap. Silakan lengkapi profil Anda terlebih dahulu sebelum mengajukan judul.';
         }
 
         $bidang_keahlian = BidangKeahlian::all();
@@ -124,95 +199,16 @@ class PengajuanJudulController extends Controller
             'hasAccepted',
             'hasRejected',
             'action',
-            'displayForm'
+            'displayForm',
+            'overallStatusText',
+            'statusColor',
+            'statusMessage'
         ));
     }
 
     public function create(Request $request)
     {
-        $user = Auth::user();
-        $dosenList = Dosen::all();
-        $isData = $user && !empty($user->mahasiswa);
-        $pengajuan = null;
-        $pembimbing1 = null;
-        $pembimbing2 = null;
-        $rejectedDosenId = null;
-        $acceptedDosenId = null;
-        $hasAccepted = false;
-        $hasRejected = false;
-        $rejectedBy = null;
-        $rejectedDetailDosen = null;
-        $action = $request->query('action');
-
-        if ($isData) {
-            $pengajuan = PengajuanJudul::with('detailDosen')
-                ->where('mahasiswa_id', $user->mahasiswa->id)
-                ->orderBy('created_at', 'desc')
-                ->first();
-
-            if ($pengajuan) {
-                $detailDosen = $pengajuan->detailDosen;
-
-                $pembimbing1Detail = $detailDosen->where('pembimbing', 'pembimbing 1')->first();
-                $pembimbing2Detail = $detailDosen->where('pembimbing', 'pembimbing 2')->first();
-
-                if ($pembimbing1Detail) {
-                    $pembimbing1 = $pembimbing1Detail->dosen_id;
-                    if ($pembimbing1Detail->status === 'ditolak') {
-                        $rejectedDosenId = $pembimbing1Detail->dosen_id;
-                        $rejectedBy = 'pembimbing 1';
-                        $rejectedDetailDosen = $pembimbing1Detail;
-                        $hasRejected = true;
-                    } elseif ($pembimbing1Detail->status === 'diterima') {
-                        $acceptedDosenId = $pembimbing1Detail->dosen_id;
-                        $hasAccepted = true;
-                    }
-                }
-
-                if ($pembimbing2Detail) {
-                    $pembimbing2 = $pembimbing2Detail->dosen_id;
-                    if ($pembimbing2Detail->status === 'ditolak') {
-                        if (!$rejectedBy) {
-                            $rejectedDosenId = $pembimbing2Detail->dosen_id;
-                            $rejectedBy = 'pembimbing 2';
-                            $rejectedDetailDosen = $pembimbing2Detail;
-                        }
-                        $hasRejected = true;
-                    } elseif ($pembimbing2Detail->status === 'diterima') {
-                        $acceptedDosenId = $pembimbing2Detail->dosen_id;
-                        $hasAccepted = true;
-                    }
-                }
-
-                if ($action === 'promote-advisor' && $pembimbing2Detail && $pembimbing2Detail->status === 'diterima') {
-                    $pembimbing1 = $pembimbing2Detail->dosen_id;
-                    $pembimbing2 = null;
-                    $rejectedDosenId = null;
-                    $rejectedBy = null;
-                    $rejectedDetailDosen = null;
-                } elseif ($action === 'remove-advisor2' && $pembimbing2Detail && $pembimbing2Detail->status === 'ditolak') {
-                    $pembimbing2 = null;
-                    $rejectedDosenId = null;
-                    $rejectedBy = null;
-                    $rejectedDetailDosen = null;
-                }
-            }
-        }
-
-        return view('mahasiswa.pengajuan-judul', compact(
-            'dosenList',
-            'isData',
-            'pengajuan',
-            'pembimbing1',
-            'pembimbing2',
-            'rejectedDosenId',
-            'acceptedDosenId',
-            'action',
-            'hasAccepted',
-            'hasRejected',
-            'rejectedBy',
-            'rejectedDetailDosen'
-        ));
+        return $this->index($request);
     }
 
     public function store(Request $request)
@@ -229,8 +225,19 @@ class PengajuanJudulController extends Controller
             'deskripsi' => 'required|string',
         ];
 
-        $pengajuan = PengajuanJudul::where('mahasiswa_id', $user->mahasiswa->id)->first();
-        $detailDosen = $pengajuan ? $pengajuan->detailDosen : collect();
+        $pengajuan = PengajuanJudul::where('mahasiswa_id', $user->mahasiswa->id)
+                                    ->where('approved_ta', '!=', 'dibatalkan')
+                                    ->orderBy('created_at', 'desc')
+                                    ->first();
+
+        $action = $request->input('action');
+
+        if ($action === 'replace-advisor1' || $action === 'resubmit' || $action === 'new-submission') {
+            $rules['dosen_pembimbing1'] = 'required|exists:dosen,id';
+        }
+        if ($action === 'replace-advisor2' || $action === 'resubmit' || $action === 'new-submission') {
+            $rules['dosen_pembimbing2'] = 'nullable|exists:dosen,id|different:dosen_pembimbing1';
+        }
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -244,87 +251,128 @@ class PengajuanJudulController extends Controller
             DB::beginTransaction();
 
             $mahasiswa = $user->mahasiswa;
+            $message = 'Pengajuan judul berhasil disimpan.';
 
-            if ($pengajuan) {
-                $currentDetailDosen = $pengajuan->detailDosen;
-                $allCurrentAccepted = $currentDetailDosen->where('status', 'diterima')->count() === $currentDetailDosen->count() && $currentDetailDosen->isNotEmpty();
+            if ($action === 'resubmit' || $action === 'new-submission') {
+                $data = [
+                    'judul' => $request->judul,
+                    'deskripsi' => $request->deskripsi,
+                    'mahasiswa_id' => $mahasiswa->id,
+                    'approved_ta' => 'pending',
+                ];
 
-                if ($allCurrentAccepted && empty($request->action)) {
+                $newPengajuan = PengajuanJudul::create($data);
+                $newPengajuan->detailDosen()->create([
+                    'dosen_id' => $request->dosen_pembimbing1,
+                    'pembimbing' => 'pembimbing 1',
+                    'status' => 'diproses',
+                ]);
+
+                if ($request->dosen_pembimbing2) {
+                    $newPengajuan->detailDosen()->create([
+                        'dosen_id' => $request->dosen_pembimbing2,
+                        'pembimbing' => 'pembimbing 2',
+                        'status' => 'diproses',
+                    ]);
+                }
+                $message = 'Pengajuan judul baru berhasil disimpan dan sedang diproses.';
+
+            } elseif ($pengajuan) {
+                // Fetch detailDosen again here to ensure $p1Detail and $p2Detail are fresh for this specific $pengajuan
+                // This is important if $pengajuan was loaded earlier in the method (which it is)
+                // and its relations might not reflect the most recent state if other logic paths modify them.
+                // However, since we're operating on $pengajuan (which is `first()`), its detailDosen should be fine.
+                // The crucial part is to ensure these are always defined before use.
+                $p1Detail = $pengajuan->detailDosen->where('pembimbing', 'pembimbing 1')->first();
+                $p2Detail = $pengajuan->detailDosen->where('pembimbing', 'pembimbing 2')->first();
+
+
+                $p1Accepted = $p1Detail && $p1Detail->status === 'diterima';
+                $p2Accepted = $p2Detail && $p2Detail->status === 'diterima';
+
+                if ($p1Accepted && ($p2Accepted || !$p2Detail) && empty($request->action)) {
+                    DB::rollBack();
                     return redirect()->route('mahasiswa.pengajuan-judul.index')
-                        ->with('error', 'Anda sudah memiliki judul yang disetujui. Tidak dapat mengajukan perubahan dosen.');
+                        ->with('error', 'Anda sudah memiliki judul yang disetujui. Tidak dapat mengajukan perubahan tanpa memilih aksi.');
                 }
 
                 $pengajuan->judul = $request->judul;
                 $pengajuan->deskripsi = $request->deskripsi;
                 $pengajuan->save();
-
                 $message = 'Pengajuan judul berhasil diperbarui.';
 
-                if ($request->action === 'replace-advisor1') {
-                    $pembimbing1Detail = $detailDosen->where('pembimbing', 'pembimbing 1')->first();
-                    if ($pembimbing1Detail) {
-                        $pembimbing1Detail->update([
+                if ($action === 'replace-advisor1') {
+                    if ($p1Detail) {
+                        DetailDosen::where('pengajuan_judul_id', $pengajuan->id)
+                                   ->where('pembimbing', 'pembimbing 1')
+                                   ->update([
+                                       'dosen_id' => $request->dosen_pembimbing1,
+                                       'status' => 'diproses',
+                                       'alasan_dibatalkan' => null,
+                                   ]);
+                        $message = 'Dosen Pembimbing 1 berhasil diganti. Pengajuan diperbarui dan menunggu persetujuan baru.';
+                    } else {
+                        $pengajuan->detailDosen()->create([
                             'dosen_id' => $request->dosen_pembimbing1,
+                            'pembimbing' => 'pembimbing 1',
                             'status' => 'diproses',
-                            'alasan_dibatalkan' => null,
                         ]);
+                        $message = 'Dosen Pembimbing 1 berhasil ditambahkan. Pengajuan diperbarui dan menunggu persetujuan.';
                     }
-                    $message = 'Dosen Pembimbing 1 berhasil diganti. Pengajuan diperbarui.';
-                } elseif ($request->action === 'promote-advisor') {
-                    $pembimbing1Detail = $detailDosen->where('pembimbing', 'pembimbing 1')->first();
-                    $pembimbing2Detail = $detailDosen->where('pembimbing', 'pembimbing 2')->first();
-
-                    if ($pembimbing1Detail && $pembimbing2Detail && $pembimbing2Detail->status === 'diterima') {
-                        $pembimbing1Detail->update([
-                            'dosen_id' => $pembimbing2Detail->dosen_id,
-                            'status' => 'diterima',
-                            'alasan_dibatalkan' => null,
-                        ]);
-                        $pembimbing2Detail->delete();
+                } elseif ($action === 'promote-advisor') {
+                    if ($p1Detail && $p2Detail && $p2Detail->status === 'diterima') {
+                        DetailDosen::where('pengajuan_judul_id', $pengajuan->id)
+                                   ->where('pembimbing', 'pembimbing 1')
+                                   ->update([
+                                       'dosen_id' => $p2Detail->dosen_id,
+                                       'status' => 'diterima',
+                                       'alasan_dibatalkan' => null,
+                                   ]);
+                        $p2Detail->delete();
                         $message = 'Dosen Pembimbing 2 berhasil dipromosikan menjadi Pembimbing 1. Pengajuan diperbarui.';
                     } else {
-                        throw new \Exception("Kondisi promosi dosen pembimbing tidak terpenuhi.");
+                        throw new \Exception("Kondisi promosi dosen pembimbing tidak terpenuhi atau Pembimbing 2 belum diterima.");
                     }
-                } elseif ($request->action === 'replace-advisor2') {
-                    $pembimbing2Detail = $detailDosen->where('pembimbing', 'pembimbing 2')->first();
-                    if ($pembimbing2Detail) {
-                        $pembimbing2Detail->update([
+                } elseif ($action === 'replace-advisor2') {
+                    // Make sure $p2Detail is checked before trying to update it
+                    if ($p2Detail) {
+                        DetailDosen::where('pengajuan_judul_id', $pengajuan->id)
+                                   ->where('pembimbing', 'pembimbing 2')
+                                   ->update([
+                                       'dosen_id' => $request->dosen_pembimbing2,
+                                       'status' => 'diproses',
+                                       'alasan_dibatalkan' => null,
+                                   ]);
+                        $message = 'Dosen Pembimbing 2 berhasil diganti. Pengajuan diperbarui dan menunggu persetujuan baru.';
+                    } else { // If there was no P2 previously, create it
+                        $pengajuan->detailDosen()->create([
                             'dosen_id' => $request->dosen_pembimbing2,
+                            'pembimbing' => 'pembimbing 2',
                             'status' => 'diproses',
-                            'alasan_dibatalkan' => null,
                         ]);
+                        $message = 'Dosen Pembimbing 2 berhasil ditambahkan. Pengajuan diperbarui dan menunggu persetujuan.';
+                    }
+                } elseif ($action === 'remove-advisor2') {
+                    if ($p2Detail) {
+                        $p2Detail->delete();
+                        $message = 'Dosen Pembimbing 2 berhasil dihapus dari pengajuan. Pengajuan diperbarui.';
                     } else {
-                        $pengajuan->detailDosen()->create([
-                            'dosen_id' => $request->dosen_pembimbing2,
-                            'pembimbing' => 'pembimbing 2',
-                            'status' => 'diproses',
-                        ]);
+                        throw new \Exception("Tidak ada dosen pembimbing 2 untuk dihapus.");
                     }
-                    $message = 'Dosen Pembimbing 2 berhasil diganti. Pengajuan diperbarui.';
-                } elseif ($request->action === 'remove-advisor2') {
-                    $pengajuan->detailDosen()->where('pembimbing', 'pembimbing 2')->delete();
-                    $message = 'Dosen Pembimbing 2 berhasil dihapus dari pengajuan. Pengajuan diperbarui.';
-                } elseif ($request->action === 'resubmit') {
-                    $pengajuan->detailDosen()->delete();
-
-                    $pengajuan->detailDosen()->create([
-                        'dosen_id' => $request->dosen_pembimbing1,
-                        'pembimbing' => 'pembimbing 1',
-                        'status' => 'diproses',
-                    ]);
-
-                    if ($request->dosen_pembimbing2) {
-                        $pengajuan->detailDosen()->create([
-                            'dosen_id' => $request->dosen_pembimbing2,
-                            'pembimbing' => 'pembimbing 2',
-                            'status' => 'diproses',
-                        ]);
-                    }
-                    $message = 'Pengajuan judul dan dosen pembimbing berhasil diajukan ulang.';
                 } else {
+                    foreach ($pengajuan->detailDosen as $detail) {
+                        if ($detail->status !== 'diterima') {
+                           DetailDosen::where('pengajuan_judul_id', $pengajuan->id)
+                                      ->where('pembimbing', $detail->pembimbing)
+                                      ->update([
+                                          'status' => 'diproses',
+                                          'alasan_dibatalkan' => null,
+                                      ]);
+                        }
+                    }
                     $message = 'Pengajuan judul berhasil diperbarui.';
                 }
-            } else {
+            } else { // Jika belum ada pengajuan sama sekali yang aktif (dan bukan resubmit/new-submission)
                 $data = [
                     'judul' => $request->judul,
                     'deskripsi' => $request->deskripsi,
@@ -346,7 +394,6 @@ class PengajuanJudulController extends Controller
                         'status' => 'diproses',
                     ]);
                 }
-
                 $message = 'Pengajuan judul baru berhasil disimpan dan sedang diproses.';
             }
 
@@ -483,22 +530,44 @@ class PengajuanJudulController extends Controller
             $pengajuan->save();
 
             foreach ($pengajuan->detailDosen as $detail) {
-                $detail->status = 'diproses';
-                $detail->alasan_dibatalkan = null;
-                $detail->save();
+                if ($detail->status == 'ditolak' || $detail->status == 'diproses') {
+                   DetailDosen::where('pengajuan_judul_id', $pengajuan->id)
+                              ->where('pembimbing', $detail->pembimbing)
+                              ->update([
+                                  'status' => 'diproses',
+                                  'alasan_dibatalkan' => null,
+                              ]);
+                }
             }
 
             $pembimbing1Detail = $pengajuan->detailDosen->where('pembimbing', 'pembimbing 1')->first();
-            if ($pembimbing1Detail && $pembimbing1Detail->dosen_id != $request->dosen_pembimbing1) {
-                $pembimbing1Detail->dosen_id = $request->dosen_pembimbing1;
-                $pembimbing1Detail->save();
+            if ($pembimbing1Detail) {
+                DetailDosen::where('pengajuan_judul_id', $pengajuan->id)
+                           ->where('pembimbing', 'pembimbing 1')
+                           ->update([
+                               'dosen_id' => $request->dosen_pembimbing1,
+                               'status' => 'diproses',
+                               'alasan_dibatalkan' => null,
+                           ]);
+            } else {
+                DetailDosen::create([
+                    'dosen_id' => $request->dosen_pembimbing1,
+                    'pengajuan_judul_id' => $pengajuan->id,
+                    'pembimbing' => 'pembimbing 1',
+                    'status' => 'diproses',
+                ]);
             }
 
             $pembimbing2Detail = $pengajuan->detailDosen->where('pembimbing', 'pembimbing 2')->first();
             if ($request->has('dosen_pembimbing2') && $request->dosen_pembimbing2) {
                 if ($pembimbing2Detail) {
-                    $pembimbing2Detail->dosen_id = $request->dosen_pembimbing2;
-                    $pembimbing2Detail->save();
+                    DetailDosen::where('pengajuan_judul_id', $pengajuan->id)
+                               ->where('pembimbing', 'pembimbing 2')
+                               ->update([
+                                   'dosen_id' => $request->dosen_pembimbing2,
+                                   'status' => 'diproses',
+                                   'alasan_dibatalkan' => null,
+                               ]);
                 } else {
                     DetailDosen::create([
                         'dosen_id' => $request->dosen_pembimbing2,
@@ -530,7 +599,7 @@ class PengajuanJudulController extends Controller
         }
     }
 
-    public function destroy(string $id)
+public function destroy(string $id)
     {
         $pengajuan = PengajuanJudul::findOrFail($id);
         $user = Auth::user();
@@ -542,7 +611,7 @@ class PengajuanJudulController extends Controller
         try {
             DB::beginTransaction();
 
-            $pengajuan->delete();
+            $pengajuan->delete(); // Ini seharusnya akan menghapus detailDosen jika telah dikonfigurasi di model
 
             DB::commit();
 

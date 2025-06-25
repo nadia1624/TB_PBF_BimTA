@@ -80,7 +80,7 @@
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Riwayat Pengajuan Judul</h3>
                     <div class="space-y-4 mb-8">
                         @foreach($allPengajuan as $pengajuanItem)
-                            <div class="border rounded-lg shadow-sm p-4 {{ $pengajuan->id === $pengajuanItem->id ? 'border-blue-500 bg-blue-50' : 'bg-gray-50' }}">
+                            <div class="border rounded-lg shadow-sm p-4 {{ $pengajuan && $pengajuan->id === $pengajuanItem->id ? 'border-blue-500 bg-blue-50' : 'bg-gray-50' }}">
                                 <p class="font-medium text-gray-700">Judul: {{ $pengajuanItem->judul }}</p>
                                 <p class="text-sm text-gray-600">Diajukan: {{ $pengajuanItem->created_at->format('d M Y H:i') }}</p>
                                 <p class="text-sm text-gray-600">Deskripsi: {{ Str::limit($pengajuanItem->deskripsi, 100) }}</p>
@@ -110,7 +110,7 @@
                                         <li>Pembimbing 2: -</li>
                                     @endif
                                 </ul>
-                                @if($pengajuan->id === $pengajuanItem->id)
+                                @if($pengajuan && $pengajuan->id === $pengajuanItem->id)
                                     <p class="text-xs text-blue-600 mt-2">Ini adalah pengajuan terakhir Anda.</p>
                                 @endif
                             </div>
@@ -131,72 +131,6 @@
                             </div>
                             <div>
                                 <h3 class="font-medium text-gray-800">Status</h3>
-                                @php
-                                    $detailDosen = $pengajuan->detailDosen;
-                                    $p1Rejected = $detailDosen->where('pembimbing', 'pembimbing 1')->where('status', 'ditolak')->first();
-                                    $p2Rejected = $detailDosen->where('pembimbing', 'pembimbing 2')->where('status', 'ditolak')->first();
-                                    $p1Accepted = $detailDosen->where('pembimbing', 'pembimbing 1')->where('status', 'diterima')->first();
-                                    $p2Accepted = $detailDosen->where('pembimbing', 'pembimbing 2')->where('status', 'diterima')->first();
-
-                                    $overallStatusText = 'Diproses';
-                                    $statusColor = 'yellow';
-                                    $statusMessage = 'Anda sudah mengajukan judul dan masih dalam proses review. Silakan tunggu respons dari dosen pembimbing atau hubungi admin jika diperlukan.';
-
-                                    if ($p1Rejected && $p2Rejected) {
-                                        $overallStatusText = 'Ditolak oleh Kedua Dosen Pembimbing';
-                                        $statusColor = 'red';
-                                        $rejectedByDosenNames = [];
-                                        $reasons = [];
-
-                                        if ($p1Rejected) {
-                                            $rejectedByDosenNames[] = optional($p1Rejected->dosen)->nama_lengkap . ' (Pembimbing 1)';
-                                            if ($p1Rejected->alasan_dibatalkan) $reasons[] = 'P1: ' . $p1Rejected->alasan_dibatalkan;
-                                        }
-                                        if ($p2Rejected) {
-                                            $rejectedByDosenNames[] = optional($p2Rejected->dosen)->nama_lengkap . ' (Pembimbing 2)';
-                                            if ($p2Rejected->alasan_dibatalkan) $reasons[] = 'P2: ' . $p2Rejected->alasan_dibatalkan;
-                                        }
-
-                                        $statusMessage = "Judul tugas akhir Anda ditolak oleh " . implode(' dan ', $rejectedByDosenNames) . ".";
-                                        if (!empty($reasons)) {
-                                            $statusMessage .= " Alasan: " . implode('; ', $reasons);
-                                        } else {
-                                            $statusMessage .= " Tidak ada alasan spesifik diberikan.";
-                                        }
-                                    } elseif ($p1Rejected && $p2Accepted) {
-                                        $overallStatusText = 'Ditolak Pembimbing 1, Diterima Pembimbing 2';
-                                        $statusColor = 'yellow';
-                                        $statusMessage = 'Pengajuan Anda ditolak oleh dosen pembimbing 1 tetapi diterima oleh dosen pembimbing 2.';
-                                    } elseif ($p2Rejected && $p1Accepted) {
-                                        $overallStatusText = 'Ditolak Pembimbing 2, Diterima Pembimbing 1';
-                                        $statusColor = 'yellow';
-                                        $statusMessage = 'Pengajuan Anda ditolak oleh dosen pembimbing 2 tetapi diterima oleh dosen pembimbing 1.';
-                                    } elseif ($p1Rejected || $p2Rejected) {
-                                        $rejectedByDosenName = '';
-                                        $reason = '';
-                                        if ($p1Rejected) {
-                                            $rejectedByDosenName = optional($p1Rejected->dosen)->nama_lengkap . ' (Pembimbing 1)';
-                                            $reason = $p1Rejected->alasan_dibatalkan;
-                                        } elseif ($p2Rejected) {
-                                            $rejectedByDosenName = optional($p2Rejected->dosen)->nama_lengkap . ' (Pembimbing 2)';
-                                            $reason = $p2Rejected->alasan_dibatalkan;
-                                        }
-                                        $reason = $reason ?? 'Tidak ada alasan spesifik diberikan.';
-
-                                        $overallStatusText = "Ditolak oleh dosen";
-                                        $statusColor = 'red';
-                                        $statusMessage = "Judul tugas akhir Anda ditolak oleh dosen " . $rejectedByDosenName . ". Alasan: " . $reason;
-                                    } elseif ($p1Accepted && (!$p2Accepted || !$pembimbing2)) {
-                                        $overallStatusText = 'Diterima oleh Pembimbing 1';
-                                        $statusColor = 'green';
-                                        $statusMessage = 'Anda sudah mengajukan judul dan sudah disetujui oleh dosen pembimbing 1.';
-                                    } elseif ($p1Accepted && $p2Accepted) {
-                                        $overallStatusText = 'Diterima';
-                                        $statusColor = 'green';
-                                        $statusMessage = 'Anda sudah mengajukan judul dan sudah disetujui oleh kedua dosen pembimbing.';
-                                    }
-                                @endphp
-
                                 <span class="px-3 py-1 bg-{{$statusColor}}-200 text-{{$statusColor}}-800 rounded-full text-xs font-medium">{{ $overallStatusText }}</span>
                             </div>
                         </div>
@@ -224,17 +158,28 @@
                                 <h4 class="font-medium text-{{$statusColor}}-800 mb-1">{{ $overallStatusText }}</h4>
                                 <p class="text-{{$statusColor}}-700">{{ $statusMessage }}</p>
 
-                                @if($rejectedDetailDosen && $rejectedDetailDosen->alasan_dibatalkan)
-                                    {{-- Ini mungkin tidak relevan jika keduanya menolak, karena pesan sudah mencakup semua --}}
-                                    {{-- <p class="text-{{$statusColor}}-700 mt-2">Alasan: {{ $rejectedDetailDosen->alasan_dibatalkan }}</p> --}}
+                                {{-- Display specific rejection reasons if applicable and $rejectedDetailDosen is available --}}
+                                @if($rejectedDetailDosen && $rejectedDetailDosen->alasan_dibatalkan && $overallStatusText !== 'Ditolak oleh Kedua Dosen Pembimbing')
+                                    <p class="text-{{$statusColor}}-700 mt-2">Alasan: {{ $rejectedDetailDosen->alasan_dibatalkan }}</p>
                                 @endif
 
                                 <div class="mt-4 space-y-2">
-                                    @if($p1Rejected && $p2Rejected)
+                                    {{-- Define action buttons based on overallStatusText and specific conditions --}}
+                                    @php
+                                        $p1 = $pengajuan->detailDosen->where('pembimbing', 'pembimbing 1')->first();
+                                        $p2 = $pengajuan->detailDosen->where('pembimbing', 'pembimbing 2')->first();
+
+                                        $p1Rejected = $p1 && $p1->status === 'ditolak';
+                                        $p2Rejected = $p2 && $p2->status === 'ditolak';
+                                        $p1Accepted = $p1 && $p1->status === 'diterima';
+                                        $p2Accepted = $p2 && $p2->status === 'diterima';
+                                    @endphp
+
+                                    @if($overallStatusText === 'Ditolak oleh Kedua Dosen Pembimbing')
                                         <form action="{{ route('mahasiswa.pengajuan-judul.destroy', $pengajuan->id) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini? Riwayat pengajuan akan dihapus.')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
                                                 Batalkan Pengajuan
                                             </button>
                                         </form>
@@ -245,13 +190,13 @@
                                         <button data-action="replace-advisor1" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             Ganti Dosen Pembimbing 1
                                         </button>
-                                        <button data-action="promote-advisor" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                                        {{-- <button data-action="promote-advisor" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                                             Jadikan Dosen Pembimbing 2 sebagai Pembimbing 1
-                                        </button>
+                                        </button> --}}
                                         <form action="{{ route('mahasiswa.pengajuan-judul.destroy', $pengajuan->id) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini? Riwayat pengajuan akan dihapus.')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
                                                 Batalkan Pengajuan
                                             </button>
                                         </form>
@@ -262,23 +207,21 @@
                                         <button data-action="remove-advisor2" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
                                             Tidak Gunakan Dosen Pembimbing 2
                                         </button>
-                                    @elseif($hasRejected && !$hasAccepted)
+                                    @elseif(($p1Rejected || $p2Rejected) && !($p1Accepted && ($p2Accepted || !$p2))) {{-- If any rejected but not fully accepted --}}
                                         <form action="{{ route('mahasiswa.pengajuan-judul.destroy', $pengajuan->id) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini?')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin membatalkan pengajuan ini? Riwayat pengajuan akan dihapus.')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
                                                 Batalkan Pengajuan
                                             </button>
                                         </form>
                                         <button data-action="resubmit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                             Ajukan Judul BARU (dengan data ini)
                                         </button>
-                                    @else
-                                        @if($overallStatusText === 'Diterima')
-                                            <button data-action="new-submission" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                                Ajukan Judul Lain (Baru)
-                                            </button>
-                                        @endif
+                                    @elseif($overallStatusText === 'Diterima')
+                                        {{-- <button data-action="new-submission" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                            Ajukan Judul Lain (Baru)
+                                        </button> --}}
                                     @endif
                                 </div>
                             </div>
@@ -290,17 +233,18 @@
 
                 <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-6 md:p-8 mt-8">
                     <h2 class="text-xl font-semibold text-gray-800 mb-6">
-                        @if(($action === 'resubmit' && $pengajuan) || ($action === 'new-submission' && !$pengajuan) || ($action === 'new-submission' && $pengajuan && $overallStatusText === 'Diterima'))
+                        @if($action === 'resubmit' || $action === 'new-submission')
                             Form Pengajuan Judul Baru
                         @else
                             Form Perubahan Pengajuan Judul
                         @endif
                     </h2>
                     <div id="submission-form" class="mt-4 @if(!$displayForm) hidden @endif">
+                        {{-- Determine the form action and method based on current state and `action` --}}
                         <form action="{{ route('mahasiswa.pengajuan-judul.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="action" id="form-action" value="{{ old('action', $action ?? '') }}">
-                            <input type="hidden" name="advisor_type" id="advisor-type" value="">
+                            {{-- <input type="hidden" name="advisor_type" id="advisor-type" value=""> Remove this, not used --}}
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                                 <div class="space-y-4">
@@ -310,7 +254,7 @@
                                             type="text"
                                             id="judul"
                                             name="judul"
-                                            value="{{ old('judul', ( ($action === 'resubmit' && $pengajuan) || ($action === 'new-submission' && $pengajuan) ? $pengajuan->judul : ($pengajuan->judul ?? '') ) ) }}"
+                                            value="{{ old('judul', ($pengajuan && ($action !== 'new-submission') ? $pengajuan->judul : '') ) }}"
                                             placeholder="Masukkan judul tugas akhir"
                                             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
                                             required
@@ -325,15 +269,20 @@
                                             placeholder="Jelaskan secara singkat tentang apa yang akan dilakukan"
                                             class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
                                             required
-                                        >{{ old('deskripsi', ( ($action === 'resubmit' && $pengajuan) || ($action === 'new-submission' && $pengajuan) ? $pengajuan->deskripsi : ($pengajuan->deskripsi ?? '') ) ) }}</textarea>
+                                        >{{ old('deskripsi', ($pengajuan && ($action !== 'new-submission') ? $pengajuan->deskripsi : '') ) }}</textarea>
                                     </div>
                                 </div>
                                 <div class="space-y-4">
-                                    @if(isset($rejectedDosenId) && $rejectedDosenId && $action !== 'resubmit' && $action !== 'new-submission')
-                                        <p class="text-red-700 mt-2 mb-4">Dosen {{ $dosenList->find($rejectedDosenId)->nama_lengkap ?? 'tidak ditemukan' }} telah menolak pengajuan sebelumnya. Silakan pilih dosen lain.</p>
-                                    @elseif ($action === 'resubmit' || $action === 'new-submission')
+                                    {{-- Provide clearer messages based on action --}}
+                                    @if ($action === 'resubmit' || $action === 'new-submission')
                                         <p class="text-yellow-700 mt-2 mb-4">Silakan pilih dosen pembimbing baru untuk pengajuan ini.</p>
+                                    @elseif ($action === 'replace-advisor1')
+                                        <p class="text-yellow-700 mt-2 mb-4">Silakan pilih Dosen Pembimbing 1 yang baru.</p>
+                                    @elseif ($action === 'replace-advisor2')
+                                        <p class="text-yellow-700 mt-2 mb-4">Silakan pilih Dosen Pembimbing 2 yang baru.</p>
                                     @endif
+
+                                    {{-- Dosen Pembimbing 1 field --}}
                                     <div id="advisor1-field" class="advisor-field">
                                         <label for="dosen_pembimbing1" class="block text-sm font-medium text-gray-700 mb-1">Dosen Pembimbing 1</label>
                                         <div class="relative">
@@ -343,11 +292,26 @@
                                                 class="w-full border border-gray-300 rounded px-3 py-2 bg-white appearance-none focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
                                                 required
                                             >
-                                                <option value="" disabled {{ old('dosen_pembimbing1', ($action === 'resubmit' || $action === 'new-submission' ? '' : ($pembimbing1 ?? ''))) ? '' : 'selected' }}>Pilih Pembimbing 1</option>
+                                                <option value="" disabled {{ old('dosen_pembimbing1', $pembimbing1 ?? '') ? '' : 'selected' }}>Pilih Pembimbing 1</option>
                                                 @foreach ($dosenList as $dosen)
+                                                    @php
+                                                        $isDisabled = false;
+                                                        // Disable rejected advisor for resubmit or specific replacement
+                                                        if (is_array($rejectedDosenId)) { // Both rejected
+                                                            if (in_array($dosen->id, $rejectedDosenId) && ($action === 'resubmit' || $action === 'new-submission')) {
+                                                                $isDisabled = true;
+                                                            }
+                                                        } elseif ($dosen->id == $rejectedDosenId && ($action === 'resubmit' || $action === 'new-submission' || ($action === 'replace-advisor1' && $rejectedBy === 'pembimbing 1') )) {
+                                                            $isDisabled = true;
+                                                        }
+                                                        // Prevent selecting current P2 if promoting (handled by JS)
+                                                        if ($action === 'promote-advisor' && $dosen->id == $pembimbing2) {
+                                                            $isDisabled = true; // This will be handled by promoting P2's ID to P1's
+                                                        }
+                                                    @endphp
                                                     <option value="{{ $dosen->id }}"
-                                                        {{ old('dosen_pembimbing1', ($action === 'resubmit' || $action === 'new-submission' ? '' : ($pembimbing1 ?? ''))) == $dosen->id ? 'selected' : '' }}
-                                                        {{ ($dosen->id == ($rejectedDosenId ?? '') && (($rejectedBy ?? '') === 'pembimbing 1' || old('action', $action ?? '') === 'resubmit' || old('action', $action ?? '') === 'new-submission')) ? 'disabled' : '' }}
+                                                        {{ old('dosen_pembimbing1', $pembimbing1 ?? '') == $dosen->id && $action !== 'resubmit' && $action !== 'new-submission' && $action !== 'promote-advisor' ? 'selected' : '' }}
+                                                        {{ $isDisabled ? 'disabled' : '' }}
                                                         >
                                                         {{ $dosen->nama_lengkap }}
                                                     </option>
@@ -360,6 +324,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    {{-- Dosen Pembimbing 2 field --}}
                                     <div id="advisor2-field" class="advisor-field">
                                         <label for="dosen_pembimbing2" class="block text-sm font-medium text-gray-700 mb-1">Dosen Pembimbing 2 (Opsional)</label>
                                         <div class="relative">
@@ -368,11 +333,21 @@
                                                 name="dosen_pembimbing2"
                                                 class="w-full border border-gray-300 rounded px-3 py-2 bg-white appearance-none focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500"
                                             >
-                                                <option value="" {{ old('dosen_pembimbing2', ($action === 'resubmit' || $action === 'new-submission' ? '' : ($pembimbing2 ?? ''))) ? '' : 'selected' }}>Pilih Pembimbing 2</option>
+                                                <option value="" {{ old('dosen_pembimbing2', $pembimbing2 ?? '') ? '' : 'selected' }}>Pilih Pembimbing 2</option>
                                                 @foreach ($dosenList as $dosen)
+                                                    @php
+                                                        $isDisabled = false;
+                                                        if (is_array($rejectedDosenId)) { // Both rejected
+                                                            if (in_array($dosen->id, $rejectedDosenId) && ($action === 'resubmit' || $action === 'new-submission')) {
+                                                                $isDisabled = true;
+                                                            }
+                                                        } elseif ($dosen->id == $rejectedDosenId && ($action === 'resubmit' || $action === 'new-submission' || ($action === 'replace-advisor2' && $rejectedBy === 'pembimbing 2'))) {
+                                                            $isDisabled = true;
+                                                        }
+                                                    @endphp
                                                     <option value="{{ $dosen->id }}"
-                                                        {{ old('dosen_pembimbing2', ($action === 'resubmit' || $action === 'new-submission' ? '' : ($pembimbing2 ?? ''))) == $dosen->id ? 'selected' : '' }}
-                                                        {{ ($dosen->id == ($rejectedDosenId ?? '') && (($rejectedBy ?? '') === 'pembimbing 2' || old('action', $action ?? '') === 'resubmit' || old('action', $action ?? '') === 'new-submission')) ? 'disabled' : '' }}
+                                                        {{ old('dosen_pembimbing2', $pembimbing2 ?? '') == $dosen->id && $action !== 'resubmit' && $action !== 'new-submission' ? 'selected' : '' }}
+                                                        {{ $isDisabled ? 'disabled' : '' }}
                                                         >
                                                         {{ $dosen->nama_lengkap }}
                                                     </option>
@@ -398,7 +373,7 @@
                                     type="submit"
                                     class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
                                 >
-                                    @if(($action === 'resubmit' && $pengajuan) || ($action === 'new-submission' && !$pengajuan) || ($action === 'new-submission' && $pengajuan && $overallStatusText === 'Diterima'))
+                                    @if($action === 'resubmit' || $action === 'new-submission')
                                         Ajukan Judul
                                     @else
                                         Perbarui Pengajuan
@@ -425,19 +400,30 @@
         const judulInput = document.getElementById('judul');
         const deskripsiInput = document.getElementById('deskripsi');
 
+        // Initial state from PHP
+        const phpPengajuan = @json($pengajuan);
+        const phpPembimbing1 = {{ $pembimbing1 ?? 'null' }};
+        const phpPembimbing2 = {{ $pembimbing2 ?? 'null' }};
+        const phpRejectedDosenId = @json($rejectedDosenId);
+        const phpRejectedBy = '{{ $rejectedBy ?? '' }}';
+        const phpAction = '{{ $action ?? '' }}';
+        const phpDisplayForm = {{ $displayForm ? 'true' : 'false' }};
+
         function resetFormVisibilityAndRequirements() {
-            form.classList.remove('hidden');
+            form.classList.remove('hidden'); // Ensure form is visible by default for any action
             advisor1Field.classList.remove('hidden');
             advisor2Field.classList.remove('hidden');
             dosenPembimbing1Select.required = true;
             dosenPembimbing2Select.required = false;
 
+            // Enable all options first
             [dosenPembimbing1Select, dosenPembimbing2Select].forEach(select => {
                 Array.from(select.options).forEach(option => {
                     option.disabled = false;
                 });
             });
 
+            // Reset selected values (important for 'new-submission' and 'resubmit')
             dosenPembimbing1Select.value = '';
             dosenPembimbing2Select.value = '';
         }
@@ -445,69 +431,116 @@
         buttons.forEach(button => {
             button.addEventListener('click', function () {
                 const action = this.getAttribute('data-action');
-                resetFormVisibilityAndRequirements();
-                actionInput.value = action;
+                resetFormVisibilityAndRequirements(); // Reset everything first
+                actionInput.value = action; // Set the hidden action field
 
-                const phpPengajuan = @json($pengajuan);
+                // Logic based on action
+                if (action === 'replace-advisor1') {
+                    judulInput.value = phpPengajuan.judul;
+                    deskripsiInput.value = phpPengajuan.deskripsi;
+                    dosenPembimbing1Select.value = ''; // Clear P1 selection for replacement
+                    dosenPembimbing2Select.value = phpPembimbing2; // Keep P2 as is
 
-                if (action === 'replace-advisor1' || action === 'promote-advisor' || action === 'replace-advisor2' || action === 'remove-advisor2') {
-                    if (phpPengajuan) {
-                        judulInput.value = phpPengajuan.judul;
-                        deskripsiInput.value = phpPengajuan.deskripsi;
-                        dosenPembimbing1Select.value = "{{ $pembimbing1 ?? '' }}";
-                        dosenPembimbing2Select.value = "{{ $pembimbing2 ?? '' }}";
+                    advisor2Field.classList.remove('hidden'); // Ensure P2 is visible
+                    dosenPembimbing1Select.required = true;
+                    dosenPembimbing2Select.required = false;
+
+                    // Disable the rejected P1 if it's the specific case
+                    if (phpRejectedDosenId === phpPembimbing1 && phpRejectedBy === 'pembimbing 1') {
+                        Array.from(dosenPembimbing1Select.options).forEach(option => {
+                            if (option.value == phpRejectedDosenId) {
+                                option.disabled = true;
+                            }
+                        });
                     }
 
-                    if (action === 'replace-advisor1' || action === 'replace-advisor2') {
-                        advisor2Field.classList.toggle('hidden', action === 'replace-advisor1');
-                        advisor1Field.classList.toggle('hidden', action === 'replace-advisor2');
-                        dosenPembimbing1Select.required = (action === 'replace-advisor1');
-                        dosenPembimbing2Select.required = (action === 'replace-advisor2');
-                    } else if (action === 'promote-advisor' || action === 'remove-advisor2') {
-                        advisor1Field.classList.add('hidden');
-                        advisor2Field.classList.add('hidden');
-                        dosenPembimbing1Select.required = false;
-                        dosenPembimbing2Select.required = false;
+                } else if (action === 'promote-advisor') {
+                    // Title and Description remain the same
+                    judulInput.value = phpPengajuan.judul;
+                    deskripsiInput.value = phpPengajuan.deskripsi;
+
+                    // This action will be handled entirely in the backend (Controller)
+                    // The form will essentially just "trigger" the backend change.
+                    // So we can hide the advisor fields or set their values to what they will become.
+                    advisor1Field.classList.add('hidden'); // Hide P1 field, it will be auto-set by backend
+                    advisor2Field.classList.add('hidden'); // Hide P2 field, it will be auto-set by backend
+                    dosenPembimbing1Select.required = false;
+                    dosenPembimbing2Select.required = false;
+
+                    // This makes the submit button in the form "trigger" the backend promote-advisor logic.
+                    // We need a way to submit the form with this action.
+                    // For now, let's just show a message or confirm the action via an alert/modal.
+                    // A direct form submission is better.
+                    // Set dummy values if fields are required by backend but hidden.
+                    dosenPembimbing1Select.value = phpPembimbing2; // Visually set P1 to P2
+                    dosenPembimbing2Select.value = ''; // Clear P2
+                    // You might want a simpler form submission for these specific actions.
+                    // For now, setting the input fields like this is a workaround.
+
+                } else if (action === 'replace-advisor2') {
+                    judulInput.value = phpPengajuan.judul;
+                    deskripsiInput.value = phpPengajuan.deskripsi;
+                    dosenPembimbing1Select.value = phpPembimbing1; // Keep P1 as is
+                    dosenPembimbing2Select.value = ''; // Clear P2 selection for replacement
+
+                    advisor1Field.classList.remove('hidden'); // Ensure P1 is visible
+                    dosenPembimbing1Select.required = true;
+                    dosenPembimbing2Select.required = false; // P2 is optional
+
+                    // Disable the rejected P2 if it's the specific case
+                    if (phpRejectedDosenId === phpPembimbing2 && phpRejectedBy === 'pembimbing 2') {
+                        Array.from(dosenPembimbing2Select.options).forEach(option => {
+                            if (option.value == phpRejectedDosenId) {
+                                option.disabled = true;
+                            }
+                        });
                     }
 
-                    const rejectedDosenId = '{{ $rejectedDosenId ?? '' }}';
-                    if (rejectedDosenId) {
-                        if (action === 'replace-advisor1') {
-                            Array.from(dosenPembimbing1Select.options).forEach(option => {
-                                if (option.value === rejectedDosenId) {
-                                    option.disabled = true;
-                                }
-                            });
-                        } else if (action === 'replace-advisor2') {
-                            Array.from(dosenPembimbing2Select.options).forEach(option => {
-                                if (option.value === rejectedDosenId) {
-                                    option.disabled = true;
-                                }
-                            });
-                        }
-                    }
+                } else if (action === 'remove-advisor2') {
+                    judulInput.value = phpPengajuan.judul;
+                    deskripsiInput.value = phpPengajuan.deskripsi;
+                    dosenPembimbing1Select.value = phpPembimbing1; // Keep P1 as is
+                    dosenPembimbing2Select.value = ''; // Clear P2 selection
+
+                    advisor1Field.classList.remove('hidden');
+                    advisor2Field.classList.add('hidden'); // Hide P2 field
+                    dosenPembimbing1Select.required = true;
+                    dosenPembimbing2Select.required = false; // Not required as it's being removed
+
                 } else if (action === 'resubmit') {
-                    if (phpPengajuan) {
-                        judulInput.value = phpPengajuan.judul;
-                        deskripsiInput.value = phpPengajuan.deskripsi;
-                    }
+                    // For resubmit, use existing title/description but clear advisor selections
+                    judulInput.value = phpPengajuan.judul;
+                    deskripsiInput.value = phpPengajuan.deskripsi;
+                    dosenPembimbing1Select.value = '';
+                    dosenPembimbing2Select.value = '';
 
                     advisor1Field.classList.remove('hidden');
                     advisor2Field.classList.remove('hidden');
                     dosenPembimbing1Select.required = true;
                     dosenPembimbing2Select.required = false;
 
-                    const rejectedDosenId = '{{ $rejectedDosenId ?? '' }}';
-                    if (rejectedDosenId) {
+                    // Disable previously rejected advisors from both lists
+                    // If phpRejectedDosenId is an array (both rejected)
+                    if (Array.isArray(phpRejectedDosenId)) {
                         [dosenPembimbing1Select, dosenPembimbing2Select].forEach(select => {
                             Array.from(select.options).forEach(option => {
-                                if (option.value === rejectedDosenId) {
+                                if (phpRejectedDosenId.includes(parseInt(option.value))) {
+                                    option.disabled = true;
+                                }
+                            });
+                        });
+                    } else if (phpRejectedDosenId) { // Single rejected advisor
+                        [dosenPembimbing1Select, dosenPembimbing2Select].forEach(select => {
+                            Array.from(select.options).forEach(option => {
+                                if (option.value == phpRejectedDosenId) {
                                     option.disabled = true;
                                 }
                             });
                         });
                     }
+
                 } else if (action === 'new-submission') {
+                    // Clear all fields for a completely new submission
                     judulInput.value = '';
                     deskripsiInput.value = '';
                     dosenPembimbing1Select.value = '';
@@ -523,60 +556,73 @@
             });
         });
 
-        const initialDisplayForm = {{ $displayForm ? 'true' : 'false' }};
-        if (!initialDisplayForm) {
+        // Initial form display logic on page load
+        if (!phpDisplayForm) {
             form.classList.add('hidden');
         } else {
-            const initialRejectedDosenId = '{{ $rejectedDosenId ?? '' }}';
-            const initialRejectedBy = '{{ $rejectedBy ?? '' }}';
-            const initialAction = '{{ $action ?? '' }}';
-            const phpPengajuan = @json($pengajuan);
-
-            if (initialRejectedDosenId) {
-                if (initialRejectedBy === 'pembimbing 1' || initialAction === 'resubmit' || initialAction === 'new-submission') {
-                    Array.from(dosenPembimbing1Select.options).forEach(option => {
-                        if (option.value === initialRejectedDosenId) {
-                            option.disabled = true;
-                        }
+            // Reapply disabled status for advisors based on initial page load state
+            if (phpRejectedDosenId) {
+                if (Array.isArray(phpRejectedDosenId)) {
+                    [dosenPembimbing1Select, dosenPembimbing2Select].forEach(select => {
+                        Array.from(select.options).forEach(option => {
+                            if (phpRejectedDosenId.includes(parseInt(option.value))) {
+                                option.disabled = true;
+                            }
+                        });
                     });
-                }
-                if (initialRejectedBy === 'pembimbing 2' || initialAction === 'resubmit' || initialAction === 'new-submission') {
-                    Array.from(dosenPembimbing2Select.options).forEach(option => {
-                        if (option.value === initialRejectedDosenId) {
-                            option.disabled = true;
-                        }
-                    });
+                } else {
+                    if (phpRejectedBy === 'pembimbing 1' || phpAction === 'resubmit' || phpAction === 'new-submission') {
+                        Array.from(dosenPembimbing1Select.options).forEach(option => {
+                            if (option.value == phpRejectedDosenId) {
+                                option.disabled = true;
+                            }
+                        });
+                    }
+                    if (phpRejectedBy === 'pembimbing 2' || phpAction === 'resubmit' || phpAction === 'new-submission') {
+                        Array.from(dosenPembimbing2Select.options).forEach(option => {
+                            if (option.value == phpRejectedDosenId) {
+                                option.disabled = true;
+                            }
+                        });
+                    }
                 }
             }
 
-            if (phpPengajuan && initialAction !== 'resubmit' && initialAction !== 'new-submission') {
+            // Set initial form values based on whether it's a "new-submission" or editing existing.
+            // If action is 'resubmit' or 'new-submission', clear advisor fields even if pengajuan exists.
+            if (phpPengajuan && (phpAction !== 'resubmit' && phpAction !== 'new-submission')) {
                 judulInput.value = phpPengajuan.judul;
                 deskripsiInput.value = phpPengajuan.deskripsi;
-                dosenPembimbing1Select.value = "{{ $pembimbing1 ?? '' }}";
-                dosenPembimbing2Select.value = "{{ $pembimbing2 ?? '' }}";
-            } else if (initialAction === 'new-submission' || !phpPengajuan) {
-                judulInput.value = '';
-                deskripsiInput.value = '';
-                dosenPembimbing1Select.value = '';
-                dosenPembimbing2Select.value = '';
-            } else if (initialAction === 'resubmit' && phpPengajuan) {
-                judulInput.value = phpPengajuan.judul;
-                deskripsiInput.value = phpPengajuan.deskripsi;
+                dosenPembimbing1Select.value = phpPembimbing1;
+                dosenPembimbing2Select.value = phpPembimbing2;
+            } else { // For new submission or resubmit, clear the fields
+                judulInput.value = phpPengajuan ? phpPengajuan.judul : ''; // Keep title/desc for resubmit
+                deskripsiInput.value = phpPengajuan ? phpPengajuan.deskripsi : '';
                 dosenPembimbing1Select.value = '';
                 dosenPembimbing2Select.value = '';
             }
         }
 
-        const newSubmissionButton = document.querySelector('button[data-action="new-submission"]');
-        if (newSubmissionButton) {
-            newSubmissionButton.addEventListener('click', function() {
-                resetFormVisibilityAndRequirements();
-                actionInput.value = 'new-submission';
+        // Handle the "Reset Form" button
+        document.querySelector('button[type="reset"]').addEventListener('click', function() {
+            // Revert to initial state on page load (if any proposal exists)
+            resetFormVisibilityAndRequirements();
+            if (phpPengajuan && (phpAction !== 'resubmit' && phpAction !== 'new-submission')) {
+                judulInput.value = phpPengajuan.judul;
+                deskripsiInput.value = phpPengajuan.deskripsi;
+                dosenPembimbing1Select.value = phpPembimbing1;
+                dosenPembimbing2Select.value = phpPembimbing2;
+            } else {
                 judulInput.value = '';
                 deskripsiInput.value = '';
-                form.scrollIntoView({ behavior: 'smooth' });
-            });
-        }
+                dosenPembimbing1Select.value = '';
+                dosenPembimbing2Select.value = '';
+            }
+            actionInput.value = ''; // Clear action on reset
+            if (!phpDisplayForm) { // If form was initially hidden, re-hide it
+                form.classList.add('hidden');
+            }
+        });
     });
 </script>
 @endsection

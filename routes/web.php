@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\JadwalBimbinganController;
+use App\Http\Controllers\Mahasiswa\BimbinganController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,7 +42,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/jadwal-bimbingan/{jadwalId}/dokumen/{dokumenId}', [JadwalBimbinganController::class, 'showDokumen'])
             ->name('jadwal-bimbingan.show-dokumen');
         Route::get('/dokumen-review/download/{id}', [JadwalBimbinganController::class, 'downloadReviewDocument'])->name('dokumen.review.download');
+
+        Route::get('/bimbingan', [BimbinganController::class, 'index'])
+            ->name('bimbingan.index');
     });
+
+
+
 
     // Routes for Dosen
 
