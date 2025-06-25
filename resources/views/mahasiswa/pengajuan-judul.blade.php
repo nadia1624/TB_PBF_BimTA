@@ -32,10 +32,10 @@
                                     <span class="text-yellow-500">Belum ditentukan</span>
                                 @endif
                             </p>
-                            <div class="mt-2 flex items-center">
+                            {{-- <div class="mt-2 flex items-center">
                                 <p class="text-sm text-gray-600 mr-2">Kuota Tersedia :</p>
                                 <p class="text-lg font-bold text-gray-700">20</p>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 @endforeach

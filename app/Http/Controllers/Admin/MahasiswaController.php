@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Models\PengajuanJudul;
+use App\Models\JadwalBimbingan;
 use Carbon\Carbon;
 
 class MahasiswaController extends Controller
@@ -166,4 +168,34 @@ class MahasiswaController extends Controller
             return redirect()->route('admin.mahasiswa')->with('error', 'Terjadi kesalahan saat memperbarui mahasiswa');
         }
     }
+
+    public function dashboard()
+    {
+        $totalMahasiswa = Mahasiswa::count();
+
+        $totalPengajuanJudul = PengajuanJudul::count();
+
+        $totalJadwalBimbingan = JadwalBimbingan::count();
+        $jadwalBimbinganHariIni = JadwalBimbingan::whereDate('tanggal_pengajuan', today())->count();
+
+        $pengajuanJudulTerbaru = PengajuanJudul::with('mahasiswa')
+            ->orderBy('created_at', 'desc')
+            ->take(4)
+            ->get();
+
+        $jadwalBimbinganHariIniDetails = JadwalBimbingan::with(['pengajuanJudul.mahasiswa', 'dosen'])
+            ->whereDate('tanggal_pengajuan', Carbon::today())
+            ->orderBy('waktu_pengajuan', 'asc')
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'totalMahasiswa',
+            'totalPengajuanJudul',
+            'totalJadwalBimbingan',
+            'jadwalBimbinganHariIni',
+            'pengajuanJudulTerbaru',
+            'jadwalBimbinganHariIniDetails'
+        ));
+    }
+
 }
