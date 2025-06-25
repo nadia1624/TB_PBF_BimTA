@@ -392,7 +392,7 @@
                 const actionUrl = this.dataset.action;
 
                 Swal.fire({
-                    title: 'Konfirmasi ACC Tugak Akhir',
+                    title: 'Konfirmasi ACC Tugas Akhir',
                     text: 'Apakah anda yakin ingin ACC tugas akhir mahasiswa ini? Setelah di-ACC, status akan berubah menjadi selesai dan tidak dapat diubah lagi.',
                     icon: 'warning',
                     showCancelButton: true,
@@ -414,7 +414,18 @@
                         .then(data => {
                             if (data.success) {
                                 Swal.fire('Berhasil!', 'Dokumen telah di-ACC dan ditandai selesai.', 'success').then(() => {
-                                    location.reload();
+                                    // Hide the clicked ACC button
+                                    button.style.display = 'none';
+                                    // Update the status display
+                                    const statusDiv = button.closest('.document-item').querySelector('.flex.items-center');
+                                    statusDiv.innerHTML = `
+                                        <span class="w-2.5 h-2.5 bg-green-500 rounded-full mr-2"></span>
+                                        <span class="text-sm font-semibold text-green-600">Sudah Direview</span>
+                                    `;
+                                    // Update the dataset status
+                                    button.closest('.document-item').dataset.status = 'selesai';
+                                    // Apply filters to reflect updated status
+                                    applyFilters();
                                 });
                             } else {
                                 Swal.fire('Gagal!', data.message, 'error');
