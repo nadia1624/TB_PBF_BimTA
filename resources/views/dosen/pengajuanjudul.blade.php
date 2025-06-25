@@ -93,6 +93,12 @@
                             <div>
                                 <h3 class="text-lg font-medium">{{ $item->mahasiswa->nama_lengkap }}</h3>
                                 <p class="text-gray-600 text-sm">{{ $item->mahasiswa->nim }}</p>
+                                <p class="text-sm text-gray-700 mt-1">
+                                    Diajukan sebagai:
+                                    <span class="font-semibold capitalize">
+                                        {{ $item->detailDosen[0]->pembimbing }}
+                                    </span>
+                                </p>
                             </div>
 
                             <!-- Status Badge -->
