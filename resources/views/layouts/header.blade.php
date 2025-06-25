@@ -39,7 +39,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600">
+                <a href="{{ route('mahasiswa.bimbingan.index') }}" class="px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600">
                     <div class="flex items-center space-x-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -121,7 +121,7 @@
             <a href="{{ route('mahasiswa.dashboard') }}" class="block py-2 px-4 text-sm {{ request()->routeIs('mahasiswa.dashboard') ? 'text-green-600 font-medium' : 'text-gray-700' }}">Dashboard</a>
             <a href="{{ route('mahasiswa.pengajuan-judul.index') }}" class="block py-2 px-4 text-sm {{ request()->routeIs('mahasiswa.pengajuan-judul.*') ? 'text-green-600 font-medium' : 'text-gray-700' }}">Pengajuan Judul</a>
             <a href="{{ route('mahasiswa.jadwal-bimbingan.index') }}" class="block py-2 px-4 text-sm {{ request()->routeIs('mahasiswa.jadwal-bimbingan.*') ? 'text-green-600 font-medium' : 'text-gray-700' }}">Jadwal Bimbingan</a>
-            <a href="#" class="block py-2 px-4 text-sm text-gray-700">Bimbingan</a>
+            <a href="{{ route('mahasiswa.bimbingan.index') }}" class="block py-2 px-4 text-sm {{ request()->routeIs('mahasiswa.bimbingan.*') ? 'text-green-600 font-medium' : 'text-gray-700' }}">Bimbingan</a>
 
             <div class="border-t border-gray-200 my-2"></div>
 
