@@ -66,10 +66,12 @@ class BimbinganController extends Controller
                 // Cek status penerimaan dari pembimbing
                 $pembimbing1Detail = $details->where('pembimbing', 'pembimbing 1')->first();
                 $pembimbing2Detail = $details->where('pembimbing', 'pembimbing 2')->first();
-                $pembimbing1Accepted = $pembimbing1Detail ? $pembimbing1Detail->status !== 'ditolak' : false;
-                $pembimbing2Accepted = $pembimbing2Detail ? $pembimbing2Detail->status !== 'ditolak' : true; // Default true if no Pembimbing 2
+                $pembimbing1Status = $pembimbing1Detail ? $pembimbing1Detail->status : 'diproses';
+                $pembimbing2Status = $pembimbing2Detail ? $pembimbing2Detail->status : 'diterima'; // Default diterima if no Pembimbing 2
 
-                if ($pembimbing1Accepted && $pembimbing2Accepted) {
+                if ($pembimbing1Status === 'diproses' && $pembimbing2Status === 'diproses') {
+                    $messageBimbingan = 'Anda masih dalam tahap pengajuan judul.';
+                } elseif ($pembimbing1Status === 'diterima' && $pembimbing2Status === 'diterima') {
                     $messageBimbingan = 'Masih dalam tahap bimbingan.';
                 } else {
                     $messageBimbingan = 'Pengajuan judul ditolak oleh salah satu dosen pembimbing.';

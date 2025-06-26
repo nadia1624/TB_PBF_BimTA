@@ -153,13 +153,13 @@
                     <td class="px-6 py-4">{{ $mhs->no_hp }}</td>
                     <td class="px-6 py-4">
                         <div class="flex flex-col items-center text-xs">
-                            <div class="flex items-center mb-1">
+                            {{-- <div class="flex items-center mb-1">
                                 <span class="font-medium mr-2">Pengajuan:</span>
-                                <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">0</span>
-                            </div>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">{{ $mhs->pengajuanJudul_count }}</span>
+                            </div> --}}
                             <div class="flex items-center">
                                 <span class="font-medium mr-2">Bimbingan:</span>
-                                <span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">0</span>
+                                <span class="bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">{{ $mhs->jadwal_bimbingan_count }}</span>
                             </div>
                         </div>
                     </td>

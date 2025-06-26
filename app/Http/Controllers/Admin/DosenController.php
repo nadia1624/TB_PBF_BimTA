@@ -19,7 +19,11 @@ class DosenController extends Controller
     public function index(Request $request)
     {
         $bidang_keahlian = BidangKeahlian::all();
-        $dosenQuery = Dosen::with(['user', 'detailBidang.bidangKeahlian']);
+        $dosenQuery = Dosen::with([
+        'user',
+        'detailBidang.bidangKeahlian',
+        'detailDosen.pengajuanJudul.mahasiswa',
+        ]);
 
     // Filter berdasarkan bidang keahlian jika ada
     if ($request->has('bidang') && $request->bidang !== 'all') {
@@ -29,7 +33,27 @@ class DosenController extends Controller
         });
     }
 
-    $dosen = $dosenQuery->get();
+    $dosen = Dosen::with('detailDosen.pengajuanJudul.mahasiswa')->get();
+
+    foreach ($dosen as $item) {
+        $mahasiswaList = [];
+
+        foreach ($item->detailDosen ?? [] as $detail) {
+            if (
+                strtolower($detail->status ?? '') === 'diterima' &&
+                $detail->pengajuanJudul &&
+                $detail->pengajuanJudul->mahasiswa
+            ) {
+                $mahasiswa = $detail->pengajuanJudul->mahasiswa;
+                $mahasiswaList[$mahasiswa->id] = $mahasiswa; // pakai ID sebagai key untuk hindari duplikat
+            }
+        }
+
+        // Simpan ke properti dosen
+        $item->mahasiswa_bimbingan = collect($mahasiswaList)->values(); // konversi ke collection indexed
+        $item->mahasiswa_count = $item->mahasiswa_bimbingan->count();
+    }
+
 
     return view('admin.dosen.index', compact('dosen', 'bidang_keahlian'));
     }

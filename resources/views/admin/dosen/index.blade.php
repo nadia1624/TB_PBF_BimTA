@@ -738,10 +738,23 @@
                             </div>
                         </div>
 
-                        <div class="border-t pt-4">
-                            <h4 class="text-lg font-medium text-gray-900 dark:text-black mb-4">Mahasiswa Bimbingan</h4>
+            <div class="border-t pt-4">
+                <h4 class="text-lg font-medium text-gray-900 dark:text-black mb-2">Mahasiswa Bimbingan</h4>
 
-                        </div>
+                <template x-if="user.mahasiswa_bimbingan && user.mahasiswa_bimbingan.length > 0">
+                    <ul class="list-disc pl-6 text-gray-700">
+                        <template x-for="mhs in user.mahasiswa_bimbingan" :key="mhs.id">
+                            <li x-text="mhs.nama_lengkap"></li>
+                        </template>
+                    </ul>
+                </template>
+
+                <template x-if="!user.mahasiswa_bimbingan || user.mahasiswa_bimbingan.length === 0">
+                    <p class="text-sm text-gray-500">Belum ada mahasiswa bimbingan.</p>
+                </template>
+            </div>
+
+
                     </div>
                 </div>
                 <!-- Modal footer -->
