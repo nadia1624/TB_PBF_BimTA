@@ -169,7 +169,7 @@
 
                                         <div class="text-sm text-gray-600">
                                             <p class="font-medium mb-1">Keterangan:</p>
-                                            <p>{{ $jadwal->dokumenOnline->keterangan_mahasiswa }}</p>
+                                            <p>{{ $jadwal->dokumenOnline->keterangan_mahasiswa ?? '-' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -236,7 +236,7 @@
                     <div class="mb-6">
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">Topik Bahasan:</h3>
                         <div class="p-4 bg-gray-50 rounded-lg">
-                            <p class="whitespace-pre-line">{{ $jadwal->dokumenOnline->keterangan_mahasiswa }}</p>
+                            <p class="whitespace-pre-line">{{ $jadwal->dokumenOnline->keterangan_mahasiswa ?? '-'}}</p>
                         </div>
                     </div>
 

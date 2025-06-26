@@ -43,4 +43,9 @@ class Dosen extends Model
     {
         return $this->hasMany(JadwalBimbingan::class);
     }
+
+    public function detailDosen()
+    {
+        return $this->hasMany(DetailDosen::class, 'dosen_id');
+    }
 }

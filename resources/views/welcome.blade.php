@@ -25,7 +25,7 @@
                 <div class="flex items-center lg:order-2">
                     @if (Route::has('login'))
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 focus:outline-none">Dashboard</a>
+                            <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 focus:outline-none">Dashboard</a>
                         @else
                             <a href="{{ route('login') }}" class="text-white bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none">Log in</a>
                             @if (Route::has('register'))
@@ -57,18 +57,25 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="bg-gradient-to-b from-white to-lime-50 pt-28 pb-12">
+<section class="bg-gradient-to-b from-white to-lime-50 pt-28 pb-12">
         <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
             <div class="mr-auto place-self-center lg:col-span-7">
                 <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl text-gray-900">BimTA: Bimbingan Tugas Akhir DSI</h1>
                 <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl">Platform yang memudahkan mahasiswa dan dosen dalam proses bimbingan tugas akhir. Jadwalkan bimbingan, pantau progres, dan dapatkan feedback secara real-time.</p>
-                <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300">
-                    Log in
-                    <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </a>
+                @auth
+                    <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300">
+                        Dashboard
+                        <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-5 py-3 mr-3 text-base font-medium text-center text-white rounded-lg bg-[#638B35] hover:bg-lime-700 focus:ring-4 focus:ring-lime-300">
+                        Log in
+                        <svg class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6 a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </a>
+                @endauth
             </div>
             <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
-                <img src="/uploads/gedungrektorat.jpg" alt="mockup">
+                <img src="/Uploads/gedungrektorat.jpg" alt="mockup">
             </div>
         </div>
     </section>

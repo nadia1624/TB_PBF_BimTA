@@ -37,6 +37,7 @@ class JadwalBimbingan extends Model
         return $this->belongsTo(Dosen::class);
     }
 
+
     public function pengajuanJudul()
     {
         return $this->belongsTo(PengajuanJudul::class);
