@@ -159,7 +159,11 @@
                     <tr class="border-t hover:bg-gray-50" data-id="{{ $jadwal->id }}" data-metode="{{ $jadwal->metode }}">
                         <td class="py-3 px-4">{{ $jadwal->pengajuanJudul->mahasiswa->nama_lengkap }}</td>
                         <td class="py-3 px-4">{{ $jadwal->pengajuanJudul->judul }}</td>
-                        <td class="py-3 px-4">{{ $jadwal->metode == 'online' ? 'Online' : 'Tatap Muka' }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-1 rounded-full text-xs {{ $jadwal->metode == 'online' ? 'bg-blue-100 text-blue-800' : ($jadwal->metode == 'offline' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') }}">
+                                {{ $jadwal->metode == 'online' ? 'Online Meeting' : ($jadwal->metode == 'offline' ? 'Offline Meeting' : '-') }}
+                            </span>
+                        </td>
                         <td class="py-3 px-4">{{ \Carbon\Carbon::parse($jadwal->tanggal_pengajuan)->format('d/m/Y') }}</td>
                         <td class="py-3 px-4">
                             @if($jadwal->status == 'diproses')
@@ -222,8 +226,8 @@
                     <label for="metode" class="block text-sm font-medium text-gray-700 mb-1">Metode</label>
                     <select id="metode" name="metode" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
                         <option value="">-- Pilih Metode --</option>
-                        <option value="online">Online</option>
-                        <option value="offline">Tatap Muka</option>
+                        <option value="online">Online Meeting</option>
+                        <option value="offline">Offline Meeting</option>
                     </select>
                 </div>
                 <div class="mb-4" id="keteranganOfflineContainer" style="display: none;">

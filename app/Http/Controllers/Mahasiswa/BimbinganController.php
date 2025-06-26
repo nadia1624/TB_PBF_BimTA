@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Mahasiswa;
 use App\Models\PengajuanJudul;
+use App\Models\JadwalBimbingan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class BimbinganController extends Controller
 {
-public function index()
+    public function index()
     {
         $user = Auth::user();
         $mahasiswa = $user->mahasiswa;
@@ -27,6 +28,7 @@ public function index()
         $messageBimbingan = 'Anda belum melakukan pengajuan judul.';
         $pembimbing1 = 'Belum ditentukan';
         $pembimbing2 = 'Tidak ada Pembimbing 2';
+        $jadwalBimbingan = collect(); // Initialize empty collection
 
         if ($pengajuanJudul) {
             // Ambil data dosen pembimbing dari detailDosen
@@ -43,6 +45,14 @@ public function index()
             if ($pembimbing2Detail && isset($pembimbing2Detail->dosen->nama_lengkap)) {
                 $pembimbing2 = $pembimbing2Detail->dosen->nama_lengkap;
             }
+
+            // Get accepted guidance schedules for this thesis
+            $jadwalBimbingan = JadwalBimbingan::where('pengajuan_judul_id', $pengajuanJudul->id)
+                ->where('status', 'diterima')
+                ->with('dosen')
+                ->orderBy('tanggal_pengajuan', 'desc')
+                ->orderBy('waktu_pengajuan', 'desc')
+                ->get();
 
             // Cek status approved_ta
             if ($pengajuanJudul->approved_ta === 'disetujui') {
@@ -69,6 +79,6 @@ public function index()
             }
         }
 
-        return view('mahasiswa.bimbingan', compact('pengajuanJudul', 'statusBimbingan', 'messageBimbingan', 'pembimbing1', 'pembimbing2'));
+        return view('mahasiswa.bimbingan', compact('pengajuanJudul', 'statusBimbingan', 'messageBimbingan', 'pembimbing1', 'pembimbing2', 'jadwalBimbingan'));
     }
 }

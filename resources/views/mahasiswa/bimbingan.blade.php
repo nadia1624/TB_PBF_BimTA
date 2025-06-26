@@ -2,8 +2,108 @@
 
 @section('content')
     <div class="w-full bg-gray-100 py-8 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="bg-white rounded-lg shadow-md p-8">
+        <div class="max-w-6xl mx-auto space-y-8">
+
+            <!-- Bimbingan Disetujui Section -->
+            @if ($statusBimbingan !== 'belum_mengajukan' && isset($jadwalBimbingan) && count($jadwalBimbingan) > 0)
+                <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl">
+                    <div class="border-b border-gray-100">
+                        <div class="px-8 py-5">
+                            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Bimbingan Disetujui
+                            </h2>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="overflow-x-auto rounded-lg shadow">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dosen</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jam</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Metode</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($jadwalBimbingan as $jadwal)
+                                        <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="flex items-center">
+                                                    @if(isset($jadwal->dosen->gambar) && $jadwal->dosen->gambar)
+                                                        <div class="flex-shrink-0 h-10 w-10">
+                                                            <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('storage/' . $jadwal->dosen->gambar) }}" alt="{{ $jadwal->dosen->nama_lengkap }}">
+                                                        </div>
+                                                    @else
+                                                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                            </svg>
+                                                        </div>
+                                                    @endif
+                                                    <div class="ml-4">
+                                                        <div class="text-sm font-medium text-gray-900">{{ $jadwal->dosen->nama_lengkap }}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ $jadwal->tanggal_pengajuan->format('d M Y') }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <div class="text-sm text-gray-900">{{ $jadwal->waktu_pengajuan->format('H:i') }} WIB</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                @if(isset($jadwal->metode) && !empty($jadwal->metode))
+                                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                        {{ $jadwal->metode == 'online' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
+                                                        {{ $jadwal->metode == 'online' ? 'Online Meeting' : 'Offline Meeting' }}
+                                                    </span>
+                                                @elseif(isset($jadwal->keterangan) && !empty($jadwal->keterangan))
+                                                    @if(strpos($jadwal->keterangan, 'Online') !== false || strpos($jadwal->keterangan, 'online') !== false)
+                                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                            Online Meeting
+                                                        </span>
+                                                    @elseif(strpos($jadwal->keterangan, 'Offline') !== false || strpos($jadwal->keterangan, 'offline') !== false)
+                                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                                            Offline Meeting
+                                                        </span>
+                                                    @endif
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Disetujui
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                                                <div class="flex justify-center">
+                                                    <!-- Tombol untuk melihat detail bimbingan -->
+                                                    <a href="{{ route('mahasiswa.jadwal-bimbingan.show', $jadwal->id) }}"
+                                                       class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-green-600 hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                                        </svg>
+                                                        Bimbingan
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Status Tugas Akhir Section -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl p-8">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-8">Status Tugas Akhir</h2>
 
                 @if ($statusBimbingan !== 'belum_mengajukan')
