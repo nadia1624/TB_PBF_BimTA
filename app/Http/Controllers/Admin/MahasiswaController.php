@@ -18,7 +18,14 @@ class MahasiswaController extends Controller
     public function index(Request $request)
     {
         // 1. Inisialisasi query untuk data mahasiswa
-        $query = Mahasiswa::with(['user']);
+        $query = Mahasiswa::with(['user', 'pengajuanJudul'])
+            ->withCount([
+                'pengajuanJudul', // Count of PengajuanJudul for each Mahasiswa
+                'pengajuanJudul as jadwal_bimbingan_count' => function ($query) {
+                    // Count of JadwalBimbingan through PengajuanJudul
+                    $query->join('jadwal_bimbingan', 'pengajuan_judul.id', '=', 'jadwal_bimbingan.pengajuan_judul_id');
+                }
+            ]);
 
         // 2. Terapkan Filter Angkatan
         // Cek apakah ada parameter 'angkatan' di URL dan nilainya bukan 'all'
@@ -187,6 +194,36 @@ class MahasiswaController extends Controller
             ->whereDate('tanggal_pengajuan', Carbon::today())
             ->orderBy('waktu_pengajuan', 'asc')
             ->get();
+// Statistik pengajuan judul per bulan
+    $pengajuanPerBulan = PengajuanJudul::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as bulan_tahun, COUNT(*) as jumlah')
+        ->whereNotNull('created_at')
+        ->groupBy('bulan_tahun')
+        ->orderBy('bulan_tahun', 'desc')
+        ->take(12)
+        ->get()
+        ->mapWithKeys(function ($item) {
+            if (preg_match('/^\d{4}-\d{2}$/', $item->bulan_tahun)) {
+                return [$item->bulan_tahun => $item->jumlah];
+            }
+            return [];
+        })->filter()->toArray();
+
+   // Statistik pengajuan judul per hari (diurutkan dari terawal ke terbaru)
+    $pengajuanPerHari = PengajuanJudul::selectRaw('DATE(created_at) as tanggal_hari, COUNT(*) as jumlah')
+        ->whereNotNull('created_at')
+        ->groupBy('tanggal_hari')
+        ->orderBy('tanggal_hari', 'asc') // Diubah dari 'desc' menjadi 'asc'
+        ->take(30) // Batasi ke 30 hari terakhir
+        ->get()
+        ->mapWithKeys(function ($item) {
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $item->tanggal_hari)) {
+                return [$item->tanggal_hari => $item->jumlah];
+            }
+            return [];
+        })->filter()->toArray();
+
+        // dd($pengajuanPerMinggu);
+
 
         return view('admin.dashboard', compact(
             'totalMahasiswa',
@@ -194,7 +231,9 @@ class MahasiswaController extends Controller
             'totalJadwalBimbingan',
             'jadwalBimbinganHariIni',
             'pengajuanJudulTerbaru',
-            'jadwalBimbinganHariIniDetails'
+            'jadwalBimbinganHariIniDetails',
+            'pengajuanPerBulan',
+            'pengajuanPerHari'
         ));
     }
 

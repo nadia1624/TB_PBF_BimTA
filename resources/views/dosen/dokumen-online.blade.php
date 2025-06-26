@@ -179,6 +179,15 @@
                         </div>
                     </a>
 
+                    {{-- <button class="flex items-center px-5 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200 open-review-modal flex-shrink-0"
+                            data-id="{{ $item->id }}"
+                            data-current-status="{{ $item->status }}"
+                            data-catatan-review="{{ $item->keterangan_dosen ?? '' }}"
+                            data-dokumen-review-path="{{ $item->dokumen_dosen ?? '' }}">
+                        Review
+                    </button> --}}
+
+                    @if($item->status != 'selesai')
                     <button class="flex items-center px-5 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors duration-200 open-review-modal flex-shrink-0"
                             data-id="{{ $item->id }}"
                             data-current-status="{{ $item->status }}"
@@ -186,6 +195,7 @@
                             data-dokumen-review-path="{{ $item->dokumen_dosen ?? '' }}">
                         Review
                     </button>
+                    @endif
 
                     @if($item->dokumen_mahasiswa && $item->bab === 'lengkap')
                     <button class="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium acc-button"
@@ -202,7 +212,7 @@
                         <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h10M7 16h10M9 3h6a2 2 0 012 2v14a2 2 0 01-2 2H9a2 2 0 01-2-2V5a2 2 0 012-2z"></path>
                         </svg>
-                        Balasan Review Dosen
+                        Balasan Review
                     </h4>
                     <p class="text-gray-700 text-sm leading-relaxed mb-2">
                         {{ $item->keterangan_dosen ?? 'Dosen belum memberikan catatan review.' }}

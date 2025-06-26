@@ -125,6 +125,7 @@ class DokumenOnlineController extends Controller
             }
 
             // Tidak mengubah status menjadi 'selesai' di sini, biarkan method acc yang menanganinya
+            $dokumen->status = 'selesai'; 
             $dokumen->keterangan_dosen = $request->catatan_review; // Catatan dari textarea
             $dokumen->tanggal_review = Carbon::now(); // Tanggal review saat ini
 
