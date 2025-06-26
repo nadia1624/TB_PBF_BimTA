@@ -68,6 +68,7 @@ class JadwalBimbinganController extends Controller
         $jadwalBimbingan->waktu_pengajuan = $request->waktu_pengajuan;
         $jadwalBimbingan->status = 'diproses';
         $jadwalBimbingan->keterangan = $request->keterangan;
+        $jadwalBimbingan->metode = null;
         // $jadwalBimbingan->metode = $request->metode;
         $jadwalBimbingan->save();
 

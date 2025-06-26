@@ -5,7 +5,7 @@
     <div class="bg-white rounded-lg shadow-md overflow-hidden max-w-6xl mx-auto">
         <div class="p-6">
             <div class="flex justify-between items-center mb-6">
-                <a href="{{ route('mahasiswa.jadwal-bimbingan.index') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+                <a href="javascript:history.back()" class="text-blue-600 hover:text-blue-800 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                     </svg>
@@ -151,11 +151,11 @@
                                                     {{ \Carbon\Carbon::parse($jadwal->dokumenOnline->created_at)->format('d F Y H:i') }}
                                                 </span>
                                             </div>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {{-- <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                 {{ $jadwal->dokumenOnline->status == 'menunggu' ? 'bg-yellow-100 text-yellow-800' :
                                                 ($jadwal->dokumenOnline->status == 'diproses' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
                                                 {{ ucfirst($jadwal->dokumenOnline->status) }}
-                                            </span>
+                                            </span> --}}
                                         </div>
 
                                         <div class="flex items-center mb-2">
@@ -223,9 +223,7 @@
                                 </svg>
                                 <span>Bimbingan Tatap Muka</span>
                             </div>
-                            <p class="text-sm text-gray-500">
-                                Bimbingan ini dilakukan secara tatap muka. Silahkan datang ke ruangan dosen sesuai dengan jadwal yang telah disepakati.
-                            </p>
+                            <p class="whitespace-pre-line">{{ $jadwal->keterangan_diterima_offline }}</p>
                         </div>
                     @endif
                 </div>
@@ -236,60 +234,60 @@
                     <div class="mb-6">
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">Topik Bahasan:</h3>
                         <div class="p-4 bg-gray-50 rounded-lg">
-                            <p class="whitespace-pre-line">{{ $jadwal->dokumenOnline->keterangan_mahasiswa }}</p>
+                            <p class="whitespace-pre-line">{{ $jadwal->keterangan }}</p>
                         </div>
                     </div>
 
                     <!-- Balasan Dosen -->
-<div class="mb-6">
-    <h3 class="text-lg font-semibold text-gray-700 mb-2">Balasan Dosen</h3>
-    <div class="p-4 bg-gray-50 rounded-lg min-h-48">
-        {{-- Pastikan ada objek DokumenOnline yang terkait dengan jadwal ini --}}
-        @if($jadwal->dokumenOnline)
-            @php
-                $dokumenReview = $jadwal->dokumenOnline; // Ambil objek DokumenOnline
-            @endphp
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Balasan Dosen</h3>
+                        <div class="p-4 bg-gray-50 rounded-lg min-h-48">
+                            {{-- Pastikan ada objek DokumenOnline yang terkait dengan jadwal ini --}}
+                            @if($jadwal->dokumenOnline)
+                                @php
+                                    $dokumenReview = $jadwal->dokumenOnline; // Ambil objek DokumenOnline
+                                @endphp
 
-            {{-- Jika dokumen dosen (file review) ada --}}
-            @if($dokumenReview->dokumen_dosen)
-                <div class="mb-4">
-                    {{-- Keterangan dosen (catatan review) --}}
-                    <p class="text-sm text-gray-700">
-                        {{ $dokumenReview->keterangan_dosen ?? 'Tidak ada catatan tambahan dari dosen.' }}
-                    </p>
-                    <div class="mt-2">
-                        {{-- Tombol Download Dokumen Revisi dari Dosen --}}
-                        <a href="{{ route('mahasiswa.dokumen.review.download', $dokumenReview->id) }}"
-                           target="_blank"
-                           class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                            Download Dokumen Revisi dari Dosen
-                        </a>
-                        <p class="text-xs text-gray-500 mt-1">
-                            Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
-                        </p>
+                                {{-- Jika dokumen dosen (file review) ada --}}
+                                @if($dokumenReview->dokumen_dosen)
+                                    <div class="mb-4">
+                                        {{-- Keterangan dosen (catatan review) --}}
+                                        <p class="text-sm text-gray-700">
+                                            {{ $dokumenReview->keterangan_dosen ?? 'Tidak ada catatan tambahan dari dosen.' }}
+                                        </p>
+                                        <div class="mt-2">
+                                            {{-- Tombol Download Dokumen Revisi dari Dosen --}}
+                                            <a href="{{ route('mahasiswa.dokumen.review.download', $dokumenReview->id) }}"
+                                            target="_blank"
+                                            class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                </svg>
+                                                Download Dokumen Revisi dari Dosen
+                                            </a>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                {{-- Jika tidak ada dokumen dosen, tapi ada catatan review (mungkin hanya catatan teks) --}}
+                                @elseif($dokumenReview->keterangan_dosen)
+                                    <p class="text-sm text-gray-700">
+                                        {{ $dokumenReview->keterangan_dosen }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
+                                    </p>
+                                {{-- Jika dokumenOnline ada, tapi belum ada dokumen_dosen maupun keterangan_dosen --}}
+                                @else
+                                    <p class="text-sm text-gray-500">Dosen belum memberikan balasan review untuk dokumen ini.</p>
+                                @endif
+                            {{-- Jika tidak ada objek DokumenOnline sama sekali untuk jadwal ini --}}
+                            @else
+                                <p class="text-sm text-gray-500">Dokumen bimbingan belum diupload atau belum direview oleh dosen.</p>
+                            @endif
+                        </div>
                     </div>
-                </div>
-            {{-- Jika tidak ada dokumen dosen, tapi ada catatan review (mungkin hanya catatan teks) --}}
-            @elseif($dokumenReview->keterangan_dosen)
-                 <p class="text-sm text-gray-700">
-                    {{ $dokumenReview->keterangan_dosen }}
-                 </p>
-                 <p class="text-xs text-gray-500 mt-1">
-                    Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
-                 </p>
-            {{-- Jika dokumenOnline ada, tapi belum ada dokumen_dosen maupun keterangan_dosen --}}
-            @else
-                <p class="text-sm text-gray-500">Dosen belum memberikan balasan review untuk dokumen ini.</p>
-            @endif
-        {{-- Jika tidak ada objek DokumenOnline sama sekali untuk jadwal ini --}}
-        @else
-            <p class="text-sm text-gray-500">Dokumen bimbingan belum diupload atau belum direview oleh dosen.</p>
-        @endif
-    </div>
-</div>
                 </div>
             </div>
 

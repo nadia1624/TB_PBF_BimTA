@@ -321,16 +321,10 @@
                                             {{ $jadwal->metode == 'online' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800' }}">
                                             {{ $jadwal->metode == 'online' ? 'Online Meeting' : 'Offline Meeting' }}
                                         </span>
-                                    @elseif(isset($jadwal->keterangan) && !empty($jadwal->keterangan))
-                                        @if(strpos($jadwal->keterangan, 'Online') !== false || strpos($jadwal->keterangan, 'online') !== false)
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                Online Meeting
-                                            </span>
-                                        @elseif(strpos($jadwal->keterangan, 'Offline') !== false || strpos($jadwal->keterangan, 'offline') !== false)
-                                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                                Offline Meeting
-                                            </span>
-                                        @endif
+                                    @else
+                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600">
+                                            -
+                                        </span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -371,14 +365,14 @@
                                             </a>
                                         @else
                                             <!-- Tombol untuk melihat detail jadwal yang diproses -->
-                                            <a href="{{ route('mahasiswa.jadwal-bimbingan.show', $jadwal->id) }}"
-                                               class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                </svg>
-                                                Detail
-                                            </a>
+                                            <button type="button" onclick="showDetailModal('{{ $jadwal->dosen->nama_lengkap }}', '{{ $jadwal->tanggal_pengajuan->format('d M Y') }}', '{{ $jadwal->waktu_pengajuan->format('H:i') }}', '{{ $jadwal->keterangan }}')"
+        class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+    </svg>
+    Detail
+</button>
 
                                             <!-- Tombol untuk membatalkan jadwal yang masih diproses -->
                                             <form method="POST" action="{{ route('mahasiswa.jadwal-bimbingan.destroy', $jadwal->id) }}" class="inline ml-2">
@@ -417,6 +411,36 @@
                 </div>
             </div>
         @endif
+    </div>
+</div>
+
+<!-- Modal untuk detail bimbingan -->
+<div id="detailModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div id="modalOverlay" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Detail Bimbingan
+                        </h3>
+                        <div class="mt-4">
+                            <p id="modalDosen" class="text-base text-gray-700"></p>
+                            <p id="modalTanggal" class="text-base text-gray-700"></p>
+                            <p id="modalWaktu" class="text-base text-gray-700"></p>
+                            <p id="modalKeterangan" class="text-base text-gray-700"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="closeDetailModal" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Tutup
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -460,6 +484,20 @@
 </div>
 
 <script>
+    function showDetailModal(dosen, tanggal, waktu, keterangan) {
+        document.getElementById('modalDosen').textContent = 'Dosen Pembimbing: ' + dosen;
+        document.getElementById('modalTanggal').textContent = 'Tanggal: ' + tanggal;
+        document.getElementById('modalWaktu').textContent = 'Waktu: ' + waktu + ' WIB';
+        document.getElementById('modalKeterangan').textContent = 'Keterangan: ' + keterangan;
+        document.getElementById('detailModal').classList.remove('hidden');
+    }
+    document.getElementById('closeDetailModal').addEventListener('click', function() {
+        document.getElementById('detailModal').classList.add('hidden');
+    });
+    document.getElementById('modalOverlay').addEventListener('click', function() {
+        document.getElementById('detailModal').classList.add('hidden');
+    });
+
     // Fungsi untuk menampilkan modal alasan penolakan
     function showRejectionReason(jadwalId, reason) {
         const modal = document.getElementById('rejectionModal');
@@ -539,12 +577,6 @@
                 const pembimbing1Radio = document.getElementById('dosen_id_1');
                 if (pembimbing1Radio) {
                     pembimbing1Radio.checked = true;
-                }
-
-                // Set Online sebagai default untuk metode
-                const metodeOnlineRadio = document.getElementById('metode_online');
-                if (metodeOnlineRadio) {
-                    metodeOnlineRadio.checked = true;
                 }
 
                 // Update tampilan

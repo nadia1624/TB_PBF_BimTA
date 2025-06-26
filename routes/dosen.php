@@ -4,6 +4,7 @@
 use App\Http\Controllers\Dosen\JadwalBimbinganController;
 use App\Http\Controllers\Dosen\DokumenOnlineController;
 use App\Http\Controllers\Dosen\PengajuanJudulController;
+use App\Http\Controllers\Dosen\RiwayatBimbinganController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,6 +25,11 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     // Accept/Reject jadwal
     Route::post('/jadwal-bimbingan/accept/{id}', [JadwalBimbinganController::class, 'accept'])->name('jadwal-accept');
     Route::post('/jadwal-bimbingan/reject/{id}', [JadwalBimbinganController::class, 'reject'])->name('jadwal-reject');
+
+    // Riwayat Bimbingan
+    Route::get('/riwayat-bimbingan', [RiwayatBimbinganController::class, 'index'])->name('riwayat-bimbingan');
+    // Route::get('/riwayat-bimbingan/{id}/detail', [RiwayatBimbinganController::class, 'detail'])->name('riwayat-bimbingan.detail');
+    // Route::get('/riwayat-bimbingan/export-pdf', [RiwayatBimbinganController::class, 'exportPdf'])->name('riwayat-bimbingan.export-pdf');
 
 
     // Dokumen Online
