@@ -125,7 +125,7 @@ class DokumenOnlineController extends Controller
             }
 
             // Tidak mengubah status menjadi 'selesai' di sini, biarkan method acc yang menanganinya
-            $dokumen->status = 'selesai'; 
+            $dokumen->status = 'selesai';
             $dokumen->keterangan_dosen = $request->catatan_review; // Catatan dari textarea
             $dokumen->tanggal_review = Carbon::now(); // Tanggal review saat ini
 
@@ -243,7 +243,7 @@ class DokumenOnlineController extends Controller
     {
         $dokumen = DokumenOnline::findOrFail($id);
 
-        // Verifikasi bahwa dosen yang login berhak mereview dokumen ini
+        // Verifikasi akses
         $userId = Auth::id();
         $dosen = Dosen::where('user_id', $userId)->first();
         $dosenId = $dosen ? $dosen->id : null;
@@ -252,7 +252,7 @@ class DokumenOnlineController extends Controller
             return response()->json(['success' => false, 'message' => 'Anda tidak memiliki akses untuk meng-ACC dokumen ini.'], 403);
         }
 
-        // Cek syarat: dokumen ada dan bab harus lengkap
+        // Cek syarat
         if (!$dokumen->dokumen_mahasiswa || $dokumen->bab !== 'lengkap') {
             return response()->json(['success' => false, 'message' => 'Dokumen harus lengkap (bab lengkap) untuk di-ACC.'], 400);
         }
@@ -260,15 +260,21 @@ class DokumenOnlineController extends Controller
         try {
             DB::beginTransaction();
 
-            // Ubah status menjadi 'selesai' dan tambahkan keterangan
-            $dokumen->status = 'selesai';
+            // Perbarui status dokumen online
             $dokumen->keterangan_dosen = $request->input('keterangan', 'Dokumen telah di-ACC pada ' . Carbon::now());
             $dokumen->tanggal_review = Carbon::now();
             $dokumen->save();
 
+            // Sinkronkan dengan pengajuan_judul, ubah ke "disetujui"
+            $pengajuan = $dokumen->jadwalBimbingan->pengajuanJudul;
+            if ($pengajuan) {
+                $pengajuan->approved_ta = 'disetujui';
+                $pengajuan->save();
+            }
+
             DB::commit();
 
-            return response()->json(['success' => true, 'message' => 'Dokumen telah di-ACC dan ditandai selesai.']);
+            return response()->json(['success' => true, 'message' => 'Dokumen telah di-ACC dan ditandai disetujui.']);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error saat meng-ACC dokumen: ' . $e->getMessage(), [

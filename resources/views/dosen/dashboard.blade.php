@@ -53,32 +53,40 @@
                 <h2 class="text-xl font-semibold text-gray-800">Pengajuan Judul Terbaru</h2>
                 <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200">Lihat Semua</a>
             </div>
-            @if(isset($latestSubmissions) && $latestSubmissions->count() > 0)
-                <div class="space-y-4">
-                    @foreach($latestSubmissions as $submission)
-                    <div class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-                        <div class="mr-4 p-2 bg-blue-100 rounded-full">
-                            <i class="fas fa-file-alt text-blue-600"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center">
-                                <h6 class="text-md font-medium text-gray-800">{{ $submission->mahasiswa->nama }} - {{ $submission->mahasiswa->nim }}</h6>
-                                <span class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d F Y, H:i') }}</span>
-                            </div>
-                            <p class="text-sm text-gray-600 mt-1">{{ $submission->judul }}</p>
-                        </div>
-                        <a href="#" class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-4">Review <i class="fas fa-chevron-right"></i></a>
+            @php
+            $submissions = DB::table('pengajuan_judul')
+                ->join('mahasiswa', 'pengajuan_judul.mahasiswa_id', '=', 'mahasiswa.id')
+                ->orderBy('pengajuan_judul.created_at', 'desc')
+                ->take(5)
+                ->get();
+        @endphp
+
+        @if($submissions->count() > 0)
+            <div class="space-y-4">
+                @foreach($submissions as $submission)
+                <div class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+                    <div class="mr-4 p-2 bg-blue-100 rounded-full">
+                        <img src="{{ $submission->foto ?? '/images/default-profile.png' }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
                     </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="text-center py-8">
-                    <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-file-alt text-gray-400 text-2xl"></i>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center">
+                            <h6 class="text-md font-medium text-gray-800">{{ $submission->nama ?? $submission->nim }}</h6>
+                            <span class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($submission->created_at)->format('d F Y, H:i') }}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-1">{{ $submission->judul }}</p>
                     </div>
-                    <p class="text-gray-500 mt-4">Tidak ada pengajuan judul terbaru</p>
+                    <a href="/dosen/review-judul/{{ $submission->id }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-4">Review <i class="fas fa-chevron-right"></i></a>
                 </div>
-            @endif
+                @endforeach
+            </div>
+        @else
+            <div class="text-center py-8">
+                <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-file-alt text-gray-400 text-2xl"></i>
+                </div>
+                <p class="text-gray-500 mt-4">Tidak ada pengajuan judul terbaru</p>
+            </div>
+        @endif
         </div>
 
         <!-- Jadwal Bimbingan Hari Ini -->
@@ -89,7 +97,15 @@
                     <a href="{{ route('dosen.jadwal-bimbingan') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200">Lihat Semua</a>
                 @endif
             </div>
-            @if(isset($todaySchedules) && $todaySchedules->count() > 0)
+            @php
+                $today = \Carbon\Carbon::today()->toDateString();
+                $todaySchedules = DB::table('jadwal_bimbingan')
+                    ->join('pengajuan_judul', 'jadwal_bimbingan.pengajuan_judul_id', '=', 'pengajuan_judul.id')
+                    ->join('mahasiswa', 'pengajuan_judul.mahasiswa_id', '=', 'mahasiswa.id')
+                    ->whereDate('jadwal_bimbingan.waktu_pengajuan', $today)
+                    ->get();
+            @endphp
+            @if($todaySchedules->count() > 0)
                 <div class="space-y-4">
                     @foreach($todaySchedules as $schedule)
                     <div class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
@@ -97,8 +113,8 @@
                             <i class="fas fa-calendar-check text-purple-600"></i>
                         </div>
                         <div class="flex-1">
-                            <h6 class="text-md font-medium text-gray-800">{{ $schedule->pengajuanJudul->mahasiswa->nama }}</h6>
-                            <p class="text-sm text-gray-600 mt-1">{{ $schedule->pengajuanJudul->judul }}</p>
+                            <h6 class="text-md font-medium text-gray-800">{{ $schedule->nama ?? 'Mahasiswa Tidak Diketahui' }}</h6>
+                            <p class="text-sm text-gray-600 mt-1">{{ $schedule->judul }}</p>
                             <div class="mt-2">
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-2">
                                     {{ \Carbon\Carbon::parse($schedule->waktu_pengajuan)->format('H:i') }}
