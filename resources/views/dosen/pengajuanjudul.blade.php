@@ -2,10 +2,8 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    <div class="mb-6">
-        <h2 class="text-2xl font-semibold">Pengajuan Judul</h2>
-    </div>
-
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Pengajuan Judul</h1>
+    
     <!-- Statistics Cards -->
     <div class="grid grid-cols-3 gap-4 mb-6">
         <!-- Total Pengajuan Card -->

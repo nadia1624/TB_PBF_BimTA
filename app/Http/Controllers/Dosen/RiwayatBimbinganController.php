@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\JadwalBimbingan;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class RiwayatBimbinganController extends Controller
 {
@@ -67,7 +68,7 @@ class RiwayatBimbinganController extends Controller
 
             // Filter berdasarkan rentang tanggal jika ada
             if ($request->has('start_date') && !empty($request->start_date)) {
-                $query->whereDate('tanggal_pengajuan', '>=', $request->start_date);
+                $query->whereDate('tanggal_pengajuan', '=', $request->start_date);
             }
 
             if ($request->has('end_date') && !empty($request->end_date)) {
@@ -154,8 +155,19 @@ class RiwayatBimbinganController extends Controller
             ));
 
         } catch (\Exception $e) {
-            // Provide default values in case of error
-            $riwayatBimbingan = collect([])->paginate(10);
+
+            // Provide default values in case of error - FIXED VERSION
+            $riwayatBimbingan = new LengthAwarePaginator(
+                collect([]), // items
+                0, // total
+                10, // per page
+                request()->get('page', 1), // current page
+                [
+                    'path' => request()->url(),
+                    'query' => request()->query(),
+                ]
+            );
+
             $totalRiwayat = 0;
             $riwayatBulanIni = 0;
             $riwayatOnline = 0;
