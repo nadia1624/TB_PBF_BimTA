@@ -1,43 +1,63 @@
 @extends('layouts.dosen')
 
 @section('content')
-<div class="container mx-auto">
-    <h1 class="text-3xl font-bold mb-6">Jadwal Bimbingan</h1>
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">Jadwal Bimbingan</h1>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <!-- Bimbingan Hari Ini Card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="flex items-center">
-                <div class="mr-4">
-                    <svg class="w-12 h-12 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                        <div class="p-2 bg-blue-50 rounded-lg mr-3">
+                            <svg class="w-6 h-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-600">Bimbingan Hari Ini</h4>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 mb-1">{{ $todaySchedulesCount }}</p>
+                    <p class="text-xs text-gray-500">Jadwal untuk hari ini</p>
                 </div>
-                <div>
-                    <p class="text-gray-600 text-sm">Bimbingan hari ini</p>
-                    <h3 class="text-4xl font-bold">{{ $todaySchedulesCount }}</h3>
+                <div class="ml-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Menunggu Konfirmasi Card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="flex items-center">
-                <div class="mr-4">
-                    <svg class="w-12 h-12 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                        <div class="p-2 bg-orange-50 rounded-lg mr-3">
+                            <svg class="w-6 h-6 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-600">Menunggu Konfirmasi</h4>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 mb-1">{{ $pendingSchedulesCount }}</p>
+                    <p class="text-xs text-gray-500">Jadwal menunggu persetujuan</p>
                 </div>
-                <div>
-                    <p class="text-gray-600 text-sm">Menunggu Konfirmasi</p>
-                    <h3 class="text-4xl font-bold">{{ $pendingSchedulesCount }}</h3>
+                <div class="ml-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Total Selesai Card -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
+        {{-- <div class="bg-white p-6 rounded-lg shadow-md">
             <div class="flex items-center">
                 <div class="mr-4">
                     <svg class="w-12 h-12 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,7 +69,7 @@
                     <h3 class="text-4xl font-bold">{{ $completedSchedulesCount }}</h3>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 
     <!-- Jadwal Hari Ini Section -->
@@ -61,64 +81,142 @@
             <h2 class="text-xl font-bold">Jadwal Hari Ini</h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @forelse($jadwalHariIni as $jadwal)
-            <div class="border rounded-lg p-4">
-                <div class="flex items-center mb-3">
-                    <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                        <svg class="w-8 h-8 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @forelse($jadwalHariIni->where('status', 'diterima') as $jadwal)
+            <div class="border rounded-lg p-4 {{ $jadwal->metode == 'online' ? 'border-blue-200 bg-blue-50' : 'border-green-200 bg-green-50' }}">
+                <!-- Header Card dengan Status Badge -->
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 rounded-full {{ $jadwal->metode == 'online' ? 'bg-blue-200' : 'bg-green-200' }} flex items-center justify-center mr-3">
+                            <svg class="w-8 h-8 {{ $jadwal->metode == 'online' ? 'text-blue-600' : 'text-green-600' }}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold">{{ $jadwal->pengajuanJudul->mahasiswa->nama_lengkap }}</h3>
+                            <p class="text-sm text-gray-600">{{ $jadwal->pengajuanJudul->mahasiswa->nim }}</p>
+                        </div>
+                    </div>
+                    <!-- Status Badge -->
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                         </svg>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold">{{ $jadwal->pengajuanJudul->mahasiswa->nama }}</h3>
-                        <p class="text-sm text-gray-600">{{ $jadwal->pengajuanJudul->mahasiswa->nim }}</p>
-                    </div>
+                        Diterima
+                    </span>
                 </div>
 
-                <div class="grid grid-cols-1 gap-2">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="grid grid-cols-1 gap-3">
+                    <!-- Tanggal -->
+                    <div class="flex items-center p-2 bg-white rounded-md border-l-4 border-blue-400">
+                        <svg class="w-5 h-5 mr-3 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        <span>{{ \Carbon\Carbon::parse($jadwal->tanggal_pengajuan)->format('d F Y') }}</span>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Tanggal</p>
+                            <p class="font-medium">{{ \Carbon\Carbon::parse($jadwal->tanggal_pengajuan)->format('d F Y') }}</p>
+                        </div>
                     </div>
 
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- Waktu -->
+                    <div class="flex items-center p-2 bg-white rounded-md border-l-4 border-purple-400">
+                        <svg class="w-5 h-5 mr-3 text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>{{ \Carbon\Carbon::parse($jadwal->waktu_pengajuan)->format('H:i') }} WIB</span>
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Waktu</p>
+                            <p class="font-medium">{{ \Carbon\Carbon::parse($jadwal->waktu_pengajuan)->format('H:i') }} WIB</p>
+                        </div>
                     </div>
 
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                        </svg>
-                        <span>{{ $jadwal->metode == 'online' ? 'Online' : 'Tatap Muka' }}</span>
+                    <!-- Metode -->
+                    <div class="flex items-center p-2 bg-white rounded-md border-l-4 {{ $jadwal->metode == 'online' ? 'border-blue-400' : 'border-green-400' }}">
+                        @if($jadwal->metode == 'online')
+                            <svg class="w-5 h-5 mr-3 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        @else
+                            <svg class="w-5 h-5 mr-3 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        @endif
+                        <div>
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Metode</p>
+                            <p class="font-medium flex items-center">
+                                @if($jadwal->metode == 'online')
+                                    <span class="text-blue-600">🖥️ Online Meeting</span>
+                                @else
+                                    <span class="text-green-600">🏢 Offline Meeting</span>
+                                @endif
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="flex items-start">
-                        <svg class="w-5 h-5 mr-2 text-gray-600 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- Keterangan Umum -->
+                    @if($jadwal->keterangan)
+                    <div class="flex items-start p-2 bg-white rounded-md border-l-4 border-orange-400">
+                        <svg class="w-5 h-5 mr-3 text-orange-600 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span>Keterangan: {{ $jadwal->keterangan ?? 'Tidak ada keterangan' }}</span>
+                        <div class="flex-1">
+                            <p class="text-xs text-gray-500 uppercase tracking-wide">Topik Bahasan</p>
+                            <p class="text-sm leading-relaxed">{{ $jadwal->keterangan }}</p>
+                        </div>
                     </div>
+                    @endif
 
-                    <div class="flex items-center mt-2">
-                        <a href="{{ route('dosen.dokumen.online') }}" class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-150 ease-in-out">
-                            <svg class="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            Detail
-                        </a>
+                    <!-- Keterangan Khusus untuk Offline -->
+                    @if($jadwal->metode == 'offline' && $jadwal->keterangan_ditampilkan_offline)
+                    <div class="flex items-start p-2 bg-green-50 rounded-md border-l-4 border-green-500">
+                        <svg class="w-5 h-5 mr-3 text-green-600 mt-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-xs text-green-600 uppercase tracking-wide font-medium">Lokasi & Info Offline</p>
+                            <p class="text-sm leading-relaxed text-green-800">{{ $jadwal->keterangan_ditampilkan_offline }}</p>
+                        </div>
+                    </div>
+                    @endif
+
+                    <!-- Action Button - Hanya untuk Online -->
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+                        @if($jadwal->metode == 'online')
+                            <a href="{{ route('dosen.dokumen.online', $jadwal->id) }}"
+                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105">
+                                <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                Kelola Dokumen Online
+                            </a>
+                            {{-- <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                                📹 Meeting Online
+                            </span> --}}
+                        @else
+                            <div class="flex items-center text-green-600">
+                                <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="text-sm font-medium">Siap untuk pertemuan tatap muka</span>
+                            </div>
+                            {{-- <span class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                🏢 Offline
+                            </span> --}}
+                        @endif
                     </div>
                 </div>
             </div>
             @empty
             <div class="col-span-2">
-                <p class="text-gray-500 text-center py-4">Tidak ada jadwal bimbingan untuk hari ini</p>
+                <div class="text-center py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Tidak ada jadwal hari ini</h3>
+                    <p class="mt-1 text-sm text-gray-500">Tidak ada jadwal bimbingan yang diterima untuk hari ini</p>
+                </div>
             </div>
             @endforelse
         </div>
@@ -134,12 +232,12 @@
                 <h2 class="text-xl font-bold">Jadwal Mendatang</h2>
             </div>
 
-            <div class="relative">
+            {{-- <div class="relative">
                 <input type="text" id="search" placeholder="Cari jadwal..." class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                 <svg class="w-5 h-5 text-gray-500 absolute left-3 top-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-            </div>
+            </div> --}}
         </div>
 
         <div class="overflow-x-auto">
@@ -190,12 +288,19 @@
                                     </svg>
                                 </button>
                                 @endif
-                                <a href="{{ route('dosen.dokumen.online') }}" class="bg-green-500 text-white p-2 rounded-md" title="Detail">
+                                <button type="button"
+                                        class="detail-btn bg-green-500 text-white p-2 rounded-md hover:bg-green-600 transition-colors"
+                                        title="Detail"
+                                        data-id="{{ $jadwal->id }}"
+                                        data-mahasiswa="{{ $jadwal->pengajuanJudul->mahasiswa->nama_lengkap }}"
+                                        data-tanggal="{{ \Carbon\Carbon::parse($jadwal->tanggal_pengajuan)->format('d F Y') }}"
+                                        data-waktu="{{ $jadwal->waktu_pengajuan->format('H:i') }}"
+                                        data-keterangan="{{ $jadwal->keterangan ?? 'Tidak ada keterangan khusus' }}">
                                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
-                                </a>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -209,70 +314,319 @@
         </div>
     </div>
 
-    <!-- Fixed approve modal -->
-    <div id="approveModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold">Pilih Metode Bimbingan</h3>
-                <button type="button" class="text-gray-400 hover:text-gray-600" id="closeApproveModal">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<!-- Fixed approve modal with improved design -->
+<div id="approveModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="approve-modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay dengan blur effect -->
+        <div id="approveModalOverlay" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-all duration-300" aria-hidden="true"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel dengan animasi yang lebih smooth -->
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full animate-scale-up">
+            <!-- Header Modal -->
+            <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="ml-3 text-xl font-bold text-white" id="approve-modal-title">
+                            Setujui Jadwal Bimbingan
+                        </h3>
+                    </div>
+                    <button type="button" id="closeApproveModal" class="text-white hover:text-gray-200 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Modal -->
+            <div class="bg-white px-6 py-6">
+                <form id="approveForm" method="POST">
+                    @csrf
+                    <div class="space-y-6">
+                        <!-- Metode Bimbingan -->
+                        <div class="p-4 bg-gray-50 rounded-xl border-l-4 border-green-500">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <label for="metode" class="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Metode Bimbingan</label>
+                                    <select id="metode" name="metode" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 text-lg font-medium bg-white shadow-sm transition-all duration-200" required>
+                                        <option value="">-- Pilih Metode Bimbingan --</option>
+                                        <option value="online">🖥️ Online Meeting</option>
+                                        <option value="offline">🏢 Offline Meeting</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Keterangan untuk Offline -->
+                        <div id="keteranganOfflineContainer" class="p-4 bg-gray-50 rounded-xl border-l-4 border-blue-500" style="display: none;">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <label for="keterangan" class="block text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">Lokasi & Keterangan</label>
+                                    <textarea id="keterangan" name="keterangan" rows="4"
+                                              class="w-full text-gray-800 px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 resize-none shadow-sm transition-all duration-200"
+                                              placeholder="Contoh: Ruang Dosen, Departemen SI. Mohon bawa laptop dan draft skripsi terbaru."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                <button type="button" id="cancelApprove" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
+                    Batal
+                </button>
+                <button type="submit" form="approveForm" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Setujui Jadwal
                 </button>
             </div>
-            <form id="approveForm" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label for="metode" class="block text-sm font-medium text-gray-700 mb-1">Metode</label>
-                    <select id="metode" name="metode" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
-                        <option value="">-- Pilih Metode --</option>
-                        <option value="online">Online Meeting</option>
-                        <option value="offline">Offline Meeting</option>
-                    </select>
-                </div>
-                <div class="mb-4" id="keteranganOfflineContainer" style="display: none;">
-                    <label for="keterangan" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
-                    <textarea id="keterangan" name="keterangan" rows="3" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" id="cancelApprove" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2 hover:bg-gray-300">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Setujui</button>
-                </div>
-            </form>
         </div>
     </div>
+</div>
 
+<!-- Reject Modal with improved design -->
+<div id="rejectModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="reject-modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay dengan blur effect -->
+        <div id="rejectModalOverlay" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-all duration-300" aria-hidden="true"></div>
 
-    <!-- Reject Modal -->
-    <div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold">Alasan Penolakan</h3>
-                <button type="button" class="text-gray-400 hover:text-gray-600" id="closeRejectModal">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel dengan animasi yang lebih smooth -->
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full animate-scale-up">
+            <!-- Header Modal -->
+            <div class="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="ml-3 text-xl font-bold text-white" id="reject-modal-title">
+                            Tolak Jadwal Bimbingan
+                        </h3>
+                    </div>
+                    <button type="button" id="closeRejectModal" class="text-white hover:text-gray-200 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Modal -->
+            <div class="bg-white px-6 py-6">
+                <form id="rejectForm" method="POST" action="">
+                    @csrf
+                    <div class="space-y-4">
+                        <!-- Warning Message -->
+                        <div class="p-4 bg-red-50 rounded-xl border-l-4 border-red-500">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-red-800 font-medium">Peringatan</h4>
+                                    <p class="text-red-700 text-sm mt-1">Pastikan Anda memberikan alasan yang jelas untuk penolakan jadwal ini.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Alasan Penolakan -->
+                        <div class="p-4 bg-gray-50 rounded-xl border-l-4 border-orange-500">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                        <svg class="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <label for="keterangan_ditolak" class="block text-sm font-medium  uppercase tracking-wide mb-2">Alasan Penolakan</label>
+                                    <textarea id="keterangan_ditolak" name="keterangan_ditolak" rows="5"
+                                              class="w-full text-gray-800 px-4 py-3 border border-gray-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none shadow-sm transition-all duration-200"
+                                              placeholder="Contoh: Jadwal bentrok dengan kegiatan dinas lain. Mohon ajukan jadwal alternatif pada hari yang berbeda."
+                                              required></textarea>
+                                    <p class="text-xs text-gray-500 mt-2">Minimal 10 karakter untuk memberikan penjelasan yang memadai.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
+                <button type="button" id="cancelReject" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200 shadow-sm hover:shadow-md">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
+                    Batal
+                </button>
+                <button type="submit" form="rejectForm" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                    </svg>
+                    Tolak Jadwal
                 </button>
             </div>
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label for="keterangan_ditolak" class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>
-                    <textarea id="keterangan_ditolak" name="keterangan_ditolak" rows="4" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required></textarea>
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" id="cancelReject" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg mr-2 hover:bg-gray-300">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Tolak</button>
-                </div>
-            </form>
         </div>
     </div>
+</div>
 
     <!-- Hidden form for accept action -->
     <form id="acceptForm" method="POST" style="display: none;">
         @csrf
         <input type="text" name="keterangan" id="keterangan-input">
     </form>
+</div>
+
+<!-- Modal untuk detail jadwal (tambahkan setelah tabel) -->
+<div id="detailJadwalModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay dengan blur effect -->
+        <div id="detailModalOverlay" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm transition-all duration-300" aria-hidden="true"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel dengan animasi yang lebih smooth -->
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all duration-300 sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full animate-scale-up">
+            <!-- Header Modal -->
+            <div class="bg-gradient-to-r from-green-600 to-green-700 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="ml-3 text-xl font-bold text-white" id="modal-title">
+                            Detail Jadwal Bimbingan
+                        </h3>
+                    </div>
+                    <button type="button" id="closeDetailJadwalModalX" class="text-white hover:text-gray-200 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Modal -->
+            <div class="bg-white px-6 py-6">
+                <div class="space-y-4">
+                    <!-- Mahasiswa Info -->
+                    <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border-l-4 border-blue-500">
+                        <div class="flex-shrink-0">
+                            <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mt-3">
+                                <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Mahasiswa</h4>
+                            <p id="modalMahasiswa" class="mt-1 text-lg font-semibold text-gray-900"></p>
+                            <p class="text-sm text-gray-600">{{ $jadwal->pengajuanJudul->mahasiswa->nim }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Tanggal -->
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border-l-4 border-green-500">
+                            <div class="flex-shrink-0">
+                                <div class="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Tanggal</h4>
+                                <p id="modalTanggalJadwal" class="mt-1 text-lg font-semibold text-gray-900"></p>
+                            </div>
+                        </div>
+
+                        <!-- Waktu -->
+                        <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl border-l-4 border-purple-500">
+                            <div class="flex-shrink-0">
+                                <div class="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Waktu</h4>
+                                <p id="modalWaktuJadwal" class="mt-1 text-lg font-semibold text-gray-900"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keterangan -->
+                    <div class="p-4 bg-gray-50 rounded-xl border-l-4 border-orange-500">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <div class="h-12 w-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <svg class="h-6 w-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Topik Bahasan</h4>
+                                <p id="modalKeteranganJadwal" class="mt-1 text-gray-900 leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="bg-gray-50 px-6 py-4 flex justify-end">
+                <button type="button" id="closeDetailJadwalModal" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -330,7 +684,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentJadwalId = this.closest('tr').getAttribute('data-id');
 
             // Set the form action with the correct ID
-            rejectForm.action = `/jadwal-bimbingan/reject/${currentJadwalId}`;
+            rejectForm.action = `/dosen/jadwal-bimbingan/reject/${currentJadwalId}`;
 
             // Show the modal
             rejectModal.classList.remove('hidden');
@@ -457,6 +811,73 @@ document.addEventListener('DOMContentLoaded', function() {
     //         rejectModal.classList.add('hidden');
     //     }
     // });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements untuk modal detail jadwal
+    const detailJadwalModal = document.getElementById('detailJadwalModal');
+    const closeDetailJadwalModal = document.getElementById('closeDetailJadwalModal');
+    const closeDetailJadwalModalX = document.getElementById('closeDetailJadwalModalX');
+    const detailModalOverlay = document.getElementById('detailModalOverlay');
+
+    // Get all detail buttons
+    const detailButtons = document.querySelectorAll('.detail-btn');
+
+    // Event listeners for detail buttons
+    detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const mahasiswa = this.getAttribute('data-mahasiswa');
+            const tanggal = this.getAttribute('data-tanggal');
+            const waktu = this.getAttribute('data-waktu');
+            const keterangan = this.getAttribute('data-keterangan');
+
+            // Set data ke modal
+            document.getElementById('modalMahasiswa').textContent = mahasiswa;
+            document.getElementById('modalTanggalJadwal').textContent = tanggal;
+            document.getElementById('modalWaktuJadwal').textContent = waktu + ' WIB';
+            document.getElementById('modalKeteranganJadwal').textContent = keterangan;
+
+            // Show modal
+            detailJadwalModal.classList.remove('hidden');
+        });
+    });
+
+    // Close modal function
+    function closeDetailJadwalModalHandler() {
+        detailJadwalModal.classList.add('hidden');
+    }
+
+    // Close modal event listeners
+    closeDetailJadwalModal.addEventListener('click', closeDetailJadwalModalHandler);
+    closeDetailJadwalModalX.addEventListener('click', closeDetailJadwalModalHandler);
+    detailModalOverlay.addEventListener('click', closeDetailJadwalModalHandler);
+
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !detailJadwalModal.classList.contains('hidden')) {
+            closeDetailJadwalModalHandler();
+        }
+    });
+});
 </script>
+<style>
+.animate-scale-up {
+    animation: scaleUp 0.3s ease-out;
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+}
+</style>
 @endpush
 @endsection

@@ -27,8 +27,12 @@ class JadwalBimbinganController extends Controller
         // Set default values
         $dosenPembimbing = collect();
         $jadwalBimbingan = collect();
+        $canSubmitSchedule = false; // Flag untuk mengecek apakah bisa mengajukan jadwal
 
         if ($pengajuanJudul) {
+            // Cek apakah approved_ta masih pending (belum disetujui/ditolak)
+            $canSubmitSchedule = $pengajuanJudul->approved_ta === 'pending';
+
             // Get the assigned supervising lecturers for this thesis
             $dosenPembimbing = Dosen::whereHas('pengajuanJudul', function($query) use ($pengajuanJudul) {
                 $query->where('pengajuan_judul_id', $pengajuanJudul->id);
@@ -42,7 +46,12 @@ class JadwalBimbinganController extends Controller
                 ->get();
         }
 
-        return view('mahasiswa.jadwal-bimbingan.index', compact('dosenPembimbing', 'pengajuanJudul', 'jadwalBimbingan'));
+        return view('mahasiswa.jadwal-bimbingan.index', compact(
+            'dosenPembimbing',
+            'pengajuanJudul',
+            'jadwalBimbingan',
+            'canSubmitSchedule'
+        ));
     }
 
     /**
