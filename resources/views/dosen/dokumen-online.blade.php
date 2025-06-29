@@ -481,7 +481,7 @@
 
             Swal.fire({
                 title: 'Konfirmasi ACC Tugas Akhir',
-                text: 'Apakah anda yakin ingin ACC tugas akhir mahasiswa ini? Setelah di-ACC, status akan berubah menjadi disetujui.',
+                text:  'Apakah anda yakin ingin ACC tugas akhir mahasiswa ini? Setelah di-ACC, tugas akhir mahasiswa akan DITERIMA, dan mahasiswa harus segera menjadwalkan serta melaksanakan Seminar Hasil. \n \n Keputusan ini bersifat final dan tidak dapat dibatalkan.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
