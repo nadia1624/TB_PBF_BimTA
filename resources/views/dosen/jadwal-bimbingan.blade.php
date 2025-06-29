@@ -244,12 +244,12 @@
             <table class="min-w-full bg-white">
                 <thead>
                     <tr>
-                        <th class="py-3 px-4 text-left">MAHASISWA</th>
-                        <th class="py-3 px-4 text-left">JUDUL</th>
-                        <th class="py-3 px-4 text-left">METODE</th>
-                        <th class="py-3 px-4 text-left">JADWAL</th>
-                        <th class="py-3 px-4 text-left">STATUS</th>
-                        <th class="py-3 px-4 text-left">AKSI</th>
+                        <th class="py-3 px-4 text-left w-1/5">MAHASISWA</th>
+                        <th class="py-3 px-4 text-left w-[40%]">JUDUL</th>
+                        <th class="py-3 px-4 text-left w-1/10">METODE</th>
+                        <th class="py-3 px-4 text-left w-1/10">JADWAL</th>
+                        <th class="py-3 px-4 text-left w-1/10">STATUS</th>
+                        <th class="py-3 px-4 text-left w-[10%]">AKSI</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -1,52 +1,84 @@
 @extends('layouts.dosen')
 
+@section('title', 'Pengajuan Judul')
+
 @section('content')
-<div class="container mx-auto px-4 py-6">
-    <h1 class="text-3xl font-bold text-gray-800 mb-8">Pengajuan Judul</h1>
-    
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
+<div class="container-fluid px-4 py-6 bg-gray-50 min-h-screen">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 animate-fade-in">Pengajuan Judul</h1>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Total Pengajuan Card -->
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
             <div class="flex items-center justify-between">
-                <div class="p-2">
-                    <svg class="w-8 h-8 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
+                <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                        <div class="p-2 bg-green-50 rounded-lg mr-3">
+                            <svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-600">Total Pengajuan</h4>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 mb-1">{{ $totalPengajuan ?? 0 }}</p>
+                    <p class="text-xs text-gray-500">Judul yang diajukan</p>
                 </div>
-                <div class="text-center">
-                    <p class="text-gray-700 text-sm">Total Pengajuan</p>
-                    <p class="text-3xl font-bold">{{ $totalPengajuan }}</p>
+                <div class="ml-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Menunggu Verifikasi Card -->
-        <div class="bg-white rounded-lg shadow p-4">
+        <!-- Menunggu Review Card -->
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
             <div class="flex items-center justify-between">
-                <div class="p-2">
-                    <svg class="w-8 h-8 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                        <div class="p-2 bg-orange-50 rounded-lg mr-3">
+                            <svg class="w-6 h-6 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-600">Menunggu Review</h4>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 mb-1">{{ $menungguVerifikasi ?? 0 }}</p>
+                    <p class="text-xs text-gray-500">Pengajuan menunggu persetujuan</p>
                 </div>
-                <div class="text-center">
-                    <p class="text-gray-700 text-sm">Menunggu Review</p>
-                    <p class="text-3xl font-bold">{{ $menungguVerifikasi }}</p>
+                <div class="ml-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Disetujui Card -->
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
             <div class="flex items-center justify-between">
-                <div class="p-2">
-                    <svg class="w-8 h-8 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
+                <div class="flex-1">
+                    <div class="flex items-center mb-2">
+                        <div class="p-2 bg-blue-50 rounded-lg mr-3">
+                            <svg class="w-6 h-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-600">Disetujui</h4>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900 mb-1">{{ $disetujui ?? 0 }}</p>
+                    <p class="text-xs text-gray-500">Pengajuan yang disetujui</p>
                 </div>
-                <div class="text-center">
-                    <p class="text-gray-700 text-sm">Disetujui</p>
-                    <p class="text-3xl font-bold">{{ $disetujui }}</p>
+                <div class="ml-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,7 +104,7 @@
     <div class="space-y-4 mb-8">
         @if(isset($pengajuanList) && count($pengajuanList) > 0)
             @foreach($pengajuanList as $item)
-                <div class="bg-white rounded-lg shadow-md overflow-hidden" data-pengajuan-id="{{ $item->id }}">
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300" data-pengajuan-id="{{ $item->id }}">
                     <div class="p-6">
                         <div class="flex items-center mb-4">
                             <div class="mr-4">
@@ -88,8 +120,8 @@
                                 </div>
                                 @endif
                             </div>
-                            <div>
-                                <h3 class="text-lg font-medium">{{ $item->mahasiswa->nama_lengkap }}</h3>
+                            <div class="flex-1">
+                                <h3 class="text-lg font-medium text-gray-800">{{ $item->mahasiswa->nama_lengkap }}</h3>
                                 <p class="text-gray-600 text-sm">{{ $item->mahasiswa->nim }}</p>
                                 <p class="text-sm text-gray-700 mt-1">
                                     Diajukan sebagai:
@@ -131,13 +163,13 @@
                         </div>
 
                         <div class="mb-4">
-                            <h4 class="font-medium mb-1">Judul Tugas Akhir:</h4>
-                            <p>{{ $item->judul }}</p>
+                            <h4 class="font-medium mb-1 text-gray-800">Judul Tugas Akhir:</h4>
+                            <p class="text-gray-600">{{ $item->judul }}</p>
                         </div>
 
                         <div class="mb-4">
-                            <h4 class="font-medium mb-1">Deskripsi:</h4>
-                            <p>{{ $item->deskripsi }}</p>
+                            <h4 class="font-medium mb-1 text-gray-800">Deskripsi:</h4>
+                            <p class="text-gray-600">{{ $item->deskripsi }}</p>
                         </div>
 
                         @if($item->detailDosen[0]->status == 'diproses')
@@ -157,100 +189,105 @@
                         </div>
                         @elseif($item->detailDosen[0]->status == 'dibatalkan')
                         <div class="mt-6">
-                            <p><strong>Alasan Pembatalan:</strong> {{ $item->detailDosen[0]->alasan_dibatalkan }}</p>
+                            <p class="text-gray-600"><strong>Alasan Pembatalan:</strong> {{ $item->detailDosen[0]->alasan_dibatalkan }}</p>
                         </div>
                         @endif
                     </div>
                 </div>
             @endforeach
         @else
-            <div class="bg-white rounded-lg shadow-md overflow-hidden p-6">
-                <p class="text-center text-gray-600">Tidak ada pengajuan judul yang tersedia</p>
+            <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <p class="text-gray-500 mt-4">Tidak ada pengajuan judul yang tersedia</p>
             </div>
         @endif
     </div>
-</div>
 
-<!-- Approve Modal -->
-<div id="approveModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg w-full max-w-md mx-4">
-        <div class="p-4 border-b">
-            <h3 class="text-lg font-semibold">Setujui Pengajuan Judul</h3>
+    <!-- Approve Modal -->
+    <div id="approveModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl w-full max-w-md mx-4">
+            <div class="p-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-800">Setujui Pengajuan Judul</h3>
+            </div>
+            <form id="approveForm" class="p-4">
+                <input type="hidden" id="approvePengajuanId" value="">
+                <div class="mb-4">
+                    <label for="approveComment" class="block text-sm font-medium text-gray-700 mb-1">Berikan Komentar</label>
+                    <textarea id="approveComment" class="w-full border rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Masukkan komentar (opsional)"></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" id="cancelApprove" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg">
+                        Batal
+                    </button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg">
+                        Setujui
+                    </button>
+                </div>
+            </form>
         </div>
-        <form id="approveForm" class="p-4">
-            <input type="hidden" id="approvePengajuanId" value="">
-            <div class="mb-4">
-                <label for="approveComment" class="block text-sm font-medium text-gray-700 mb-1">Berikan Komentar</label>
-                <textarea id="approveComment" class="w-full border rounded p-2" rows="3" placeholder="Masukkan komentar (opsional)"></textarea>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-                <button type="button" id="cancelApprove" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
-                    Batal
-                </button>
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded">
-                    Setujui
-                </button>
-            </div>
-        </form>
     </div>
-</div>
 
-<!-- Reject Modal -->
-<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg w-full max-w-md mx-4">
-        <div class="p-4 border-b">
-            <h3 class="text-lg font-semibold">Tolak Pengajuan Judul</h3>
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl w-full max-w-md mx-4">
+            <div class="p-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-800">Tolak Pengajuan Judul</h3>
+            </div>
+            <form id="rejectForm" class="p-4">
+                <input type="hidden" id="rejectPengajuanId" value="">
+                <div class="mb-4">
+                    <label for="rejectReason" class="block text-sm font-medium text-gray-700 mb-1">Berikan Alasan</label>
+                    <textarea id="rejectReason" class="w-full border rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Masukkan alasan penolakan" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" id="cancelReject" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg">
+                        Batal
+                    </button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg">
+                        Tolak
+                    </button>
+                </div>
+            </form>
         </div>
-        <form id="rejectForm" class="p-4">
-            <input type="hidden" id="rejectPengajuanId" value="">
-            <div class="mb-4">
-                <label for="rejectReason" class="block text-sm font-medium text-gray-700 mb-1">Berikan Alasan</label>
-                <textarea id="rejectReason" class="w-full border rounded p-2" rows="3" placeholder="Masukkan alasan penolakan" required></textarea>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-                <button type="button" id="cancelReject" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
-                    Batal
-                </button>
-                <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
-                    Tolak
-                </button>
-            </div>
-        </form>
     </div>
-</div>
 
-<!-- Cancel Modal -->
-<div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg w-full max-w-md mx-4">
-        <div class="p-4 border-b">
-            <h3 class="text-lg font-semibold">Batalkan Mahasiswa</h3>
+    <!-- Cancel Modal -->
+    <div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl w-full max-w-md mx-4">
+            <div class="p-4 border-b">
+                <h3 class="text-lg font-semibold text-gray-800">Batalkan Mahasiswa</h3>
+            </div>
+            <form id="cancelForm" class="p-4">
+                <input type="hidden" id="cancelPengajuanId" value="">
+                <div class="mb-4">
+                    <label for="cancelReason" class="block text-sm font-medium text-gray-700 mb-1">Berikan Alasan Pembatalan</label>
+                    <textarea id="cancelReason" class="w-full border rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500" rows="3" placeholder="Masukkan alasan pembatalan" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-2 mt-4">
+                    <button type="button" id="cancelCancelModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg">
+                        Batal
+                    </button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg">
+                        Batalkan
+                    </button>
+                </div>
+            </form>
         </div>
-        <form id="cancelForm" class="p-4">
-            <input type="hidden" id="cancelPengajuanId" value="">
-            <div class="mb-4">
-                <label for="cancelReason" class="block text-sm font-medium text-gray-700 mb-1">Berikan Alasan Pembatalan</label>
-                <textarea id="cancelReason" class="w-full border rounded p-2" rows="3" placeholder="Masukkan alasan pembatalan" required></textarea>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-                <button type="button" id="cancelCancelModal" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
-                    Batal
-                </button>
-                <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
-                    Batalkan
-                </button>
-            </div>
-        </form>
     </div>
-</div>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white p-5 rounded-lg flex items-center">
-        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <span>Memproses...</span>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white p-5 rounded-lg flex items-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Memproses...</span>
+        </div>
     </div>
 </div>
 
@@ -550,5 +587,48 @@ function showAlert(type, message) {
     setTimeout(() => alertContainer.classList.add('hidden'), 5000);
 }
 </script>
+
+<style>
+    .animate-fade-in {
+        opacity: 0;
+    }
+
+    /* Smooth gradient animations */
+    .bg-gradient-to-br:hover {
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+    }
+
+    @keyframes gradient-shift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* Enhanced card hover effects */
+    .bg-white:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Custom scrollbar for better aesthetics */
+    .space-y-4::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .space-y-4::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .space-y-4::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 10px;
+    }
+
+    .space-y-4::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+</style>
+
 @endpush
 @endsection
