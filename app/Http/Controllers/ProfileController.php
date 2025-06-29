@@ -27,13 +27,14 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = Auth::user();
+        $request->$user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($request->$user()->isDirty('email')) {
+            $request->$user()->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $request->$user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -115,35 +116,52 @@ class ProfileController extends Controller
         // Use mahasiswa if it exists, otherwise fallback to user
         $mahasiswa = $user->mahasiswa ?? $user;
 
-        return view('mahasiswa.profile.show', compact('mahasiswa', 'user'));
+        return view('profile.edit', compact('mahasiswa', 'user'));
     }
 
     /**
      * Update student's profile image.
      */
-    public function updateProfileImage(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+public function updateProfileImage(Request $request): RedirectResponse
+{
+    // Validasi file yang diupload
+    $request->validate([
+        'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    // Ambil user yang sedang login dan relasi mahasiswa-nya
+    $user = Auth::user();
+    $mahasiswa = $user->mahasiswa;
+
+    if (!$mahasiswa) {
+        return back()->with('error', 'Data mahasiswa tidak ditemukan.');
+    }
+
+    // Proses jika file benar-benar dikirim
+    if ($request->hasFile('gambar')) {
+        $file = $request->file('gambar');
+
+        // Buat nama file unik
+        $filename = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+        // Simpan file ke storage/app/public/mahasiswa/images
+        $path = $file->storeAs('mahasiswa/images', $filename, 'public');
+
+        // Hapus gambar lama jika ada
+        if ($mahasiswa->gambar && Storage::disk('public')->exists($mahasiswa->gambar)) {
+            Storage::disk('public')->delete($mahasiswa->gambar);
+        }
+
+        // Simpan path gambar ke database
+        $mahasiswa->update([
+            'gambar' => $path,
         ]);
 
-        $user = Auth::user();
-        $mahasiswa = $user->mahasiswa;
-
-        if ($request->hasFile('gambar')) {
-            // Delete old image if exists
-            if ($mahasiswa->gambar && Storage::disk('public')->exists($mahasiswa->gambar)) {
-                Storage::disk('public')->delete($mahasiswa->gambar);
-            }
-            // Store new image
-            $imagePath = $request->file('gambar')->store('mahasiswa/images', 'public');
-            // Update mahasiswa record
-            $mahasiswa->update([
-                'gambar' => $imagePath
-            ]);
-
-            return redirect()->route('profile.show')->with('success', 'Foto profil berhasil diperbarui!');
-        }
-        return redirect()->route('profile.show')->with('error', 'Gagal memperbarui foto profil!');
+        return redirect()->route('mahasiswa.profile.show')->with('success', 'Foto profil berhasil diperbarui!');
     }
+
+    return back()->with('error', 'Gagal memperbarui foto profil.');
+}
+
+
 }
