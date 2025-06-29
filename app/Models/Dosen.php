@@ -32,7 +32,7 @@ class Dosen extends Model
 {
     return $this->hasMany(DetailBidang::class, 'dosen_id');
 }
-
+    
     public function pengajuanJudul()
     {
         return $this->belongsToMany(PengajuanJudul::class, 'detail_dosen', 'dosen_id', 'pengajuan_judul_id')

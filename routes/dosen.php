@@ -5,6 +5,7 @@ use App\Http\Controllers\Dosen\JadwalBimbinganController;
 use App\Http\Controllers\Dosen\DokumenOnlineController;
 use App\Http\Controllers\Dosen\PengajuanJudulController;
 use App\Http\Controllers\Dosen\RiwayatBimbinganController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -16,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->group(function () {
     // Dashboard dosen
     Route::get('/dashboard', [JadwalBimbinganController::class, 'dashboard'])->name('dashboard');
+
+    // Profile Dosen
+    Route::get('/profile', [ProfileController::class, 'dosenProfile'])->name('profile');
+    Route::post('/profile/update-image', [ProfileController::class, 'updateDosenImage'])->name('profile.update.image');
 
 
     // Jadwal Bimbingan
