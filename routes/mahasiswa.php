@@ -16,3 +16,13 @@ Route::middleware(['auth', 'verified', 'role:mahasiswa'])
         Route::delete('/pengajuan-judul/{id}', [PengajuanJudulController::class, 'destroy'])->name('pengajuan-judul.destroy');
     });
 
+Route::middleware(['auth', 'verified', 'role:mahasiswa'])
+    ->prefix('mahasiswa')
+    ->name('mahasiswa.')
+    ->group(function () {
+        // Existing routes...
+        Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile.show');
+        Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update');
+    });
+
+

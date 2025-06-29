@@ -104,4 +104,46 @@ class ProfileController extends Controller
         return redirect()->route('dosen.profile')
             ->with('error', 'Gagal memperbarui foto profil!');
     }
+
+    /**
+     * Display the student's profile.
+     */
+    public function showProfile(Request $request): View
+    {
+        $user = Auth::user();
+
+        // Use mahasiswa if it exists, otherwise fallback to user
+        $mahasiswa = $user->mahasiswa ?? $user;
+
+        return view('mahasiswa.profile.show', compact('mahasiswa', 'user'));
+    }
+
+    /**
+     * Update student's profile image.
+     */
+    public function updateProfileImage(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+
+        if ($request->hasFile('gambar')) {
+            // Delete old image if exists
+            if ($mahasiswa->gambar && Storage::disk('public')->exists($mahasiswa->gambar)) {
+                Storage::disk('public')->delete($mahasiswa->gambar);
+            }
+            // Store new image
+            $imagePath = $request->file('gambar')->store('mahasiswa/images', 'public');
+            // Update mahasiswa record
+            $mahasiswa->update([
+                'gambar' => $imagePath
+            ]);
+
+            return redirect()->route('profile.show')->with('success', 'Foto profil berhasil diperbarui!');
+        }
+        return redirect()->route('profile.show')->with('error', 'Gagal memperbarui foto profil!');
+    }
 }
