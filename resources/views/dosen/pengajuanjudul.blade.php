@@ -210,10 +210,10 @@
                 <textarea id="rejectReason" class="w-full border rounded p-2" rows="3" placeholder="Masukkan alasan penolakan" required></textarea>
             </div>
             <div class="flex justify-end space-x-2 mt-4">
-                <button type="button" id="cancelReject" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
+                <button type="button" id="cancelReject" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
                     Batal
                 </button>
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
+                <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
                     Tolak
                 </button>
             </div>
@@ -234,10 +234,10 @@
                 <textarea id="cancelReason" class="w-full border rounded p-2" rows="3" placeholder="Masukkan alasan pembatalan" required></textarea>
             </div>
             <div class="flex justify-end space-x-2 mt-4">
-                <button type="button" id="cancelCancelModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
+                <button type="button" id="cancelCancelModal" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
                     Batal
                 </button>
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">
+                <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded">
                     Batalkan
                 </button>
             </div>
