@@ -27,80 +27,108 @@ class JadwalBimbinganController extends Controller
             // Get current dosen
             $dosen = Auth::user()->dosen;
 
-
             if (!$dosen) {
                 return redirect()->back()->with('error', 'Data dosen tidak ditemukan.');
             }
-
 
             // Get total students under guidance
             $totalMahasiswa = DetailDosen::where('dosen_id', $dosen->id)
                 ->where('status', 'diterima')
                 ->whereHas('pengajuanJudul', function($query) {
-                    $query->where('approved_ta', 'berjalan');
+                    $query->where('approved_ta', 'pending');
                 })
                 ->count();
 
-
-            // Get total title submissions
+            // Get total title submissions - only show "diproses" status
             $totalPengajuanJudul = DetailDosen::where('dosen_id', $dosen->id)
+                ->where('status', 'diproses')
                 ->count();
 
-
-            // Get total guidance schedules
+            // Get total guidance schedules with specific conditions
+            $today = Carbon::now()->format('Y-m-d');
             $totalJadwalBimbingan = JadwalBimbingan::where('dosen_id', $dosen->id)
+                ->where(function($query) use ($today) {
+                    // For online: show pending and processing status
+                    $query->where(function($q) {
+                        $q->where('metode', 'online')
+                        ->whereIn('status', ['menunggu', 'diproses']);
+                    })
+                    // For offline: show all except past dates
+                    ->orWhere(function($q) use ($today) {
+                        $q->where('metode', 'offline')
+                        ->where('tanggal_pengajuan', '>=', $today);
+                    });
+                })
                 ->count();
 
+            // Count today's accepted schedules
+            $todayAcceptedSchedulesCount = JadwalBimbingan::where('dosen_id', $dosen->id)
+                ->where('tanggal_pengajuan', $today)
+                ->where('status', 'diterima')
+                ->count();
 
-            // Get latest title submissions
+            // Count pending schedules
+            $pendingSchedulesCount = JadwalBimbingan::where('dosen_id', $dosen->id)
+                ->whereIn('status', ['menunggu', 'diproses'])
+                ->count();
+
+            // Get latest title submissions - only show "diproses" status
             $latestSubmissions = PengajuanJudul::whereHas('detailDosen', function($query) use ($dosen) {
-                    $query->where('dosen_id', $dosen->id);
+                    $query->where('dosen_id', $dosen->id)
+                        ->where('status', 'diproses'); // Only show processing submissions
                 })
-                ->with('mahasiswa')
-                ->orderBy('id', 'desc')
+                ->with(['mahasiswa', 'detailDosen' => function($query) use ($dosen) {
+                    $query->where('dosen_id', $dosen->id);
+                }])
+                ->orderBy('created_at', 'desc')
                 ->limit(5)
                 ->get();
 
-
-            // Get today's guidance schedule
-            $today = Carbon::now()->format('Y-m-d');
+            // Get today's accepted guidance schedules with proper relationships
             $todaySchedules = JadwalBimbingan::where('dosen_id', $dosen->id)
                 ->where('tanggal_pengajuan', $today)
                 ->where('status', 'diterima')
-                ->with(['pengajuanJudul', 'pengajuanJudul.mahasiswa'])
+                ->with([
+                    'pengajuanJudul' => function($query) {
+                        $query->with('mahasiswa');
+                    },
+                    'pengajuanJudul.mahasiswa'
+                ])
+                ->orderBy('waktu_pengajuan', 'asc')
                 ->get();
-
 
             return view('dosen.dashboard', compact(
                 'totalMahasiswa',
                 'totalPengajuanJudul',
                 'totalJadwalBimbingan',
+                'todayAcceptedSchedulesCount',
+                'pendingSchedulesCount',
                 'latestSubmissions',
                 'todaySchedules'
             ));
 
-
         } catch (\Exception $e) {
-
 
             // Provide default values for the view
             $totalMahasiswa = 0;
             $totalPengajuanJudul = 0;
             $totalJadwalBimbingan = 0;
+            $todayAcceptedSchedulesCount = 0;
+            $pendingSchedulesCount = 0;
             $latestSubmissions = collect([]);
             $todaySchedules = collect([]);
-
 
             return view('dosen.dashboard', compact(
                 'totalMahasiswa',
                 'totalPengajuanJudul',
                 'totalJadwalBimbingan',
+                'todayAcceptedSchedulesCount',
+                'pendingSchedulesCount',
                 'latestSubmissions',
                 'todaySchedules'
             ));
         }
     }
-
 
     /**
      * Tampilkan halaman jadwal bimbingan dengan semua informasi yang diperlukan

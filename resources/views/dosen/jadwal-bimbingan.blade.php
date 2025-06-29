@@ -209,7 +209,7 @@
                 </div>
             </div>
             @empty
-            <div class="col-span-2">
+            <div class="col-span-4">
                 <div class="text-center py-8">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -560,7 +560,9 @@
                         <div class="flex-1">
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Mahasiswa</h4>
                             <p id="modalMahasiswa" class="mt-1 text-lg font-semibold text-gray-900"></p>
-                            <p class="text-sm text-gray-600">{{ $jadwal->pengajuanJudul->mahasiswa->nim }}</p>
+                            @if($todaySchedules->isNotEmpty())
+                                <p class="text-sm text-gray-600">{{ $todaySchedules->first()->pengajuanJudul->mahasiswa->nim }}</p>
+                            @endif
                         </div>
                     </div>
 
@@ -631,6 +633,52 @@
 
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Elements untuk modal detail jadwal
+    const detailJadwalModal = document.getElementById('detailJadwalModal');
+    const closeDetailJadwalModal = document.getElementById('closeDetailJadwalModal');
+    const closeDetailJadwalModalX = document.getElementById('closeDetailJadwalModalX');
+    const detailModalOverlay = document.getElementById('detailModalOverlay');
+
+    // Get all detail buttons
+    const detailButtons = document.querySelectorAll('.detail-btn');
+
+    // Event listeners for detail buttons
+    detailButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const mahasiswa = this.getAttribute('data-mahasiswa');
+            const tanggal = this.getAttribute('data-tanggal');
+            const waktu = this.getAttribute('data-waktu');
+            const keterangan = this.getAttribute('data-keterangan');
+
+            // Set data ke modal
+            document.getElementById('modalMahasiswa').textContent = mahasiswa;
+            document.getElementById('modalTanggalJadwal').textContent = tanggal;
+            document.getElementById('modalWaktuJadwal').textContent = waktu + ' WIB';
+            document.getElementById('modalKeteranganJadwal').textContent = keterangan;
+
+            // Show modal
+            detailJadwalModal.classList.remove('hidden');
+        });
+    });
+
+    // Close modal function
+    function closeDetailJadwalModalHandler() {
+        detailJadwalModal.classList.add('hidden');
+    }
+
+    // Close modal event listeners
+    closeDetailJadwalModal.addEventListener('click', closeDetailJadwalModalHandler);
+    closeDetailJadwalModalX.addEventListener('click', closeDetailJadwalModalHandler);
+    detailModalOverlay.addEventListener('click', closeDetailJadwalModalHandler);
+
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !detailJadwalModal.classList.contains('hidden')) {
+            closeDetailJadwalModalHandler();
+        }
+    });
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     // Elements
@@ -812,52 +860,7 @@ document.addEventListener('DOMContentLoaded', function() {
     //     }
     // });
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Elements untuk modal detail jadwal
-    const detailJadwalModal = document.getElementById('detailJadwalModal');
-    const closeDetailJadwalModal = document.getElementById('closeDetailJadwalModal');
-    const closeDetailJadwalModalX = document.getElementById('closeDetailJadwalModalX');
-    const detailModalOverlay = document.getElementById('detailModalOverlay');
 
-    // Get all detail buttons
-    const detailButtons = document.querySelectorAll('.detail-btn');
-
-    // Event listeners for detail buttons
-    detailButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const mahasiswa = this.getAttribute('data-mahasiswa');
-            const tanggal = this.getAttribute('data-tanggal');
-            const waktu = this.getAttribute('data-waktu');
-            const keterangan = this.getAttribute('data-keterangan');
-
-            // Set data ke modal
-            document.getElementById('modalMahasiswa').textContent = mahasiswa;
-            document.getElementById('modalTanggalJadwal').textContent = tanggal;
-            document.getElementById('modalWaktuJadwal').textContent = waktu + ' WIB';
-            document.getElementById('modalKeteranganJadwal').textContent = keterangan;
-
-            // Show modal
-            detailJadwalModal.classList.remove('hidden');
-        });
-    });
-
-    // Close modal function
-    function closeDetailJadwalModalHandler() {
-        detailJadwalModal.classList.add('hidden');
-    }
-
-    // Close modal event listeners
-    closeDetailJadwalModal.addEventListener('click', closeDetailJadwalModalHandler);
-    closeDetailJadwalModalX.addEventListener('click', closeDetailJadwalModalHandler);
-    detailModalOverlay.addEventListener('click', closeDetailJadwalModalHandler);
-
-    // Close modal with ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !detailJadwalModal.classList.contains('hidden')) {
-            closeDetailJadwalModalHandler();
-        }
-    });
-});
 </script>
 <style>
 .animate-scale-up {

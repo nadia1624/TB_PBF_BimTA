@@ -1,161 +1,287 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700&display=swap" rel="stylesheet" />
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-            <span class="sr-only">Open sidebar</span>
-            <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .sidebar-gradient {
+            background: linear-gradient(135deg, #638B35 0%, #4a6b28 50%, #3d5721 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .menu-item {
+            position: relative;
+            overflow: hidden;
+        }
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .menu-item:hover::before {
+            left: 100%;
+        }
+        .active-menu {
+            background: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #ffffff;
+        }
+        .scroll-fade {
+            mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="font-inter antialiased bg-gray-50">
+    <!-- Mobile Menu Button -->
+    <button
+        data-drawer-target="logo-sidebar"
+        data-drawer-toggle="logo-sidebar"
+        aria-controls="logo-sidebar"
+        type="button"
+        class="fixed top-4 left-4 z-50 inline-flex items-center p-3 text-sm text-gray-600 rounded-xl lg:hidden hover:bg-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-200 transition-all duration-300 bg-white/80 backdrop-blur-sm"
+    >
+        <span class="sr-only">Open sidebar</span>
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
             <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
-            </svg>
-         </button>
+        </svg>
+    </button>
 
-<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen flex flex-col transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-    <div class="h-full px-3 py-4 overflow-y-auto bg-[#638B35] flex flex-col justify-between rounded-3xl drop-shadow-xl m-2">
-          <div class="flex flex-col items-center justify-center">
-            <img src="/uploads/logo.png" class="h-6 sm:h-16 mx-auto mb-2" alt="BimTa Logo" />
-            <img src="/uploads/namelogo.png" class="h-5 sm:h-10 mx-auto" alt="BimTa Name" />
-          </div>
-       <ul class="space-y-2 pt-6 text-sm font-medium">
-          <li>
-             <a href="{{ route('dosen.dashboard') }}" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-black group">
-                <svg class="w-5 h-5 text-white transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                   <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
-                   <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
-                </svg>
-                <span class="ms-3 group-hover:text-black">Dashboard</span>
-             </a>
-          </li>
-          <li>
-             <a href="{{ url('dosen/pengajuanjudul') }}" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-black group">
-                <svg class="shrink-0 w-5 h-5 text-white transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 18">
-                   <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap group-hover:text-black">Pengajuan Judul</span>
-             </a>
-          </li>
-          <li>
-             <!-- PERBAIKAN DISINI: Mengubah dari dosen.jadwal-bimbingan.index menjadi dosen.jadwal-bimbingan -->
-             <a href="{{ url('dosen/jadwal-bimbingan') }}" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-black group">
-                <svg class="shrink-0 w-5 h-5 text-white transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                   <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap group-hover:text-black">Jadwal Bimbingan</span>
-             </a>
-          </li>
-          <li>
-             <a href="{{ url('dosen/riwayat-bimbingan') }}" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-black group">
-                <svg class="shrink-0 w-5 h-5 text-white transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                   <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap group-hover:text-black">Riwayat Bimbingan</span>
-             </a>
-          </li>
-          <li>
-             <a href="{{ route('dosen.dokumen.online') }}" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-black group">
-                <svg class="shrink-0 w-5 h-5 text-white transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                   <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z"/>
-                   <path d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z"/>
-                   <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap group-hover:text-black">Dokumen Bimbingan</span>
-             </a>
-          </li>
-       </ul>
-        <div class="mt-16 text-center">
-        <div class="flex items-center justify-left p-2 rounded-lg text-white hover:bg-gray-100 hover:text-black group">
-            <svg class="w-8 h-8 text-white mr-2 group-hover:text-black" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
-            </svg>
-            <div>
-                <p class="text-sm font-medium">{{ Auth::user()->dosen->nama_lengkap ?? 'Nama Tidak Tersedia' }}</p>
-                <p class="text-xs text-black-200">{{ Auth::user()->dosen->nip ?? 'NIP Tidak Tersedia' }}</p>
+    <!-- Sidebar -->
+    <aside
+        id="logo-sidebar"
+        class="fixed top-0 left-0 z-40 w-72 h-screen transition-transform -translate-x-full lg:translate-x-0"
+        aria-label="Sidebar"
+    >
+        <div class="h-full p-4 sidebar-gradient">
+            <div class="h-full flex flex-col rounded-2xl glass-effect shadow-2xl">
+
+                <!-- Header Section -->
+                <div class="p-6 text-center border-b border-white/20">
+                    <div class="mb-4">
+                        <img src="/uploads/logo.png" class="h-16 mx-auto mb-3 drop-shadow-lg" alt="BimTa Logo" />
+                        <img src="/uploads/namelogo.png" class="h-8 mx-auto filter brightness-0 invert" alt="BimTa Name" />
+                    </div>
+
+                    <!-- User Profile -->
+                    <div class="mt-6 p-4 rounded-xl glass-effect">
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white/30">
+                                    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
+                                    </svg>
+                                </div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+                            </div>
+                            <div class="flex-1 text-left">
+                                <p class="text-sm font-semibold text-white truncate">
+                                    {{ Auth::user()->dosen->nama_lengkap ?? 'Nama Tidak Tersedia' }}
+                                </p>
+                                <p class="text-xs text-white/70 truncate">
+                                    {{ Auth::user()->dosen->nip ?? 'NIP Tidak Tersedia' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Menu -->
+                <nav class="flex-1 px-4 py-6 scroll-fade overflow-y-auto">
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{{ route('dosen.dashboard') }}"
+                               class="menu-item flex items-center px-4 py-3 text-white rounded-xl hover:bg-white/10 transition-all duration-300 group">
+                                <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 22 21">
+                                        <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
+                                        <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Dashboard</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ url('dosen/pengajuanjudul') }}"
+                               class="menu-item flex items-center px-4 py-3 text-white rounded-xl hover:bg-white/10 transition-all duration-300 group">
+                                <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 18 18">
+                                        <path d="M6.143 0H1.857A1.857 1.857 0 0 0 0 1.857v4.286C0 7.169.831 8 1.857 8h4.286A1.857 1.857 0 0 0 8 6.143V1.857A1.857 1.857 0 0 0 6.143 0Zm10 0h-4.286A1.857 1.857 0 0 0 10 1.857v4.286C10 7.169 10.831 8 11.857 8h4.286A1.857 1.857 0 0 0 18 6.143V1.857A1.857 1.857 0 0 0 16.143 0Zm-10 10H1.857A1.857 1.857 0 0 0 0 11.857v4.286C0 17.169.831 18 1.857 18h4.286A1.857 1.857 0 0 0 8 16.143v-4.286A1.857 1.857 0 0 0 6.143 10Zm10 0h-4.286A1.857 1.857 0 0 0 10 11.857v4.286c0 1.026.831 1.857 1.857 1.857h4.286A1.857 1.857 0 0 0 18 16.143v-4.286A1.857 1.857 0 0 0 16.143 10Z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Pengajuan Judul</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ url('dosen/jadwal-bimbingan') }}"
+                               class="menu-item flex items-center px-4 py-3 text-white rounded-xl hover:bg-white/10 transition-all duration-300 group">
+                                <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm14-7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm-5-4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1Zm0 4a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1ZM20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4Z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Jadwal Bimbingan</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ url('dosen/riwayat-bimbingan') }}"
+                               class="menu-item flex items-center px-4 py-3 text-white rounded-xl hover:bg-white/10 transition-all duration-300 group">
+                                <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 18">
+                                        <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Riwayat Bimbingan</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('dosen.dokumen.online') }}"
+                               class="menu-item flex items-center px-4 py-3 text-white rounded-xl hover:bg-white/10 transition-all duration-300 group">
+                                <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center mr-3 group-hover:bg-white/20 transition-colors duration-300">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 18">
+                                        <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.96 2.96 0 0 0 .13 5H5Z"/>
+                                        <path d="M6.737 11.061a2.961 2.961 0 0 1 .81-1.515l6.117-6.116A4.839 4.839 0 0 1 16 2.141V2a1.97 1.97 0 0 0-1.933-2H7v5a2 2 0 0 1-2 2H0v11a1.969 1.969 0 0 0 1.933 2h12.134A1.97 1.97 0 0 0 16 18v-3.093l-1.546 1.546c-.413.413-.94.695-1.513.81l-3.4.679a2.947 2.947 0 0 1-1.85-.227 2.96 2.96 0 0 1-1.635-3.257l.681-3.397Z"/>
+                                        <path d="M8.961 16a.93.93 0 0 0 .189-.019l3.4-.679a.961.961 0 0 0 .49-.263l6.118-6.117a2.884 2.884 0 0 0-4.079-4.078l-6.117 6.117a.96.96 0 0 0-.263.491l-.679 3.4A.961.961 0 0 0 8.961 16Zm7.477-9.8a.958.958 0 0 1 .68-.281.961.961 0 0 1 .682 1.644l-.315.315-1.36-1.36.313-.318Zm-5.911 5.911 4.236-4.236 1.359 1.359-4.236 4.237-1.7.339.341-1.699Z"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">Dokumen Bimbingan</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <!-- Footer Section -->
+                <div class="p-4 border-t border-white/20">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                                class="w-full flex items-center px-4 py-3 text-white rounded-xl hover:bg-red-500/20 hover:border-red-400 transition-all duration-300 group border border-white/20">
+                            <div class="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-red-500/30 transition-colors duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                            </div>
+                            <span class="font-medium">Logout</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
+    </aside>
 
-       <div class="mt-auto">
-        <ul class="space-y-2 pt-6 mt-auto text-sm font-medium flex-grow">
-            <li>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="flex items-center p-2 rounded-lg text-white hover:bg-gray-100 hover:text-black group w-full text-left">
-                        <svg class="shrink-0 w-5 h-5 text-white transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16">
-                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h11m0 0-4-4m4 4-4 4m-5 3H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h3"/>
+    <!-- Main Content -->
+    <div class="lg:ml-72 min-h-screen bg-gray-50">
+        <div class="p-6">
+            <!-- Flash Messages -->
+            @if (session('success'))
+                <div id="success-alert" class="mb-6 p-4 bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-sm" role="alert">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                         </svg>
-                        <span class="flex-1 ms-3 whitespace-nowrap group-hover:text-black">Logout</span>
-                    </button>
-                </form>
-            </li>
-        </ul>
+                        <span class="font-medium">{{ session('success') }}</span>
+                        <button class="ml-auto text-green-600 hover:text-green-800" onclick="this.parentElement.parentElement.remove()">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endif
 
-    </div>
-    </div>
-</aside>
+            @if (session('error'))
+                <div id="error-alert" class="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl shadow-sm" role="alert">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="font-medium">{{ session('error') }}</span>
+                        <button class="ml-auto text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endif
 
-<div class="p-4 sm:ml-64">
-    <!-- Flash Messages -->
-    @if (session('success'))
-        <div id="success-alert" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('success') }}</span>
-            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                <svg class="fill-current h-6 w-6 text-green-500" role="button" onclick="this.parentElement.parentElement.remove()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
-                </svg>
-            </span>
+            @yield('content')
         </div>
-    @endif
-
-    @if (session('error'))
-        <div id="error-alert" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-            <span class="block sm:inline">{{ session('error') }}</span>
-            <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
-                <svg class="fill-current h-6 w-6 text-red-500" role="button" onclick="this.parentElement.parentElement.remove()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
-                </svg>
-            </span>
-        </div>
-    @endif
-
-    @yield('content')
-</div>
+    </div>
 
     @stack('scripts')
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const sidebar = document.getElementById("logo-sidebar");
             const toggleButton = document.querySelector("[data-drawer-toggle]");
+            const overlay = document.createElement('div');
 
-            toggleButton.addEventListener("click", function() {
-                sidebar.classList.toggle("-translate-x-full");
-            });
+            // Create overlay for mobile
+            overlay.className = 'fixed inset-0 bg-black/50 z-30 lg:hidden opacity-0 pointer-events-none transition-opacity duration-300';
+            document.body.appendChild(overlay);
 
-            // Auto hide alerts after 5 seconds
+            function toggleSidebar() {
+                const isOpen = !sidebar.classList.contains('-translate-x-full');
+
+                if (isOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    overlay.classList.add('opacity-0', 'pointer-events-none');
+                    overlay.classList.remove('opacity-100');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    overlay.classList.remove('opacity-0', 'pointer-events-none');
+                    overlay.classList.add('opacity-100');
+                }
+            }
+
+            toggleButton.addEventListener("click", toggleSidebar);
+            overlay.addEventListener("click", toggleSidebar);
+
+            // Auto hide alerts
             setTimeout(function() {
-                const successAlert = document.getElementById('success-alert');
-                const errorAlert = document.getElementById('error-alert');
-
-                if (successAlert) {
-                    successAlert.style.display = 'none';
-                }
-
-                if (errorAlert) {
-                    errorAlert.style.display = 'none';
-                }
+                const alerts = document.querySelectorAll('[id$="-alert"]');
+                alerts.forEach(alert => {
+                    if (alert) {
+                        alert.style.opacity = '0';
+                        alert.style.transform = 'translateY(-10px)';
+                        setTimeout(() => alert.remove(), 300);
+                    }
+                });
             }, 5000);
+
+            // Add active state to current menu item
+            const currentPath = window.location.pathname;
+            const menuLinks = document.querySelectorAll('nav a');
+
+            menuLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath ||
+                    (currentPath.includes(link.getAttribute('href')) && link.getAttribute('href') !== '/')) {
+                    link.classList.add('active-menu');
+                }
+            });
         });
     </script>
-    </body>
+</body>
 </html>

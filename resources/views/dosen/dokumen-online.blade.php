@@ -267,15 +267,15 @@
                 @endif
 
                 <!-- ACC Button -->
-                @if($item->bab === 'lengkap' && $item->status === 'selesai' && $item->jadwalBimbingan && $item->jadwalBimbingan->pengajuanJudul && $item->jadwalBimbingan->pengajuanJudul->approved_ta === 'pending')
-                <button class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-md transition-colors acc-button"
-                        data-id="{{ $item->id }}"
-                        data-action="{{ route('dosen.dokumen.online.acc', $item->id) }}">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 rigid 0 0118 0z"></path>
-                    </svg>
-                    ACC Tugas Akhir
-                </button>
+                @if($item->dokumen_mahasiswa && $item->bab === 'lengkap')
+                    <button class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium rounded-md transition-colors acc-button"
+                            data-id="{{ $item->id }}"
+                            data-action="{{ route('dosen.dokumen.online.acc', $item->id) }}">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        ACC Tugas Akhir
+                    </button>
                 @endif
             </div>
 
