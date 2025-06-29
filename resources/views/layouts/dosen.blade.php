@@ -82,24 +82,35 @@
 
                     <!-- User Profile -->
                     <div class="mt-6 p-4 rounded-xl glass-effect">
-                        <div class="flex items-center space-x-3">
+                        <a href="{{ route('dosen.profile') }}" class="flex items-center space-x-3 group transition-all duration-200 hover:bg-white/10 rounded-lg p-2 -m-2">
                             <div class="relative">
-                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white/30">
-                                    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
-                                    </svg>
+                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white/30 group-hover:ring-white/50 transition-all duration-200">
+                                    @if(Auth::user()->dosen && Auth::user()->dosen->gambar && Storage::disk('public')->exists(Auth::user()->dosen->gambar))
+                                        <img src="{{ Storage::url(Auth::user()->dosen->gambar) }}"
+                                            alt="Profile Picture"
+                                            class="w-12 h-12 rounded-full object-cover">
+                                    @else
+                                        <svg class="w-7 h-7 text-white group-hover:text-white/90 transition-colors duration-200" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
+                                        </svg>
+                                    @endif
                                 </div>
-                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+                                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white group-hover:bg-green-300 transition-colors duration-200"></div>
                             </div>
                             <div class="flex-1 text-left">
-                                <p class="text-sm font-semibold text-white truncate">
+                                <p class="text-sm font-semibold text-white truncate group-hover:text-white/90 transition-colors duration-200">
                                     {{ Auth::user()->dosen->nama_lengkap ?? 'Nama Tidak Tersedia' }}
                                 </p>
-                                <p class="text-xs text-white/70 truncate">
+                                <p class="text-xs text-white/70 truncate group-hover:text-white/80 transition-colors duration-200">
                                     {{ Auth::user()->dosen->nip ?? 'NIP Tidak Tersedia' }}
                                 </p>
                             </div>
-                        </div>
+                            <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <svg class="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
