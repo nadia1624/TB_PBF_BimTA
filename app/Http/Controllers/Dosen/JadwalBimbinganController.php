@@ -125,6 +125,7 @@ class JadwalBimbinganController extends Controller
             // Get today's schedules
             $todaySchedules = JadwalBimbingan::where('dosen_id', $dosen->id)
                 ->where('tanggal_pengajuan', $today)
+                ->where('status', 'diterima')
                 ->with(['pengajuanJudul.mahasiswa', 'dokumenOnline'])
                 ->orderBy('waktu_pengajuan', 'asc')
                 ->get();

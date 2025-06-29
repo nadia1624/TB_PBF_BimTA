@@ -33,7 +33,7 @@
                     <div class="div">
                         <div>
                             <span class="px-4 py-2 rounded-md text-sm font-medium bg-blue-50 text-blue-700">
-                                {{ $jadwal->metode == 'online' ? 'Online Meeting' : 'Tatap Muka' }}
+                                {{ $jadwal->metode == 'online' ? 'Online Meeting' : 'Offline Meeting' }}
                             </span>
                         </div>
                         <div class="mt-4">
@@ -101,35 +101,44 @@
                             }
 
                             // Menentukan apakah halaman dalam mode read-only
-                            // Halaman read-only jika:
-                            // 1. Status jadwal tidak diterima, ATAU
-                            // 2. Ada dokumen online DAN dokumen tersebut bukan dalam status 'menunggu'
                             $isReadOnly = $jadwal->status != 'diterima' ||
                                         ($jadwal->dokumenOnline && $jadwal->dokumenOnline->status != 'menunggu');
                         @endphp
 
                         <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="p-4 border rounded-lg {{ $selectedBab == 'bab 1' ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer bab-selector' : '' }}" {{ !$isReadOnly ? 'data-bab=bab 1' : '' }}>
+                            <div class="p-4 border rounded-lg bab-item {{ $selectedBab == 'bab 1' ? 'bg-blue-50 border-blue-300 selected' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer' : '' }}"
+                                data-bab="bab 1"
+                                {{ $isReadOnly ? 'style=pointer-events:none;' : '' }}>
                                 <h4 class="font-semibold">BAB I</h4>
                                 <p class="text-sm text-gray-500">Pendahuluan</p>
                             </div>
-                            <div class="p-4 border rounded-lg {{ $selectedBab == 'bab 2' ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer bab-selector' : '' }}" {{ !$isReadOnly ? 'data-bab=bab 2' : '' }}>
+                            <div class="p-4 border rounded-lg bab-item {{ $selectedBab == 'bab 2' ? 'bg-blue-50 border-blue-300 selected' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer' : '' }}"
+                                data-bab="bab 2"
+                                {{ $isReadOnly ? 'style=pointer-events:none;' : '' }}>
                                 <h4 class="font-semibold">BAB II</h4>
                                 <p class="text-sm text-gray-500">Landasan Teori</p>
                             </div>
-                            <div class="p-4 border rounded-lg {{ $selectedBab == 'bab 3' ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer bab-selector' : '' }}" {{ !$isReadOnly ? 'data-bab=bab 3' : '' }}>
+                            <div class="p-4 border rounded-lg bab-item {{ $selectedBab == 'bab 3' ? 'bg-blue-50 border-blue-300 selected' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer' : '' }}"
+                                data-bab="bab 3"
+                                {{ $isReadOnly ? 'style=pointer-events:none;' : '' }}>
                                 <h4 class="font-semibold">BAB III</h4>
                                 <p class="text-sm text-gray-500">Metodologi</p>
                             </div>
-                            <div class="p-4 border rounded-lg {{ $selectedBab == 'bab 4' ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer bab-selector' : '' }}" {{ !$isReadOnly ? 'data-bab=bab 4' : '' }}>
+                            <div class="p-4 border rounded-lg bab-item {{ $selectedBab == 'bab 4' ? 'bg-blue-50 border-blue-300 selected' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer' : '' }}"
+                                data-bab="bab 4"
+                                {{ $isReadOnly ? 'style=pointer-events:none;' : '' }}>
                                 <h4 class="font-semibold">BAB IV</h4>
                                 <p class="text-sm text-gray-500">Hasil dan Pembahasan</p>
                             </div>
-                            <div class="p-4 border rounded-lg {{ $selectedBab == 'bab 5' ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer bab-selector' : '' }}" {{ !$isReadOnly ? 'data-bab=bab 5' : '' }}>
+                            <div class="p-4 border rounded-lg bab-item {{ $selectedBab == 'bab 5' ? 'bg-blue-50 border-blue-300 selected' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer' : '' }}"
+                                data-bab="bab 5"
+                                {{ $isReadOnly ? 'style=pointer-events:none;' : '' }}>
                                 <h4 class="font-semibold">BAB V</h4>
                                 <p class="text-sm text-gray-500">Kesimpulan</p>
                             </div>
-                            <div class="p-4 border rounded-lg {{ $selectedBab == 'lengkap' ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer bab-selector' : '' }}" {{ !$isReadOnly ? 'data-bab=lengkap' : '' }}>
+                            <div class="p-4 border rounded-lg bab-item {{ $selectedBab == 'lengkap' ? 'bg-blue-50 border-blue-300 selected' : 'bg-white border-gray-200' }} {{ !$isReadOnly ? 'cursor-pointer' : '' }}"
+                                data-bab="lengkap"
+                                {{ $isReadOnly ? 'style=pointer-events:none;' : '' }}>
                                 <h4 class="font-semibold">Lengkap</h4>
                                 <p class="text-sm text-gray-500">Dokumen Lengkap</p>
                             </div>
@@ -151,11 +160,6 @@
                                                     {{ \Carbon\Carbon::parse($jadwal->dokumenOnline->created_at)->format('d F Y H:i') }}
                                                 </span>
                                             </div>
-                                            {{-- <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                {{ $jadwal->dokumenOnline->status == 'menunggu' ? 'bg-yellow-100 text-yellow-800' :
-                                                ($jadwal->dokumenOnline->status == 'diproses' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
-                                                {{ ucfirst($jadwal->dokumenOnline->status) }}
-                                            </span> --}}
                                         </div>
 
                                         <div class="flex items-center mb-2">
@@ -176,7 +180,7 @@
                             </div>
                         @endif
 
-                        <!-- Form Upload File (Visible only if status = diterima and either no document yet or document status is "menunggu") -->
+                        <!-- Form Upload File -->
                         @if($jadwal->metode == 'online' && $jadwal->status == 'diterima' &&
                         (!$jadwal->dokumenOnline ||
                         ($jadwal->dokumenOnline && $jadwal->dokumenOnline->status == 'menunggu')))
@@ -185,6 +189,11 @@
                                 <form method="POST" action="{{ route('mahasiswa.jadwal-bimbingan.upload-dokumen', $jadwal->id) }}" enctype="multipart/form-data" id="uploadForm">
                                     @csrf
                                     <input type="hidden" name="bab" id="selectedBab" value="{{ $selectedBab }}">
+
+                                    <!-- Debug info -->
+                                    <div class="mb-2 p-2 bg-yellow-50 rounded text-xs text-yellow-800" id="debugInfo">
+                                        Selected BAB: <span id="debugBab">{{ $selectedBab }}</span>
+                                    </div>
 
                                     <div class="mb-4">
                                         <label for="dokumen" class="block text-sm font-medium text-gray-700 mb-2">Upload File</label>
@@ -235,60 +244,54 @@
                         <h3 class="text-lg font-semibold text-gray-700 mb-2">Topik Bahasan:</h3>
                         <div class="p-4 bg-gray-50 rounded-lg">
                             <p class="whitespace-pre-line">{{ $jadwal->keterangan }}</p>
-
                         </div>
                     </div>
 
-                    <!-- Balasan Dosen -->
-                    <div class="mb-6">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-2">Balasan Dosen</h3>
-                        <div class="p-4 bg-gray-50 rounded-lg min-h-48">
-                            {{-- Pastikan ada objek DokumenOnline yang terkait dengan jadwal ini --}}
-                            @if($jadwal->dokumenOnline)
-                                @php
-                                    $dokumenReview = $jadwal->dokumenOnline; // Ambil objek DokumenOnline
-                                @endphp
+                    <!-- Balasan Dosen - Hanya untuk metode online -->
+                    @if($jadwal->metode == 'online')
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">Balasan Dosen</h3>
+                            <div class="p-4 bg-gray-50 rounded-lg min-h-48">
+                                @if($jadwal->dokumenOnline)
+                                    @php
+                                        $dokumenReview = $jadwal->dokumenOnline;
+                                    @endphp
 
-                                {{-- Jika dokumen dosen (file review) ada --}}
-                                @if($dokumenReview->dokumen_dosen)
-                                    <div class="mb-4">
-                                        {{-- Keterangan dosen (catatan review) --}}
-                                        <p class="text-sm text-gray-700">
-                                            {{ $dokumenReview->keterangan_dosen ?? 'Tidak ada catatan tambahan dari dosen.' }}
-                                        </p>
-                                        <div class="mt-2">
-                                            {{-- Tombol Download Dokumen Revisi dari Dosen --}}
-                                            <a href="{{ route('mahasiswa.dokumen.review.download', $dokumenReview->id) }}"
-                                            target="_blank"
-                                            class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                                </svg>
-                                                Download Dokumen Revisi dari Dosen
-                                            </a>
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
+                                    @if($dokumenReview->dokumen_dosen)
+                                        <div class="mb-4">
+                                            <p class="text-sm text-gray-700">
+                                                {{ $dokumenReview->keterangan_dosen ?? 'Tidak ada catatan tambahan dari dosen.' }}
                                             </p>
+                                            <div class="mt-2">
+                                                <a href="{{ route('mahasiswa.dokumen.review.download', $dokumenReview->id) }}"
+                                                target="_blank"
+                                                class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Download Dokumen Revisi dari Dosen
+                                                </a>
+                                                <p class="text-xs text-gray-500 mt-1">
+                                                    Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
-                                {{-- Jika tidak ada dokumen dosen, tapi ada catatan review (mungkin hanya catatan teks) --}}
-                                @elseif($dokumenReview->keterangan_dosen)
-                                    <p class="text-sm text-gray-700">
-                                        {{ $dokumenReview->keterangan_dosen }}
-                                    </p>
-                                    <p class="text-xs text-gray-500 mt-1">
-                                        Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
-                                    </p>
-                                {{-- Jika dokumenOnline ada, tapi belum ada dokumen_dosen maupun keterangan_dosen --}}
+                                    @elseif($dokumenReview->keterangan_dosen)
+                                        <p class="text-sm text-gray-700">
+                                            {{ $dokumenReview->keterangan_dosen }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-1">
+                                            Direview pada: {{ optional($dokumenReview->tanggal_review)->format('d F Y H:i') ?? 'Tanggal tidak tersedia' }}
+                                        </p>
+                                    @else
+                                        <p class="text-sm text-gray-500">Dosen belum memberikan balasan review untuk dokumen ini.</p>
+                                    @endif
                                 @else
-                                    <p class="text-sm text-gray-500">Dosen belum memberikan balasan review untuk dokumen ini.</p>
+                                    <p class="text-sm text-gray-500">Dokumen bimbingan belum diupload atau belum direview oleh dosen.</p>
                                 @endif
-                            {{-- Jika tidak ada objek DokumenOnline sama sekali untuk jadwal ini --}}
-                            @else
-                                <p class="text-sm text-gray-500">Dokumen bimbingan belum diupload atau belum direview oleh dosen.</p>
-                            @endif
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -310,6 +313,8 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing bab selector...');
+
     // Handle file selection
     const fileInput = document.getElementById('dokumen');
     const fileSelected = document.getElementById('file-selected');
@@ -324,37 +329,73 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle bab selection
-    const babSelectors = document.querySelectorAll('.bab-selector');
+    // Handle bab selection dengan event delegation dan perbaikan
+    const babItems = document.querySelectorAll('.bab-item');
     const selectedBabInput = document.getElementById('selectedBab');
+    const debugBab = document.getElementById('debugBab');
 
-    babSelectors.forEach(selector => {
-        selector.addEventListener('click', function() {
-            // Remove active class from all bab elements
-            babSelectors.forEach(el => {
-                el.classList.remove('bg-blue-50', 'border-blue-300');
-                el.classList.add('bg-white', 'border-gray-200');
+    console.log('Found bab items:', babItems.length);
+    console.log('Current selected bab:', selectedBabInput ? selectedBabInput.value : 'not found');
+
+    babItems.forEach((item, index) => {
+        // Cek apakah item bisa diklik (tidak read-only)
+        if (item.style.pointerEvents !== 'none' && item.classList.contains('cursor-pointer')) {
+            console.log(`Setting up click handler for item ${index}:`, item.getAttribute('data-bab'));
+
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const selectedBab = this.getAttribute('data-bab');
+                console.log('Bab clicked:', selectedBab);
+
+                // Remove active class from all bab elements
+                babItems.forEach(el => {
+                    el.classList.remove('bg-blue-50', 'border-blue-300', 'selected');
+                    el.classList.add('bg-white', 'border-gray-200');
+                });
+
+                // Add active class to clicked element
+                this.classList.remove('bg-white', 'border-gray-200');
+                this.classList.add('bg-blue-50', 'border-blue-300', 'selected');
+
+                // Set selected bab value
+                if (selectedBabInput) {
+                    selectedBabInput.value = selectedBab;
+                    console.log('Updated hidden input value to:', selectedBab);
+                }
+
+                // Update debug info
+                if (debugBab) {
+                    debugBab.textContent = selectedBab;
+                }
             });
-
-            // Add active class to clicked element
-            this.classList.remove('bg-white', 'border-gray-200');
-            this.classList.add('bg-blue-50', 'border-blue-300');
-
-            // Set selected bab value
-            selectedBabInput.value = this.getAttribute('data-bab');
-        });
+        }
     });
 
-    // Form validation
+    // Form validation dengan debug yang lebih detail
     const uploadForm = document.getElementById('uploadForm');
     if (uploadForm) {
         uploadForm.addEventListener('submit', function(e) {
             const dokumen = document.getElementById('dokumen');
-            if (dokumen.files.length === 0) {
+            const babValue = selectedBabInput ? selectedBabInput.value : '';
+
+            console.log('Form submit - Selected BAB:', babValue);
+            console.log('Form submit - File selected:', dokumen && dokumen.files.length > 0);
+
+            if (!dokumen || dokumen.files.length === 0) {
                 e.preventDefault();
                 alert('Silakan pilih file terlebih dahulu');
                 return false;
             }
+
+            if (!babValue) {
+                e.preventDefault();
+                alert('Silakan pilih BAB terlebih dahulu');
+                return false;
+            }
+
+            console.log('Form validation passed, submitting...');
             return true;
         });
     }
