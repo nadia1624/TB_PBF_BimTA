@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -122,46 +123,124 @@ class ProfileController extends Controller
     /**
      * Update student's profile image.
      */
-public function updateProfileImage(Request $request): RedirectResponse
-{
-    // Validasi file yang diupload
-    $request->validate([
-        'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    // Ambil user yang sedang login dan relasi mahasiswa-nya
-    $user = Auth::user();
-    $mahasiswa = $user->mahasiswa;
-
-    if (!$mahasiswa) {
-        return back()->with('error', 'Data mahasiswa tidak ditemukan.');
-    }
-
-    // Proses jika file benar-benar dikirim
-    if ($request->hasFile('gambar')) {
-        $file = $request->file('gambar');
-
-        // Buat nama file unik
-        $filename = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
-
-        // Simpan file ke storage/app/public/mahasiswa/images
-        $path = $file->storeAs('mahasiswa/images', $filename, 'public');
-
-        // Hapus gambar lama jika ada
-        if ($mahasiswa->gambar && Storage::disk('public')->exists($mahasiswa->gambar)) {
-            Storage::disk('public')->delete($mahasiswa->gambar);
-        }
-
-        // Simpan path gambar ke database
-        $mahasiswa->update([
-            'gambar' => $path,
+    public function updateProfileImage(Request $request): RedirectResponse
+    {
+        // Validasi file yang diupload
+        $request->validate([
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        return redirect()->route('mahasiswa.profile.show')->with('success', 'Foto profil berhasil diperbarui!');
+        // Ambil user yang sedang login dan relasi mahasiswa-nya
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa;
+
+        if (!$mahasiswa) {
+            return back()->with('error', 'Data mahasiswa tidak ditemukan.');
+        }
+
+        // Proses jika file benar-benar dikirim
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+
+            // Buat nama file unik
+            $filename = uniqid() . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+            // Simpan file ke storage/app/public/mahasiswa/images
+            $path = $file->storeAs('mahasiswa/images', $filename, 'public');
+
+            // Hapus gambar lama jika ada
+            if ($mahasiswa->gambar && Storage::disk('public')->exists($mahasiswa->gambar)) {
+                Storage::disk('public')->delete($mahasiswa->gambar);
+            }
+
+            // Simpan path gambar ke database
+            $mahasiswa->update([
+                'gambar' => $path,
+            ]);
+
+            return redirect()->route('mahasiswa.profile.show')->with('success', 'Foto profil berhasil diperbarui!');
+        }
+
+        return back()->with('error', 'Gagal memperbarui foto profil.');
     }
 
-    return back()->with('error', 'Gagal memperbarui foto profil.');
-}
+    /**
+     * Display the form to change the user's password.
+     */
+    public function showChangePasswordForm(): View
+    {
+        $user = Auth::user();
+        $mahasiswa = $user->mahasiswa ?? $user;
 
+        return view('profile.change-password', compact('mahasiswa', 'user'));
+    }
+
+    /**
+     * Update user's password.
+     */
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        // Validasi inputD
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+            'new_password_confirmation' => ['required', 'string', 'min:8'],
+        ], [
+            'current_password.required' => 'Password saat ini wajib diisi.',
+            'current_password.current_password' => 'Password saat ini tidak sesuai.',
+            'new_password.required' => 'Password baru wajib diisi.',
+            'new_password.min' => 'Password baru minimal 8 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'new_password_confirmation.required' => 'Konfirmasi password wajib diisi.',
+            'new_password_confirmation.min' => 'Konfirmasi password minimal 8 karakter.',
+        ]);
+
+        $user = Auth::user();
+
+        // Update password
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return redirect()->route('mahasiswa.profile.change-password')
+            ->with('success', 'Password berhasil diubah!');
+    }
+
+    public function showChangePasswordDosen(): View
+    {
+        $user = Auth::user();
+        $dosen = $user->dosen ?? $user;
+
+        return view('dosen.change-password', compact('dosen', 'user'));
+    }
+
+    public function updatePasswordDosen(Request $request): RedirectResponse
+    {
+        // Validasi input
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+            'new_password_confirmation' => ['required', 'string', 'min:8'],
+        ], [
+            'current_password.required' => 'Password saat ini wajib diisi.',
+            'current_password.current_password' => 'Password saat ini tidak sesuai.',
+            'new_password.required' => 'Password baru wajib diisi.',
+            'new_password.min' => 'Password baru minimal 8 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            'new_password_confirmation.required' => 'Konfirmasi password wajib diisi.',
+            'new_password_confirmation.min' => 'Konfirmasi password minimal 8 karakter.',
+        ]);
+
+        $user = Auth::user();
+
+        // Update password
+        $user->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        // Perbaikan: redirect ke dosen, bukan mahasiswa
+        return redirect()->route('dosen.change-password')
+            ->with('success', 'Password berhasil diubah!');
+    }
 
 }

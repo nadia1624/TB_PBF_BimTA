@@ -22,6 +22,11 @@ Route::middleware(['auth', 'role:dosen'])->prefix('dosen')->name('dosen.')->grou
     Route::get('/profile', [ProfileController::class, 'dosenProfile'])->name('profile');
     Route::post('/profile/update-image', [ProfileController::class, 'updateDosenImage'])->name('profile.update.image');
 
+    // Pastikan rute ini ada dalam grup rute dosen
+    Route::get('/change-password', [ProfileController::class, 'showChangePasswordDosen'])->name('change-password');
+    Route::put('/change-password', [ProfileController::class, 'updatePasswordDosen'])->name('profile.update-password');
+
+
 
     // Jadwal Bimbingan
     Route::get('/jadwal-bimbingan', [JadwalBimbinganController::class, 'jadwalBimbingan'])->name('jadwal-bimbingan');

@@ -158,6 +158,21 @@
                                 </div>
                             </div>
                         @endif
+
+                        <!-- Password Management Section -->
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <h4 class="text-md font-medium text-gray-800 mb-4">Keamanan Akun</h4>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700">Password</p>
+                                    <p class="text-xs text-gray-500">Ubah password untuk meningkatkan keamanan akun</p>
+                                </div>
+                                <a href="{{ route('dosen.change-password') }}"
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200 text-sm">
+                                    Ubah Password
+                                </a>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
