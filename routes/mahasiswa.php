@@ -23,6 +23,10 @@ Route::middleware(['auth', 'verified', 'role:mahasiswa'])
         // Existing routes...
         Route::get('/profile', [ProfileController::class, 'showProfile'])->name('profile.show');
         Route::post('/profile/image', [ProfileController::class, 'updateProfileImage'])->name('profile.image.update');
+
+        Route::get('/profile/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('profile.change-password');
+        Route::put('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
+
     });
 
 
